@@ -42,6 +42,8 @@ urlpatterns = [
     path('get_fertility_as_value', get_fertility_as_value),
     path('get_fertility_as_stats', get_fertility_as_stats),
 
+    path('get_recommended_plants', get_recommended_plants),
+
     path(r'auth/obtain_token/', obtain_jwt_token),
     path(r'auth/refresh_token/', refresh_jwt_token),
 

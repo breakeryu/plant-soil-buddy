@@ -10,7 +10,7 @@
 import axios from 'axios'
 import VeLine from 'v-charts/lib/line.common'
 export default {
-  name: 'Chart',
+  name: 'MoistChart',
   components: { VeLine },
   data () {
     return {

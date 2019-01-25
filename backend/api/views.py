@@ -177,6 +177,16 @@ def get_fertility_as_stats(request):
     }
     return JsonResponse(chart_data)
 
+def get_best_plants_list():
+    return ['Banana', 'Coffee']
+
+@csrf_exempt
+def get_recommended_plants(request):
+    plants_list = {
+            'plants': get_best_plants_list()
+        }
+    return JsonResponse(plants_list)
+
 def public(request):
     return HttpResponse("You don't need to be authenticated to see this")
 

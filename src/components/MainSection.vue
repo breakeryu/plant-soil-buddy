@@ -10,23 +10,26 @@
 	<moist-chart></moist-chart>
   <acidity-chart></acidity-chart>
   <fertility-chart></fertility-chart>
+  <plant-recommender></plant-recommender>
     <button class="normal-btn exit-btn" v-on:click="doLogout">Logout</button>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+//import axios from 'axios'
 import router from '@/router'
 import MoistChart from '@/components/Charts/MoistChart'
 import AcidityChart from '@/components/Charts/AcidityChart'
 import FertilityChart from '@/components/Charts/FertilityChart'
+import PlantRecommender from '@/components/PlantRecommender'
 
 export default {
   name: 'Welcome',
   components: {
     MoistChart,
     AcidityChart,
-    FertilityChart
+    FertilityChart,
+    PlantRecommender
   },
   data () {
     return {
@@ -38,9 +41,7 @@ export default {
   methods: {
     doLogout() {
     	this.$store.commit('updateToken', '')
-    	this.$store.commit("setAuthUser",
-                {authUser: '', isAuthenticated: false}
-              )
+    	this.$store.commit("setAuthUser", {authUser: '', isAuthenticated: false})
     	router.push('/')
     }
   },
