@@ -14,12 +14,21 @@ export default {
       plants_list: []
     }
   },
+  methods: {
+    getData() {
+      axios.get("/get_recommended_plants")
+            .then((response) => {
+              this.plants_list = response.data
+            })
+    }
+  },
   mounted(){
-
+/*
     axios.get("/get_recommended_plants")
             .then((response) => {
               this.plants_list = response.data
             })
+            */
   }
 }
 </script>

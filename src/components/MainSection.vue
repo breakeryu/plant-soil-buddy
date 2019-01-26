@@ -3,14 +3,13 @@
     <h1>{{ msg }} {{ username }}!</h1>  
     <h3> Device Status: {{ status_msg }}</h3>
     <p>
-    <button class="normal-btn normal-btn">Start</button>  
-    <button class="normal-btn normal-btn exit-btn">Stop</button>
+    <button id="trig-btn" class="normal-btn normal-btn" v-on:click="triggerSensor">{{ btn_text }}</button>  
   </p>
     <h4> Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy. </h4>
-	<moist-chart></moist-chart>
-  <acidity-chart></acidity-chart>
-  <fertility-chart></fertility-chart>
-  <plant-recommender></plant-recommender>
+	<moist-chart ref="moist_ch"></moist-chart>
+  <acidity-chart ref="acidity_ch"></acidity-chart>
+  <fertility-chart ref="fertility_ch"></fertility-chart>
+  <plant-recommender ref="plant_rec"></plant-recommender>
     <button class="normal-btn exit-btn" v-on:click="doLogout">Logout</button>
   </div>
 </template>
@@ -34,11 +33,49 @@ export default {
   data () {
     return {
       username: '',
-      status_msg: 'Disconnected',
-      msg: 'Welcome,'
+      status_msg: 'Connected',
+      msg: 'Welcome,',
+      timer_running: false,
+      timer: null,
+      time: 5,
+      btn_text: "Start"
     }
   },
   methods: {
+    readFromSensors() {
+      this.$refs.moist_ch.getData()
+      this.$refs.acidity_ch.getData()
+      this.$refs.fertility_ch.getData()
+      this.$refs.plant_rec.getData()
+    },
+    startSensor() {
+      this.btn_text = "Stop"
+      this.timer_running = true
+      this.readFromSensors()
+      if (!this.timer) {
+          this.timer = setInterval( () => {
+            if (this.time > 0) {
+               this.time--
+            } else {
+               this.time = 5
+               this.readFromSensors()
+            }
+          }, 1000 )
+       }
+    },
+    stopSensor() {
+      this.btn_text = "Start"
+      this.timer_running = false
+      clearInterval(this.timer)
+      this.timer = null
+    },
+    triggerSensor() {
+      if (this.timer_running) {
+        this.stopSensor()
+      } else {
+        this.startSensor()
+      }
+    },
     doLogout() {
     	this.$store.commit('updateToken', '')
     	this.$store.commit("setAuthUser", {authUser: '', isAuthenticated: false})

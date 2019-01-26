@@ -13,6 +13,8 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 
 import json
+import random
+import decimal
 
 from .models import *
 from django.contrib.auth.models import User
@@ -30,7 +32,9 @@ class PostsView(ListAPIView):
     authentication_class = (JSONWebTokenAuthentication,) # Don't forget to add a 'comma' after first element to make it a tuple
     permission_classes = (IsAuthenticated,)
 
-
+moist = 0
+acidity = 7
+fertility = 0
 
 #@ensure_csrf_cookie
 @csrf_exempt
@@ -72,32 +76,11 @@ def user(request):
     else:
         return None
 
-@csrf_exempt
-def get_temp(request):
-    return HttpResponse(25) #Farenheit
-
-@csrf_exempt
-def get_temp_stats(request):
-    column_1 = 'time'
-    column_2 = '°C'
-    chart_data = {
-        'columns': [column_1, column_2],
-        'rows': [
-
-                {column_1: '08:00', column_2: 25},
-                {column_1: '09:00', column_2: 10},
-                {column_1: '10:00', column_2: -8},
-                {column_1: '13:00', column_2: 18},
-                {column_1: '14:00', column_2: 27},
-                {column_1: '15:00', column_2: 6},
-                
-                
-            ]
-    }
-    return JsonResponse(chart_data)
-
 def get_current_moist():
-    return 40
+    curr_moist = float(decimal.Decimal(random.randrange(4155, 9389))/100)
+    global moist
+    moist = curr_moist
+    return curr_moist
 
 @csrf_exempt
 def get_moist_as_value(request):
@@ -124,7 +107,10 @@ def get_moist_as_stats(request):
     return JsonResponse(chart_data)
 
 def get_current_acidity():
-    return 7
+    curr_acidity = float(decimal.Decimal(random.randrange(400, 1000))/100)
+    global acidity
+    acidity = curr_acidity
+    return curr_acidity
 
 @csrf_exempt
 def get_acidity_as_value(request):
@@ -151,7 +137,10 @@ def get_acidity_as_stats(request):
     return JsonResponse(chart_data)
 
 def get_current_fertility():
-    return 55
+    curr_fertility = float(decimal.Decimal(random.randrange(1000, 10000))/100)
+    global fertility
+    fertility = curr_fertility
+    return curr_fertility
 
 @csrf_exempt
 def get_fertility_as_value(request):
@@ -179,9 +168,13 @@ def get_fertility_as_stats(request):
 
 @csrf_exempt
 def get_recommended_plants(request):
+    global moist
+    global acidity
+    global fertility
     plants_list = [
                     {'id':0, 'name':'Banana'},
-                    {'id':1, 'name':'Apple'}
+                    {'id':1, 'name':'Apple'},
+                    {'id':2, 'name':'Papaya'}
                 ]
     return JsonResponse(plants_list, safe=False)
 

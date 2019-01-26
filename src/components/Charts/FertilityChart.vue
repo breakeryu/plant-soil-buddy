@@ -22,8 +22,16 @@ export default {
       }
     }
   },
+  methods: {
+    getData() {
+      axios.get("/get_fertility_as_value")
+            .then((response) => {
+              this.current_data = response.data
+            })
+    }
+  },
   mounted(){
-
+/*
     axios.get("/get_fertility_as_value")
             .then((response) => {
               this.current_data = response.data
@@ -33,7 +41,7 @@ export default {
     axios.get("/get_fertility_as_stats")
             .then((response) => {
               this.chart_data = response.data
-            })
+            })*/
   }
 }
 </script>

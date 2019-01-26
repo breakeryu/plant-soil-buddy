@@ -22,8 +22,16 @@ export default {
       }
     }
   },
+  methods: {
+    getData() {
+      axios.get("/get_moist_as_value")
+            .then((response) => {
+              this.current_data = response.data
+            })
+    }
+  },
   mounted(){
-
+/*
     axios.get("/get_moist_as_value")
             .then((response) => {
               this.current_data = response.data
@@ -34,6 +42,7 @@ export default {
             .then((response) => {
               this.chart_data = response.data
             })
+            */
   }
 }
 </script>

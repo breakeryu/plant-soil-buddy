@@ -30,9 +30,6 @@ urlpatterns = [
 
     path('user', user),
 
-    path('ask-current-temp', get_temp),
-    path('get-temp-stats', get_temp_stats),
-
     path('get_moist_as_value', get_moist_as_value),
     path('get_moist_as_stats', get_moist_as_stats),
 

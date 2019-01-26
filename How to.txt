@@ -1,17 +1,61 @@
+-Credit-
+
 https://github.com/gtalarico/django-vue-template
+
+
+
+-Install these-
 
 pip3 install whitenoise
 pip3 install djangorestframework
 
-https://docs.djangoproject.com/en/2.1/topics/migrations/
 
+
+-Refs-
+
+https://docs.djangoproject.com/en/2.1/topics/migrations/
 https://www.google.com/search?ei=l_IhXJ3MJs-1rQHOpIhw&q=django+add+superuser&oq=django+add+superuser&gs_l=psy-ab.3..0l2j0i22i30l4.44567.52746..53049...8.0..0.127.1579.15j3......0....1..gws-wiz.......35i39j0i67j0i20i263j0i22i10i30j0i8i13i30j0i13j0i13i30j33i160j0i13i10i30.bWoKKGk3FWo
+
+
+
+-Link to former work-
 
 https://github.com/jzrlza/django-vue-base
 
+
+
+
 -test front-
+
 yarn serve
 
 -test all-
+
 yarn build
 python manage.py runserver
+
+
+
+
+
+
+-Update Model Database-
+
+python manage.py makemigrations
+python manage.py migrate
+
+
+-Make superuser-
+
+python manage.py createsuperuser
+
+Current use
+username: jb
+password: 1q2w3e4r
+
+
+
+-Manage Database by Admin-
+
+visit : localhost:8000/api/admin
+
