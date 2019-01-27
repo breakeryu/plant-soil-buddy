@@ -95,7 +95,7 @@ def user(request):
 
 
 def get_current_moist():
-    curr_moist = float(decimal.Decimal(random.randrange(4155, 9389))/100)
+    curr_moist = float(decimal.Decimal(random.randrange(5555, 9389))/100)
     global moist
     moist = curr_moist
     return curr_moist
@@ -120,7 +120,7 @@ def get_moist_as_stats(request):
 
 
 def get_current_acidity():
-    curr_acidity = float(decimal.Decimal(random.randrange(400, 1000))/100)
+    curr_acidity = float(decimal.Decimal(random.randrange(500, 900))/100)
     global acidity
     acidity = curr_acidity
     return curr_acidity
@@ -145,7 +145,7 @@ def get_acidity_as_stats(request):
 
 
 def get_current_fertility():
-    curr_fertility = float(decimal.Decimal(random.randrange(1000, 10000))/100)
+    curr_fertility = float(decimal.Decimal(random.randrange(4500, 10000))/100)
     global fertility
     fertility = curr_fertility
     return curr_fertility
@@ -174,11 +174,14 @@ def get_recommended_plants(request):
     global moist
     global acidity
     global fertility
-    plants_list = [
-                    {'id':0, 'name':'Banana'},
-                    {'id':1, 'name':'Apple'},
-                    {'id':2, 'name':'Papaya'}
-                ]
+    plants_set = Plant.objects.all()
+    plants_list = []
+    for plant in plants_set :
+        if moist < plant.min_moist or moist > plant.max_moist or acidity < plant.min_ph or acidity > plant.max_ph or fertility < plant.min_fertility or fertility > plant.max_fertility :
+            continue
+        plants_list.append({'id':plant.id, 'name':plant.name})
+        
+    print(plants_list)
     return JsonResponse(plants_list, safe=False)
 
 
