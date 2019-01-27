@@ -5,17 +5,18 @@
     <p>
     <button id="trig-btn" class="normal-btn normal-btn" v-on:click="triggerSensor">{{ btn_text }}</button>  
   </p>
-    <h4> Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy. </h4>
+    <h4> Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy. </h4><br><br>
 	<moist-chart ref="moist_ch"></moist-chart>
   <acidity-chart ref="acidity_ch"></acidity-chart>
   <fertility-chart ref="fertility_ch"></fertility-chart>
   <plant-recommender ref="plant_rec"></plant-recommender>
-    <button class="normal-btn exit-btn" v-on:click="doLogout">Logout</button>
+  <br><br>
+    <button class="normal-btn exit-btn" v-on:click="doLogout">Logout</button><br>
   </div>
 </template>
 
 <script>
-//import axios from 'axios'
+import axios from 'axios'
 import router from '@/router'
 import MoistChart from '@/components/Charts/MoistChart'
 import AcidityChart from '@/components/Charts/AcidityChart'
@@ -42,6 +43,12 @@ export default {
     }
   },
   methods: {
+    snapReset() {
+      axios.get("/snap_reset")
+            .then((response) => {
+              this.current_data = response.data
+            })
+    },
     readFromSensors() {
       this.$refs.moist_ch.getData()
       this.$refs.acidity_ch.getData()
@@ -49,6 +56,7 @@ export default {
       this.$refs.plant_rec.getData()
     },
     startSensor() {
+      this.snapReset()
       this.btn_text = "Stop"
       this.timer_running = true
       this.readFromSensors()
@@ -66,6 +74,7 @@ export default {
     stopSensor() {
       this.btn_text = "Start"
       this.timer_running = false
+      this.time = 5
       clearInterval(this.timer)
       this.timer = null
     },

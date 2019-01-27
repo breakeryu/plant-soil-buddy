@@ -242,10 +242,41 @@ def get_recommended_plants(request):
         if moist < plant.min_moist or moist > plant.max_moist or acidity < plant.min_ph or acidity > plant.max_ph or fertility < plant.min_fertility or fertility > plant.max_fertility :
             continue
         plants_list.append({'id':plant.id, 'name':plant.name})
-        
+
     return JsonResponse(plants_list, safe=False)
 
 
+
+@csrf_exempt
+def snap_reset(request):
+    global moist, acidity, fertility
+    global moist_chart_data, acidity_chart_data, fertility_chart_data
+    global avg_moist, avg_acidity, avg_fertility
+    
+    moist = 0
+    acidity = 7
+    fertility = 0
+
+    moist_chart_data = {
+        'columns': ['time', '%'],
+        'rows': []
+    }
+
+    acidity_chart_data = {
+        'columns': ['time', 'pH'],
+        'rows': []
+    }
+
+    fertility_chart_data = {
+        'columns': ['time', '%'],
+        'rows': []
+    }
+
+    avg_moist = 0
+    avg_acidity = 7
+    avg_fertility = 0
+
+    return HttpResponse('Reset')
 
 def public(request):
     return HttpResponse("You don't need to be authenticated to see this")
