@@ -60,6 +60,9 @@ avg_fertility = 0
 def round_two_decimal_digits(number) :
     return math.ceil(number*100)/100
 
+def get_current_time() :
+    return f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S}"
+
 #@ensure_csrf_cookie
 @csrf_exempt
 def home(request):
@@ -113,7 +116,7 @@ def get_moist_as_value(request):
     global moist_chart_data
     
     value = get_current_moist()
-    moist_chart_data["rows"].append({'time':str(datetime.datetime.now()), '%':value})
+    moist_chart_data["rows"].append({'time':get_current_time(), '%':value})
     if len(moist_chart_data["rows"]) > 10 :
         moist_chart_data["rows"].pop(0)
     
@@ -140,7 +143,7 @@ def get_acidity_as_value(request):
     global acidity_chart_data
     
     value = get_current_acidity()
-    acidity_chart_data["rows"].append({'time':str(datetime.datetime.now()), 'pH':value})
+    acidity_chart_data["rows"].append({'time':get_current_time(), 'pH':value})
     if len(acidity_chart_data["rows"]) > 10 :
         acidity_chart_data["rows"].pop(0)
         
@@ -167,7 +170,7 @@ def get_fertility_as_value(request):
     global fertility_chart_data
     
     value = get_current_fertility()
-    fertility_chart_data["rows"].append({'time':str(datetime.datetime.now()), '%':value})
+    fertility_chart_data["rows"].append({'time':get_current_time(), '%':value})
     if len(fertility_chart_data["rows"]) > 10 :
         fertility_chart_data["rows"].pop(0)
         
