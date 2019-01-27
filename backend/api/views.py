@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 
 import json
+import math
 import random
 import decimal
 import datetime
@@ -51,6 +52,13 @@ fertility_chart_data = {
     'columns': ['time', '%'],
     'rows': []
 }
+
+avg_moist = 0
+avg_acidity = 7
+avg_fertility = 0
+
+def round_two_decimal_digits(number) :
+    return math.ceil(number*100)/100
 
 #@ensure_csrf_cookie
 @csrf_exempt
@@ -106,6 +114,8 @@ def get_moist_as_value(request):
     
     value = get_current_moist()
     moist_chart_data["rows"].append({'time':str(datetime.datetime.now()), '%':value})
+    if len(moist_chart_data["rows"]) > 10 :
+        moist_chart_data["rows"].pop(0)
     
     return HttpResponse(value)
 
@@ -131,7 +141,9 @@ def get_acidity_as_value(request):
     
     value = get_current_acidity()
     acidity_chart_data["rows"].append({'time':str(datetime.datetime.now()), 'pH':value})
-    
+    if len(acidity_chart_data["rows"]) > 10 :
+        acidity_chart_data["rows"].pop(0)
+        
     return HttpResponse(value)
 
 @csrf_exempt
@@ -156,7 +168,9 @@ def get_fertility_as_value(request):
     
     value = get_current_fertility()
     fertility_chart_data["rows"].append({'time':str(datetime.datetime.now()), '%':value})
-    
+    if len(fertility_chart_data["rows"]) > 10 :
+        fertility_chart_data["rows"].pop(0)
+        
     return HttpResponse(value)
 
 @csrf_exempt
@@ -169,19 +183,66 @@ def get_fertility_as_stats(request):
 
 
 
+
+@csrf_exempt
+def get_average_moist(request):
+    global moist_chart_data
+    global avg_moist
+    
+    total_moist_data = 0
+    for moist_data in moist_chart_data["rows"] :
+        total_moist_data += moist_data["%"]
+    avg_moist = total_moist_data / len(moist_chart_data["rows"])
+    
+    return HttpResponse(round_two_decimal_digits(avg_moist))
+
+@csrf_exempt
+def get_average_acidity(request):
+    global acidity_chart_data
+    global avg_acidity
+
+    total_acidity_data = 0
+    for acidity_data in acidity_chart_data["rows"] :
+        total_acidity_data += acidity_data["pH"]
+    avg_acidity = total_acidity_data / len(acidity_chart_data["rows"])
+
+    return HttpResponse(round_two_decimal_digits(avg_acidity))
+
+@csrf_exempt
+def get_average_fertility(request):
+    global fertility_chart_data
+    global avg_fertility
+
+    total_fertility_data = 0
+    for fertility_data in fertility_chart_data["rows"] :
+        total_fertility_data += fertility_data["%"]
+    avg_fertility = total_fertility_data / len(fertility_chart_data["rows"])
+
+    return HttpResponse(round_two_decimal_digits(avg_fertility))
+
+
 @csrf_exempt
 def get_recommended_plants(request):
-    global moist
-    global acidity
-    global fertility
+    global avg_moist
+    global avg_acidity
+    global avg_fertility
+
+    #moist = moist_chart_data["rows"][-1]["%"]
+    #acidity = acidity_chart_data["rows"][-1]["pH"]
+    #fertility = fertility_chart_data["rows"][-1]["%"]
+
+    moist = avg_moist
+    acidity = avg_acidity
+    fertility = avg_fertility
+
     plants_set = Plant.objects.all()
     plants_list = []
+    
     for plant in plants_set :
         if moist < plant.min_moist or moist > plant.max_moist or acidity < plant.min_ph or acidity > plant.max_ph or fertility < plant.min_fertility or fertility > plant.max_fertility :
             continue
         plants_list.append({'id':plant.id, 'name':plant.name})
         
-    print(plants_list)
     return JsonResponse(plants_list, safe=False)
 
 
