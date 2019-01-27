@@ -28,6 +28,11 @@ export default {
             .then((response) => {
               this.current_data = response.data
             })
+
+      axios.get("/get_acidity_as_stats")
+            .then((response) => {
+              this.chart_data = response.data
+            })
     }
   },
   mounted(){

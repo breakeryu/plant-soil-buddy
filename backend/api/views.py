@@ -15,6 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import random
 import decimal
+import datetime
 
 from .models import *
 from django.contrib.auth.models import User
@@ -35,6 +36,21 @@ class PostsView(ListAPIView):
 moist = 0
 acidity = 7
 fertility = 0
+
+moist_chart_data = {
+    'columns': ['time', '%'],
+    'rows': []
+}
+
+acidity_chart_data = {
+    'columns': ['time', 'pH'],
+    'rows': []
+}
+
+fertility_chart_data = {
+    'columns': ['time', '%'],
+    'rows': []
+}
 
 #@ensure_csrf_cookie
 @csrf_exempt
@@ -76,6 +92,8 @@ def user(request):
     else:
         return None
 
+
+
 def get_current_moist():
     curr_moist = float(decimal.Decimal(random.randrange(4155, 9389))/100)
     global moist
@@ -84,27 +102,22 @@ def get_current_moist():
 
 @csrf_exempt
 def get_moist_as_value(request):
-    return HttpResponse(get_current_moist())
+    global moist_chart_data
+    
+    value = get_current_moist()
+    moist_chart_data["rows"].append({'time':str(datetime.datetime.now()), '%':value})
+    
+    return HttpResponse(value)
 
 @csrf_exempt
 def get_moist_as_stats(request):
-    column_1 = 'time'
-    column_2 = '%'
-    chart_data = {
-        'columns': [column_1, column_2],
-        'rows': [
-
-                {column_1: '08:00', column_2: 100},
-                {column_1: '09:00', column_2: 70},
-                {column_1: '10:00', column_2: 80},
-                {column_1: '13:00', column_2: 50},
-                {column_1: '14:00', column_2: 60},
-                {column_1: '15:00', column_2: 40},
-                
-                
-            ]
-    }
+    global moist_chart_data
+    
+    chart_data = moist_chart_data
     return JsonResponse(chart_data)
+
+
+
 
 def get_current_acidity():
     curr_acidity = float(decimal.Decimal(random.randrange(400, 1000))/100)
@@ -114,27 +127,22 @@ def get_current_acidity():
 
 @csrf_exempt
 def get_acidity_as_value(request):
-    return HttpResponse(get_current_acidity())
+    global acidity_chart_data
+    
+    value = get_current_acidity()
+    acidity_chart_data["rows"].append({'time':str(datetime.datetime.now()), 'pH':value})
+    
+    return HttpResponse(value)
 
 @csrf_exempt
 def get_acidity_as_stats(request):
-    column_1 = 'time'
-    column_2 = 'pH'
-    chart_data = {
-        'columns': [column_1, column_2],
-        'rows': [
+    global acidity_chart_data
 
-                {column_1: '08:00', column_2: 14},
-                {column_1: '09:00', column_2: 13},
-                {column_1: '10:00', column_2: 11},
-                {column_1: '13:00', column_2: 9},
-                {column_1: '14:00', column_2: 8},
-                {column_1: '15:00', column_2: 7},
-                
-                
-            ]
-    }
+    chart_data = acidity_chart_data
     return JsonResponse(chart_data)
+
+
+
 
 def get_current_fertility():
     curr_fertility = float(decimal.Decimal(random.randrange(1000, 10000))/100)
@@ -144,27 +152,22 @@ def get_current_fertility():
 
 @csrf_exempt
 def get_fertility_as_value(request):
-    return HttpResponse(get_current_fertility())
+    global fertility_chart_data
+    
+    value = get_current_fertility()
+    fertility_chart_data["rows"].append({'time':str(datetime.datetime.now()), '%':value})
+    
+    return HttpResponse(value)
 
 @csrf_exempt
 def get_fertility_as_stats(request):
-    column_1 = 'time'
-    column_2 = '%'
-    chart_data = {
-        'columns': [column_1, column_2],
-        'rows': [
+    global fertility_chart_data
 
-                {column_1: '08:00', column_2: 100},
-                {column_1: '09:00', column_2: 70},
-                {column_1: '10:00', column_2: 60},
-                {column_1: '13:00', column_2: 50},
-                {column_1: '14:00', column_2: 60},
-                {column_1: '15:00', column_2: 55},
-                
-                
-            ]
-    }
+    chart_data = fertility_chart_data
     return JsonResponse(chart_data)
+
+
+
 
 @csrf_exempt
 def get_recommended_plants(request):
@@ -177,6 +180,8 @@ def get_recommended_plants(request):
                     {'id':2, 'name':'Papaya'}
                 ]
     return JsonResponse(plants_list, safe=False)
+
+
 
 def public(request):
     return HttpResponse("You don't need to be authenticated to see this")
