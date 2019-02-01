@@ -106,7 +106,7 @@ def user(request):
 
 
 def get_current_moist():
-    curr_moist = float(decimal.Decimal(random.randrange(5555, 9389))/100)
+    curr_moist = float(decimal.Decimal(random.randrange(8000, 9000))/100)
     global moist
     moist = curr_moist
     return curr_moist
@@ -133,7 +133,7 @@ def get_moist_as_stats(request):
 
 
 def get_current_acidity():
-    curr_acidity = float(decimal.Decimal(random.randrange(500, 900))/100)
+    curr_acidity = float(decimal.Decimal(random.randrange(500, 700))/100)
     global acidity
     acidity = curr_acidity
     return curr_acidity
@@ -160,7 +160,7 @@ def get_acidity_as_stats(request):
 
 
 def get_current_fertility():
-    curr_fertility = float(decimal.Decimal(random.randrange(4500, 10000))/100)
+    curr_fertility = float(decimal.Decimal(random.randrange(7000, 9000))/100)
     global fertility
     fertility = curr_fertility
     return curr_fertility

@@ -5,11 +5,13 @@
     <p>
     <button id="trig-btn" class="normal-btn normal-btn" v-on:click="triggerSensor">{{ btn_text }}</button>  
   </p>
-    <h4> Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy. </h4><br><br>
+    <h4> {{ btn_note }} </h4><br><br>
+    <plant-recommender ref="plant_rec"></plant-recommender>
+    <br><br>
 	<moist-chart ref="moist_ch"></moist-chart>
   <acidity-chart ref="acidity_ch"></acidity-chart>
   <fertility-chart ref="fertility_ch"></fertility-chart>
-  <plant-recommender ref="plant_rec"></plant-recommender>
+  
   <br><br>
     <button class="normal-btn exit-btn" v-on:click="doLogout">Logout</button><br>
   </div>
@@ -36,6 +38,7 @@ export default {
       username: '',
       status_msg: 'Connected',
       msg: 'Welcome,',
+      btn_note: 'Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy of plant recommendation.',
       timer_running: false,
       timer: null,
       time: 5,
@@ -53,7 +56,6 @@ export default {
       this.$refs.moist_ch.getData()
       this.$refs.acidity_ch.getData()
       this.$refs.fertility_ch.getData()
-      this.$refs.plant_rec.getData()
     },
     startSensor() {
       this.snapReset()
@@ -80,9 +82,13 @@ export default {
     },
     triggerSensor() {
       if (this.timer_running) {
+        this.$refs.plant_rec.getData()
         this.stopSensor()
+        this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy of plant recommendation.'
       } else {
+        this.$refs.plant_rec.reset()
         this.startSensor()
+        this.btn_note = 'Click "Stop" to see the result of the plant recommendation.'
       }
     },
     doLogout() {

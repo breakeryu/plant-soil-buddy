@@ -2,7 +2,8 @@
   <div>
     <h1>Recommended Plants</h1>
       <p v-for="plant in plants_list" :key="plant.id">{{ plant.name }}</p>
-      <p v-if="empty">-None-</p>
+      <p v-if="!showing_results">-N/A-</p>
+      <p v-if="empty && showing_results">-None-</p>
   </div>
 </template>
 
@@ -13,6 +14,7 @@ export default {
   data () {
     return {
       plants_list: [],
+      showing_results: false,
       empty: true
     }
   },
@@ -27,6 +29,12 @@ export default {
                 this.empty = false
               }
             })
+      this.showing_results = true
+    },
+    reset() {
+      this.showing_results = false
+      this.plants_list = []
+      this.empty = true
     }
   },
   mounted(){
