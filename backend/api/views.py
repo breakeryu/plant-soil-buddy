@@ -17,6 +17,7 @@ import math
 import random
 import decimal
 import datetime
+import serial
 
 from .models import *
 from django.contrib.auth.models import User
@@ -280,6 +281,34 @@ def snap_reset(request):
     avg_fertility = 0
 
     return HttpResponse('Reset')
+
+@csrf_exempt
+def get_connection_status(request):
+    status = 'Unknown'
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        
+        try :
+            arduino = serial.Serial(data['port'], 9600)
+
+            status = 'Connected'
+           
+        except serial.serialutil.SerialException :
+            status = 'Disconnected'
+
+    else :
+        status = 'Disconnected'
+
+    return HttpResponse(status)
+
+#For the coder's computer only
+def is_connected():
+    try :
+        arduino = serial.Serial("COM8", 9600)
+        return True
+       
+    except serial.serialutil.SerialException :
+        return False
 
 def public(request):
     return HttpResponse("You don't need to be authenticated to see this")

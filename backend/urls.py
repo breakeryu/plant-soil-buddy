@@ -45,6 +45,8 @@ urlpatterns = [
 
     path('get_recommended_plants', get_recommended_plants),
 
+    path('get_connection_status', get_connection_status),
+
     path('snap_reset', snap_reset),
 
     path(r'auth/obtain_token/', obtain_jwt_token),

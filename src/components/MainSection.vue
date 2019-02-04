@@ -2,7 +2,10 @@
   <div class="hello">
     <h1>{{ msg }} {{ username }}!</h1>  
     <h3> Device Status: {{ status_msg }}</h3>
+    <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager"></h3>
+    <button class="normal-btn" v-on:click="recheckConnection">Re-check Connection</button><br>
     <p>
+      <br>
     <button id="trig-btn" class="normal-btn normal-btn" v-on:click="triggerSensor">{{ btn_text }}</button>  
   </p>
     <h4> {{ btn_note }} </h4><br><br>
@@ -36,13 +39,14 @@ export default {
   data () {
     return {
       username: '',
-      status_msg: 'Connected',
+      status_msg: 'Unknown',
       msg: 'Welcome,',
       btn_note: 'Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy of plant recommendation.',
       timer_running: false,
       timer: null,
       time: 5,
-      btn_text: "Start"
+      btn_text: "Start",
+      port: 'COM8'
     }
   },
   methods: {
@@ -86,20 +90,46 @@ export default {
         this.stopSensor()
         this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy of plant recommendation.'
       } else {
-        this.$refs.plant_rec.reset()
-        this.startSensor()
-        this.btn_note = 'Click "Stop" to see the result of the plant recommendation.'
+
+        axios.post("/get_connection_status", {
+            'port': this.port
+          })
+            .then((response) => {
+              this.status_msg = response.data
+
+              this.$refs.plant_rec.reset()
+
+              if (this.status_msg == 'Connected') {
+                  this.startSensor()
+                  this.btn_note = 'Click "Stop" to see the result of the plant recommendation.'
+                }
+            })
+
+        
       }
     },
     doLogout() {
     	this.$store.commit('updateToken', '')
     	this.$store.commit("setAuthUser", {authUser: '', isAuthenticated: false})
     	router.push('/')
+    },
+    recheckConnection() {
+      axios.post("/get_connection_status", {
+            'port': this.port
+          })
+            .then((response) => {
+              this.status_msg = response.data
+            })
     }
   },
   mounted(){
     this.username = this.$store.state.authUser
-
+    axios.post("/get_connection_status", {
+            'port': this.port
+          })
+            .then((response) => {
+              this.status_msg = response.data
+            })
   }
 }
 </script>
