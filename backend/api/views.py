@@ -106,22 +106,28 @@ def user(request):
 
 
 
-def get_current_moist():
-    curr_moist = float(decimal.Decimal(random.randrange(8000, 9000))/100)
-    global moist
-    moist = curr_moist
-    return curr_moist
 
 @csrf_exempt
 def get_moist_as_value(request):
     global moist_chart_data
     
-    value = get_current_moist()
-    moist_chart_data["rows"].append({'time':get_current_time(), '%':value})
-    if len(moist_chart_data["rows"]) > 10 :
-        moist_chart_data["rows"].pop(0)
-    
-    return HttpResponse(value)
+    data = json.loads(request.body)
+    try :
+        arduino = serial.Serial(data['port'], 9600)
+        
+        value = int(arduino.readline())
+
+        if value < 0:
+            value = 0
+
+        moist_chart_data["rows"].append({'time':get_current_time(), '%':value})
+        if len(moist_chart_data["rows"]) > 10 :
+            moist_chart_data["rows"].pop(0)
+
+        return HttpResponse(value)
+            
+    except serial.serialutil.SerialException :
+        return HttpResponse(-999)
 
 @csrf_exempt
 def get_moist_as_stats(request):
@@ -133,22 +139,28 @@ def get_moist_as_stats(request):
 
 
 
-def get_current_acidity():
-    curr_acidity = float(decimal.Decimal(random.randrange(500, 700))/100)
-    global acidity
-    acidity = curr_acidity
-    return curr_acidity
 
 @csrf_exempt
 def get_acidity_as_value(request):
     global acidity_chart_data
     
-    value = get_current_acidity()
-    acidity_chart_data["rows"].append({'time':get_current_time(), 'pH':value})
-    if len(acidity_chart_data["rows"]) > 10 :
-        acidity_chart_data["rows"].pop(0)
+    data = json.loads(request.body)
+    try :
+        arduino = serial.Serial(data['port'], 9600)
         
-    return HttpResponse(value)
+        value = int(arduino.readline())
+
+        if value < 0:
+            value = 0
+            
+        acidity_chart_data["rows"].append({'time':get_current_time(), 'pH':value})
+        if len(acidity_chart_data["rows"]) > 10 :
+            acidity_chart_data["rows"].pop(0)
+        
+        return HttpResponse(value)
+
+    except serial.serialutil.SerialException :
+        return HttpResponse(-999)
 
 @csrf_exempt
 def get_acidity_as_stats(request):
@@ -160,22 +172,28 @@ def get_acidity_as_stats(request):
 
 
 
-def get_current_fertility():
-    curr_fertility = float(decimal.Decimal(random.randrange(7000, 9000))/100)
-    global fertility
-    fertility = curr_fertility
-    return curr_fertility
 
 @csrf_exempt
 def get_fertility_as_value(request):
     global fertility_chart_data
     
-    value = get_current_fertility()
-    fertility_chart_data["rows"].append({'time':get_current_time(), '%':value})
-    if len(fertility_chart_data["rows"]) > 10 :
-        fertility_chart_data["rows"].pop(0)
+    data = json.loads(request.body)
+    try :
+        arduino = serial.Serial(data['port'], 9600)
         
-    return HttpResponse(value)
+        value = int(arduino.readline())
+
+        if value < 0:
+            value = 0
+            
+        fertility_chart_data["rows"].append({'time':get_current_time(), '%':value})
+        if len(fertility_chart_data["rows"]) > 10 :
+            fertility_chart_data["rows"].pop(0)
+        
+        return HttpResponse(value)
+
+    except serial.serialutil.SerialException :
+        return HttpResponse(-999)
 
 @csrf_exempt
 def get_fertility_as_stats(request):
@@ -196,7 +214,11 @@ def get_average_moist(request):
     total_moist_data = 0
     for moist_data in moist_chart_data["rows"] :
         total_moist_data += moist_data["%"]
-    avg_moist = total_moist_data / len(moist_chart_data["rows"])
+        
+    if len(moist_chart_data["rows"]) > 0 :
+        avg_moist = total_moist_data / len(moist_chart_data["rows"])
+    else :
+        avg_moist = 0
     
     return HttpResponse(round_two_decimal_digits(avg_moist))
 
@@ -208,7 +230,11 @@ def get_average_acidity(request):
     total_acidity_data = 0
     for acidity_data in acidity_chart_data["rows"] :
         total_acidity_data += acidity_data["pH"]
-    avg_acidity = total_acidity_data / len(acidity_chart_data["rows"])
+        
+    if len(acidity_chart_data["rows"]) > 0 :
+        avg_acidity = total_acidity_data / len(acidity_chart_data["rows"])
+    else :
+        avg_acidity = 0
 
     return HttpResponse(round_two_decimal_digits(avg_acidity))
 
@@ -220,7 +246,11 @@ def get_average_fertility(request):
     total_fertility_data = 0
     for fertility_data in fertility_chart_data["rows"] :
         total_fertility_data += fertility_data["%"]
-    avg_fertility = total_fertility_data / len(fertility_chart_data["rows"])
+
+    if len(fertility_chart_data["rows"]) > 0 : 
+        avg_fertility = total_fertility_data / len(fertility_chart_data["rows"])
+    else :
+        avg_fertility = 0
 
     return HttpResponse(round_two_decimal_digits(avg_fertility))
 
@@ -285,6 +315,7 @@ def snap_reset(request):
 @csrf_exempt
 def get_connection_status(request):
     status = 'Unknown'
+    
     if request.method == 'POST':
         data = json.loads(request.body)
         

@@ -26,9 +26,13 @@ export default {
   },
   methods: {
     getData() {
-      axios.get("/get_acidity_as_value")
+      axios.post("/get_acidity_as_value", {
+            'port': this.$parent.port
+          })
             .then((response) => {
-              this.current_data = response.data
+              if (response.data >= 0)  {
+                this.current_data = response.data
+              }
             })
 
       axios.get("/get_acidity_as_stats")

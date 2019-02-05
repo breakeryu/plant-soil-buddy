@@ -44,7 +44,7 @@ export default {
       btn_note: 'Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy of plant recommendation.',
       timer_running: false,
       timer: null,
-      time: 5,
+      time: 1,
       btn_text: "Start",
       port: 'COM8'
     }
@@ -71,7 +71,7 @@ export default {
             if (this.time > 0) {
                this.time--
             } else {
-               this.time = 5
+               this.time = 1
                this.readFromSensors()
             }
           }, 1000 )
@@ -80,7 +80,7 @@ export default {
     stopSensor() {
       this.btn_text = "Start"
       this.timer_running = false
-      this.time = 5
+      this.time = 1
       clearInterval(this.timer)
       this.timer = null
     },
