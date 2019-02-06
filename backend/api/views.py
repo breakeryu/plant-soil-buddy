@@ -115,7 +115,7 @@ def get_moist_as_value(request):
     try :
         arduino = serial.Serial(data['port'], 9600)
         
-        value = int(arduino.readline()) + 86
+        value = int(arduino.readline())
 
         if value < 0:
             value = 0
