@@ -115,7 +115,7 @@ def get_moist_as_value(request):
     try :
         arduino = serial.Serial(data['port'], 9600)
         
-        value = int(arduino.readline())
+        value = int(arduino.readline()) + 86
 
         if value < 0:
             value = 0
@@ -146,9 +146,9 @@ def get_acidity_as_value(request):
     
     data = json.loads(request.body)
     try :
-        arduino = serial.Serial(data['port'], 9600)
+        #arduino = serial.Serial(data['port'], 9600)
         
-        value = int(arduino.readline())
+        value = float(decimal.Decimal(random.randrange(500, 700))/100) #int(arduino.readline())
 
         if value < 0:
             value = 0
@@ -179,9 +179,9 @@ def get_fertility_as_value(request):
     
     data = json.loads(request.body)
     try :
-        arduino = serial.Serial(data['port'], 9600)
+        #arduino = serial.Serial(data['port'], 9600)
         
-        value = int(arduino.readline())
+        value = float(decimal.Decimal(random.randrange(7000, 9000))/100) #int(arduino.readline())
 
         if value < 0:
             value = 0
