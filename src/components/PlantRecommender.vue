@@ -19,8 +19,10 @@ export default {
     }
   },
   methods: {
-    getData() {
-      axios.get("/get_recommended_plants")
+    getData(selected) {
+      axios.post("/get_recommended_plants", {
+        'soil_profile_id' : selected
+      })
             .then((response) => {
               this.plants_list = response.data
               if (this.plants_list.length <= 0) {

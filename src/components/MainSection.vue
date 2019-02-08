@@ -8,12 +8,13 @@
     <p>
       <br>
 
-      <h3> Soil Profile : <select v-model="selected" v-on:change="reloadGraph">
+      <h3> Soil Profile : <select v-model="selected" v-on:change="reloadGraph(selected)">
         <option v-for="soil_profile in soil_profiles" v-bind:value="soil_profile.id"> {{ soil_profile.name }}, at {{ soil_profile.location }}</option>
       </select> </h3>
       <p>
       <button id="trig-btn" class="normal-btn normal-btn soil-btn" >Add</button>
       <button id="trig-btn" class="normal-btn normal-btn soil-btn" >Edit</button>
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn" >Clear</button>
       <button id="trig-btn" class="normal-btn normal-btn soil-btn" >Delete</button> 
     </p>
 
@@ -82,8 +83,7 @@ export default {
             .then((response) => {
 
               if (response.data > 0) {
-                  this.reloadGraph()
-                  this.$refs.plant_rec.getData()
+                  this.reloadGraph(this.selected)
                 }
             })
     },
@@ -147,10 +147,11 @@ export default {
               this.status_msg = response.data
             })
     },
-    reloadGraph() {
-      this.$refs.moist_ch.getData(this.selected)
-      this.$refs.acidity_ch.getData(this.selected)
-      this.$refs.fertility_ch.getData(this.selected)
+    reloadGraph(selected) {
+      this.$refs.moist_ch.getData(selected)
+      this.$refs.acidity_ch.getData(selected)
+      this.$refs.fertility_ch.getData(selected)
+      this.$refs.plant_rec.getData(selected)
     }
   },
   mounted(){
@@ -169,8 +170,8 @@ export default {
               this.soil_profiles = response.data
             })
 
-    this.reloadGraph()
-    this.$refs.plant_rec.getData()
+    this.reloadGraph(this.selected)
+    
   }
 }
 </script>

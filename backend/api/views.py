@@ -127,6 +127,88 @@ def get_soil_profiles(request):
         return None
 
 @csrf_exempt
+def add_soil_profile(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        try:
+            owner = User.objects.get(username=data['username'])
+        except User.DoesNotExist:
+            return JsonResponse({'status': 400, 'message':'User does not exist'}, safe=False)
+        
+        name = data['name']
+        location = data['location']
+
+        SoilProfile.objects.create(owner=owner, name=name, location=location)
+
+        return JsonResponse({'status': 200, 'message':'OK'}, safe=False)
+
+    else:
+        return None
+
+@csrf_exempt
+def edit_soil_profile(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        soil_profile_id = data['soil_profile_id']
+        try:
+            soil_profile = SoilProfile.objects.get(pk=soil_profile_id)
+        except SoilProfile.DoesNotExist:
+            return JsonResponse({'status': 400, 'message':'Soil Profile does not exist'}, safe=False)
+
+        name = data['name']
+        location = data['location']
+
+        soil_profile.update(name=name, location=location)
+
+        return JsonResponse({'status': 200, 'message':'OK'}, safe=False)
+
+    else:
+        return None
+
+@csrf_exempt
+def clear_soil_profile(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        soil_profile_id = data['soil_profile_id']
+        try:
+            soil_profile = SoilProfile.objects.get(pk=soil_profile_id)
+        except SoilProfile.DoesNotExist:
+            return JsonResponse({'status': 400, 'message':'Soil Profile does not exist'}, safe=False)
+
+        records = SensorRecord.objects.all()
+
+        for record in records :
+            if record.soil_profile == soil_profile_on_use :
+                record.delete()
+
+        return JsonResponse({'status': 200, 'message':'OK'}, safe=False)
+
+    else:
+        return None
+
+@csrf_exempt
+def delete_soil_profile(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        
+        soil_profile_id = data['soil_profile_id']
+        try:
+            soil_profile = SoilProfile.objects.get(pk=soil_profile_id)
+
+            soil_profile.delete()
+            
+        except SoilProfile.DoesNotExist:
+            return JsonResponse({'status': 400, 'message':'Soil Profile does not exist'}, safe=False)
+
+        return JsonResponse({'status': 200, 'message':'OK'}, safe=False)
+
+    else:
+        return None
+
+@csrf_exempt
 def get_all_values(request):
     global moist_chart_data
     global moist
@@ -278,15 +360,24 @@ def get_fertility_as_stats(request):
 
 @csrf_exempt
 def get_average_moist(request):
-    global moist_chart_data
     global avg_moist
+
+    data = json.loads(request.body)
+
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+
+    records = SensorRecord.objects.all()
+    target_records = []
     
     total_moist_data = 0
-    for moist_data in moist_chart_data["rows"] :
-        total_moist_data += moist_data["%"]
-        
-    if len(moist_chart_data["rows"]) > 0 :
-        avg_moist = total_moist_data / len(moist_chart_data["rows"])
+
+    for record in records :
+        if record.soil_profile == soil_profile_on_use :
+            total_moist_data += record.moist
+            target_records.append(record)
+            
+    if len(target_records) > 0 :
+        avg_moist = total_moist_data / len(target_records)
     else :
         avg_moist = 0
     
@@ -294,15 +385,24 @@ def get_average_moist(request):
 
 @csrf_exempt
 def get_average_acidity(request):
-    global acidity_chart_data
     global avg_acidity
 
+    data = json.loads(request.body)
+
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+
+    records = SensorRecord.objects.all()
+    target_records = []
+    
     total_acidity_data = 0
-    for acidity_data in acidity_chart_data["rows"] :
-        total_acidity_data += acidity_data["pH"]
-        
-    if len(acidity_chart_data["rows"]) > 0 :
-        avg_acidity = total_acidity_data / len(acidity_chart_data["rows"])
+
+    for record in records :
+        if record.soil_profile == soil_profile_on_use :
+            total_acidity_data += record.ph
+            target_records.append(record)
+            
+    if len(target_records) > 0 :
+        avg_acidity = total_acidity_data / len(target_records)
     else :
         avg_acidity = 0
 
@@ -310,15 +410,24 @@ def get_average_acidity(request):
 
 @csrf_exempt
 def get_average_fertility(request):
-    global fertility_chart_data
     global avg_fertility
 
-    total_fertility_data = 0
-    for fertility_data in fertility_chart_data["rows"] :
-        total_fertility_data += fertility_data["%"]
+    data = json.loads(request.body)
 
-    if len(fertility_chart_data["rows"]) > 0 : 
-        avg_fertility = total_fertility_data / len(fertility_chart_data["rows"])
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+
+    records = SensorRecord.objects.all()
+    target_records = []
+    
+    total_fertility_data = 0
+
+    for record in records :
+        if record.soil_profile == soil_profile_on_use :
+            total_fertility_data += record.fertility
+            target_records.append(record)
+            
+    if len(target_records) > 0 :
+        avg_fertility = total_fertility_data / len(target_records)
     else :
         avg_fertility = 0
 
@@ -327,23 +436,38 @@ def get_average_fertility(request):
 
 @csrf_exempt
 def get_recommended_plants(request):
-    global avg_moist
-    global avg_acidity
-    global avg_fertility
+    data = json.loads(request.body)
 
-    #moist = moist_chart_data["rows"][-1]["%"]
-    #acidity = acidity_chart_data["rows"][-1]["pH"]
-    #fertility = fertility_chart_data["rows"][-1]["%"]
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
-    moist = avg_moist
-    acidity = avg_acidity
-    fertility = avg_fertility
+    records = SensorRecord.objects.all()
+    target_records = []
+
+    total_moist_data = 0
+    total_acidity_data = 0
+    total_fertility_data = 0
+
+    for record in records :
+        if record.soil_profile == soil_profile_on_use :
+            total_moist_data += record.moist
+            total_acidity_data += record.ph
+            total_fertility_data += record.fertility
+            target_records.append(record)
+            
+    if len(target_records) > 0 :
+        avg_moist = total_moist_data / len(target_records)
+        avg_acidity = total_acidity_data / len(target_records)
+        avg_fertility = total_fertility_data / len(target_records)
+    else :
+        avg_moist = 0
+        avg_acidity = 0
+        avg_fertility = 0
 
     plants_set = Plant.objects.all()
     plants_list = []
     
     for plant in plants_set :
-        if moist < plant.min_moist or moist > plant.max_moist or acidity < plant.min_ph or acidity > plant.max_ph or fertility < plant.min_fertility or fertility > plant.max_fertility :
+        if avg_moist < plant.min_moist or avg_moist > plant.max_moist or avg_acidity < plant.min_ph or avg_acidity > plant.max_ph or avg_fertility < plant.min_fertility or avg_fertility > plant.max_fertility :
             continue
         plants_list.append({'id':plant.id, 'name':plant.name})
 

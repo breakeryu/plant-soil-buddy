@@ -40,7 +40,9 @@ export default {
               this.chart_data = response.data
             })
 
-      axios.get("/get_average_fertility")
+      axios.post("/get_average_fertility", {
+        'soil_profile_id' : selected
+      })
             .then((response) => {
               this.avg_data = response.data
             })
