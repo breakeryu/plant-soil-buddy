@@ -12,11 +12,12 @@ from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 
+from datetime import datetime 
+
 import json
 import math
 import random
 import decimal
-import datetime
 import serial
 
 from .models import *
@@ -62,7 +63,7 @@ def round_two_decimal_digits(number) :
     return math.ceil(number*100)/100
 
 def get_current_time() :
-    return f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S}"
+    return f"{datetime.now():%Y-%m-%d %H:%M:%S}"
 
 #@ensure_csrf_cookie
 @csrf_exempt
@@ -104,30 +105,59 @@ def user(request):
     else:
         return None
 
-
-
-
 @csrf_exempt
-def get_moist_as_value(request):
+def get_all_values(request):
     global moist_chart_data
+    global moist
+    global acidity_chart_data
+    global acidity
+    global fertility_chart_data
+    global fertility
     
     data = json.loads(request.body)
     try :
         arduino = serial.Serial(data['port'], 9600)
         
-        value = int(arduino.readline())
+        moist = int(arduino.readline())
+        acidity = float(decimal.Decimal(random.randrange(500, 700))/100)
+        fertility = float(decimal.Decimal(random.randrange(7000, 9000))/100)
 
-        if value < 0:
-            value = 0
+        if moist < 0:
+            moist = 0
 
-        moist_chart_data["rows"].append({'time':get_current_time(), '%':value})
+        if acidity < 0:
+            acidity = 0
+
+        if acidity > 14:
+            acidity = 14
+
+        if fertility < 0:
+            fertility = 0
+
+        moist_chart_data["rows"].append({'time':get_current_time(), '%':moist})
         if len(moist_chart_data["rows"]) > 10 :
             moist_chart_data["rows"].pop(0)
 
-        return HttpResponse(value)
+        acidity_chart_data["rows"].append({'time':get_current_time(), 'pH':acidity})
+        if len(acidity_chart_data["rows"]) > 10 :
+            acidity_chart_data["rows"].pop(0)
+
+        fertility_chart_data["rows"].append({'time':get_current_time(), '%':fertility})
+        if len(fertility_chart_data["rows"]) > 10 :
+            fertility_chart_data["rows"].pop(0)
+
+        return HttpResponse(1)
             
     except serial.serialutil.SerialException :
         return HttpResponse(-999)
+
+
+@csrf_exempt
+def get_moist_as_value(request):
+    global moist
+
+    value = moist
+    return HttpResponse(value)
 
 @csrf_exempt
 def get_moist_as_stats(request):
@@ -142,25 +172,10 @@ def get_moist_as_stats(request):
 
 @csrf_exempt
 def get_acidity_as_value(request):
-    global acidity_chart_data
-    
-    data = json.loads(request.body)
-    try :
-        #arduino = serial.Serial(data['port'], 9600)
-        
-        value = float(decimal.Decimal(random.randrange(500, 700))/100) #int(arduino.readline())
+    global acidity
 
-        if value < 0:
-            value = 0
-            
-        acidity_chart_data["rows"].append({'time':get_current_time(), 'pH':value})
-        if len(acidity_chart_data["rows"]) > 10 :
-            acidity_chart_data["rows"].pop(0)
-        
-        return HttpResponse(value)
-
-    except serial.serialutil.SerialException :
-        return HttpResponse(-999)
+    value = acidity
+    return HttpResponse(value)
 
 @csrf_exempt
 def get_acidity_as_stats(request):
@@ -175,25 +190,10 @@ def get_acidity_as_stats(request):
 
 @csrf_exempt
 def get_fertility_as_value(request):
-    global fertility_chart_data
-    
-    data = json.loads(request.body)
-    try :
-        #arduino = serial.Serial(data['port'], 9600)
-        
-        value = float(decimal.Decimal(random.randrange(7000, 9000))/100) #int(arduino.readline())
+    global fertility
 
-        if value < 0:
-            value = 0
-            
-        fertility_chart_data["rows"].append({'time':get_current_time(), '%':value})
-        if len(fertility_chart_data["rows"]) > 10 :
-            fertility_chart_data["rows"].pop(0)
-        
-        return HttpResponse(value)
-
-    except serial.serialutil.SerialException :
-        return HttpResponse(-999)
+    value = fertility
+    return HttpResponse(value)
 
 @csrf_exempt
 def get_fertility_as_stats(request):
@@ -332,14 +332,6 @@ def get_connection_status(request):
 
     return HttpResponse(status)
 
-#For the coder's computer only
-def is_connected():
-    try :
-        arduino = serial.Serial("COM8", 9600)
-        return True
-       
-    except serial.serialutil.SerialException :
-        return False
 
 def public(request):
     return HttpResponse("You don't need to be authenticated to see this")

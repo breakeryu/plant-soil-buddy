@@ -30,6 +30,8 @@ urlpatterns = [
 
     path('user', user),
 
+    path('get_all_values', get_all_values),
+
     path('get_moist_as_value', get_moist_as_value),
     path('get_moist_as_stats', get_moist_as_stats),
 

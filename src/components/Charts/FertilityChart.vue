@@ -26,9 +26,7 @@ export default {
   },
   methods: {
     getData() {
-      axios.post("/get_fertility_as_value", {
-            'port': this.$parent.port
-          })
+      axios.get("/get_fertility_as_value")
             .then((response) => {
               if (response.data >= 0)  {
                 this.current_data = response.data

@@ -57,9 +57,17 @@ export default {
             })
     },
     readFromSensors() {
-      this.$refs.moist_ch.getData()
-      this.$refs.acidity_ch.getData()
-      this.$refs.fertility_ch.getData()
+      axios.post("/get_all_values", {
+            'port': this.port
+          })
+            .then((response) => {
+
+              if (response.data > 0) {
+                  this.$refs.moist_ch.getData()
+                  this.$refs.acidity_ch.getData()
+                  this.$refs.fertility_ch.getData()
+                }
+            })
     },
     startSensor() {
       this.snapReset()
