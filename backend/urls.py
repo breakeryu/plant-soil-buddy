@@ -31,6 +31,7 @@ urlpatterns = [
     path('user', user),
 
     path('get_soil_profiles', get_soil_profiles),
+    path('get_soil_profile', get_soil_profile),
 
     path('add_soil_profile', add_soil_profile),
     path('edit_soil_profile', edit_soil_profile),

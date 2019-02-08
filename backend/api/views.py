@@ -127,6 +127,20 @@ def get_soil_profiles(request):
         return None
 
 @csrf_exempt
+def get_soil_profile(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            soil_profile = SoilProfile.objects.get(pk=data['soil_profile_id'])
+        except SoilProfile.DoesNotExist:
+            return None
+                
+        return JsonResponse({'id': soil_profile.id, 'name': soil_profile.name, 'location': soil_profile.location}, safe=False)
+        
+    else:
+        return None
+
+@csrf_exempt
 def add_soil_profile(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -152,15 +166,12 @@ def edit_soil_profile(request):
         data = json.loads(request.body)
 
         soil_profile_id = data['soil_profile_id']
-        try:
-            soil_profile = SoilProfile.objects.get(pk=soil_profile_id)
-        except SoilProfile.DoesNotExist:
-            return JsonResponse({'status': 400, 'message':'Soil Profile does not exist'}, safe=False)
-
         name = data['name']
         location = data['location']
-
-        soil_profile.update(name=name, location=location)
+        try:
+            SoilProfile.objects.filter(pk=soil_profile_id).update(name=name, location=location)
+        except SoilProfile.DoesNotExist:
+            return JsonResponse({'status': 400, 'message':'Soil Profile does not exist'}, safe=False)
 
         return JsonResponse({'status': 200, 'message':'OK'}, safe=False)
 
@@ -181,7 +192,7 @@ def clear_soil_profile(request):
         records = SensorRecord.objects.all()
 
         for record in records :
-            if record.soil_profile == soil_profile_on_use :
+            if record.soil_profile == soil_profile :
                 record.delete()
 
         return JsonResponse({'status': 200, 'message':'OK'}, safe=False)
@@ -240,18 +251,6 @@ def get_all_values(request):
         soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
         record = SensorRecord.objects.create(soil_profile=soil_profile_on_use ,record_time=get_current_time(), moist=moist, ph=acidity, fertility=fertility)
-
-        #moist_chart_data["rows"].append({'time':get_current_time(), '%':moist})
-        #if len(moist_chart_data["rows"]) > 10 :
-        #    moist_chart_data["rows"].pop(0)
-
-        #acidity_chart_data["rows"].append({'time':get_current_time(), 'pH':acidity})
-        #if len(acidity_chart_data["rows"]) > 10 :
-        #    acidity_chart_data["rows"].pop(0)
-
-        #fertility_chart_data["rows"].append({'time':get_current_time(), '%':fertility})
-        #if len(fertility_chart_data["rows"]) > 10 :
-        #    fertility_chart_data["rows"].pop(0)
 
         return HttpResponse(1)
             

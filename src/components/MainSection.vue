@@ -12,10 +12,10 @@
         <option v-for="soil_profile in soil_profiles" v-bind:value="soil_profile.id"> {{ soil_profile.name }}, at {{ soil_profile.location }}</option>
       </select> </h3>
       <p>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn" >Add</button>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn" >Edit</button>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn" >Clear</button>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn" >Delete</button> 
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileAdd">Add</button>
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileEdit">Edit</button>
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileClear">Clear</button>
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileDelete">Delete</button> 
     </p>
 
       <br><br>
@@ -69,6 +69,18 @@ export default {
     }
   },
   methods: {
+    soilProfileAdd() {
+        router.push('addsoil')
+    },
+    soilProfileEdit() {
+        router.push('editsoil')
+    },
+    soilProfileClear() {
+        router.push('clearsoil')
+    },
+    soilProfileDelete() {
+        router.push('deletesoil')
+    },
     snapReset() {
       axios.get("/snap_reset")
             .then((response) => {
@@ -152,6 +164,7 @@ export default {
       this.$refs.acidity_ch.getData(selected)
       this.$refs.fertility_ch.getData(selected)
       this.$refs.plant_rec.getData(selected)
+      this.$store.state.selected_soil_profile = selected
     }
   },
   mounted(){
