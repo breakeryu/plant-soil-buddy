@@ -44,5 +44,5 @@ class SensorRecord(models.Model):
     fertility = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     def __str__(self):
         soil = SoilProfile.objects.get(pk=self.soil_profile.pk)
-        return soil.name + " - " + self.name
+        return soil.name + " - " + str(self.record_time)
 

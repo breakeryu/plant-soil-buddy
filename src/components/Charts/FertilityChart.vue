@@ -2,7 +2,7 @@
   <div>
     <h1>Soil Fertility Level</h1>
     <h3>Current: {{ current_data }} %</h3>
-    <h3>Average for most recent 10 records: {{ avg_data }} %</h3>
+    <h3>Average: {{ avg_data }} %</h3>
     <ve-line :data="chart_data"></ve-line>
   </div>
 </template>

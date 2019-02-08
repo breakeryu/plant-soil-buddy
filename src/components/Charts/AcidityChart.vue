@@ -2,7 +2,7 @@
   <div>
     <h1>Soil Acidity Level</h1>
     <h3>Current: {{ current_data }} pH</h3>
-    <h3>Average for most recent 10 records: {{ avg_data }} pH</h3>
+    <h3>Average: {{ avg_data }} pH</h3>
     <ve-line :data="chart_data"></ve-line>
   </div>
 </template>

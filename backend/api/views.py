@@ -106,6 +106,27 @@ def user(request):
         return None
 
 @csrf_exempt
+def get_soil_profiles(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            user = User.objects.get(username=data['username'])
+        except User.DoesNotExist:
+            return None
+
+        soil_profiles = SoilProfile.objects.all()
+        current_soil_profiles = []
+
+        for soil_profile in soil_profiles :
+            if soil_profile.owner == user :
+                current_soil_profiles.append({'id': soil_profile.id, 'name': soil_profile.name, 'location': soil_profile.location})
+                
+        return JsonResponse(current_soil_profiles, safe=False)
+        
+    else:
+        return None
+
+@csrf_exempt
 def get_all_values(request):
     global moist_chart_data
     global moist
@@ -134,17 +155,21 @@ def get_all_values(request):
         if fertility < 0:
             fertility = 0
 
-        moist_chart_data["rows"].append({'time':get_current_time(), '%':moist})
-        if len(moist_chart_data["rows"]) > 10 :
-            moist_chart_data["rows"].pop(0)
+        soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
-        acidity_chart_data["rows"].append({'time':get_current_time(), 'pH':acidity})
-        if len(acidity_chart_data["rows"]) > 10 :
-            acidity_chart_data["rows"].pop(0)
+        record = SensorRecord.objects.create(soil_profile=soil_profile_on_use ,record_time=get_current_time(), moist=moist, ph=acidity, fertility=fertility)
 
-        fertility_chart_data["rows"].append({'time':get_current_time(), '%':fertility})
-        if len(fertility_chart_data["rows"]) > 10 :
-            fertility_chart_data["rows"].pop(0)
+        #moist_chart_data["rows"].append({'time':get_current_time(), '%':moist})
+        #if len(moist_chart_data["rows"]) > 10 :
+        #    moist_chart_data["rows"].pop(0)
+
+        #acidity_chart_data["rows"].append({'time':get_current_time(), 'pH':acidity})
+        #if len(acidity_chart_data["rows"]) > 10 :
+        #    acidity_chart_data["rows"].pop(0)
+
+        #fertility_chart_data["rows"].append({'time':get_current_time(), '%':fertility})
+        #if len(fertility_chart_data["rows"]) > 10 :
+        #    fertility_chart_data["rows"].pop(0)
 
         return HttpResponse(1)
             

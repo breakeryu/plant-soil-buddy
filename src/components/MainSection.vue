@@ -1,15 +1,31 @@
 <template>
   <div class="hello">
     <h1>{{ msg }} {{ username }}!</h1>  
+
     <h3> Device Status: {{ status_msg }}</h3>
     <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager"></h3>
     <button class="normal-btn" v-on:click="recheckConnection">Re-check Connection</button><br>
     <p>
       <br>
+
+      <h3> Soil Profile : <select v-model="selected">
+        <option v-for="soil_profile in soil_profiles" v-bind:value="soil_profile.id"> {{ soil_profile.name }}, at {{ soil_profile.location }}</option>
+      </select> </h3>
+      <p>
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn" >Add</button>
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn" >Edit</button>
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn" >Delete</button> 
+    </p>
+
+      <br><br>
     <button id="trig-btn" class="normal-btn normal-btn" v-on:click="triggerSensor">{{ btn_text }}</button>  
   </p>
-    <h4> {{ btn_note }} </h4><br><br>
+    <h4> {{ btn_note }} </h4>
+
+    <br><br>
+
     <plant-recommender ref="plant_rec"></plant-recommender>
+
     <br><br>
 	<moist-chart ref="moist_ch"></moist-chart>
   <acidity-chart ref="acidity_ch"></acidity-chart>
@@ -46,7 +62,9 @@ export default {
       timer: null,
       time: 1,
       btn_text: "Start",
-      port: 'COM8'
+      port: 'COM8',
+      soil_profiles : [],
+      selected: 1
     }
   },
   methods: {
@@ -58,7 +76,8 @@ export default {
     },
     readFromSensors() {
       axios.post("/get_all_values", {
-            'port': this.port
+            'port': this.port,
+            'soil_profile_id': this.selected
           })
             .then((response) => {
 
@@ -138,6 +157,13 @@ export default {
             .then((response) => {
               this.status_msg = response.data
             })
+
+    axios.post("/get_soil_profiles", {
+            'username': this.username
+          })
+            .then((response) => {
+              this.soil_profiles = response.data
+            })
   }
 }
 </script>
@@ -169,5 +195,9 @@ input:focus {
 }
 input, .normal-btn {
   width: 200px;
+}
+.soil-btn {
+  margin-left: 10px;
+  margin-right: 10px;
 }
 </style>
