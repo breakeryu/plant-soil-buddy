@@ -221,4 +221,9 @@ input, .normal-btn {
   margin-left: 10px;
   margin-right: 10px;
 }
+select {
+  height: 45px;
+  border: 3px solid #555;
+  font-size: 16px;
+}
 </style>
