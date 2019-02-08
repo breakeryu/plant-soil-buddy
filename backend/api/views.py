@@ -187,6 +187,21 @@ def get_moist_as_value(request):
 @csrf_exempt
 def get_moist_as_stats(request):
     global moist_chart_data
+
+    data = json.loads(request.body)
+
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+
+    records = SensorRecord.objects.all()
+
+    moist_chart_data = {
+    'columns': ['time', '%'],
+    'rows': []
+    }
+
+    for record in records :
+        if record.soil_profile == soil_profile_on_use :
+            moist_chart_data["rows"].append({'time':record.record_time, '%':record.moist})
     
     chart_data = moist_chart_data
     return JsonResponse(chart_data)
@@ -206,6 +221,21 @@ def get_acidity_as_value(request):
 def get_acidity_as_stats(request):
     global acidity_chart_data
 
+    data = json.loads(request.body)
+
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+
+    records = SensorRecord.objects.all()
+
+    acidity_chart_data = {
+    'columns': ['time', 'pH'],
+    'rows': []
+    }
+
+    for record in records :
+        if record.soil_profile == soil_profile_on_use :
+            acidity_chart_data["rows"].append({'time':record.record_time, 'pH':record.ph})
+    
     chart_data = acidity_chart_data
     return JsonResponse(chart_data)
 
@@ -224,6 +254,21 @@ def get_fertility_as_value(request):
 def get_fertility_as_stats(request):
     global fertility_chart_data
 
+    data = json.loads(request.body)
+
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+
+    records = SensorRecord.objects.all()
+
+    fertility_chart_data = {
+    'columns': ['time', '%'],
+    'rows': []
+    }
+
+    for record in records :
+        if record.soil_profile == soil_profile_on_use :
+            fertility_chart_data["rows"].append({'time':record.record_time, '%':record.fertility})
+    
     chart_data = fertility_chart_data
     return JsonResponse(chart_data)
 

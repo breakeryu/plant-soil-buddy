@@ -25,7 +25,7 @@ export default {
     }
   },
   methods: {
-    getData() {
+    getData(selected) {
       axios.get("/get_acidity_as_value")
             .then((response) => {
               if (response.data >= 0)  {
@@ -33,7 +33,9 @@ export default {
               }
             })
 
-      axios.get("/get_acidity_as_stats")
+      axios.post("/get_acidity_as_stats", {
+        'soil_profile_id' : selected
+      })
             .then((response) => {
               this.chart_data = response.data
             })

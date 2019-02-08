@@ -8,7 +8,7 @@
     <p>
       <br>
 
-      <h3> Soil Profile : <select v-model="selected">
+      <h3> Soil Profile : <select v-model="selected" v-on:change="reloadGraph">
         <option v-for="soil_profile in soil_profiles" v-bind:value="soil_profile.id"> {{ soil_profile.name }}, at {{ soil_profile.location }}</option>
       </select> </h3>
       <p>
@@ -82,9 +82,8 @@ export default {
             .then((response) => {
 
               if (response.data > 0) {
-                  this.$refs.moist_ch.getData()
-                  this.$refs.acidity_ch.getData()
-                  this.$refs.fertility_ch.getData()
+                  this.reloadGraph()
+                  this.$refs.plant_rec.getData()
                 }
             })
     },
@@ -147,6 +146,11 @@ export default {
             .then((response) => {
               this.status_msg = response.data
             })
+    },
+    reloadGraph() {
+      this.$refs.moist_ch.getData(this.selected)
+      this.$refs.acidity_ch.getData(this.selected)
+      this.$refs.fertility_ch.getData(this.selected)
     }
   },
   mounted(){
@@ -164,6 +168,9 @@ export default {
             .then((response) => {
               this.soil_profiles = response.data
             })
+
+    this.reloadGraph()
+    this.$refs.plant_rec.getData()
   }
 }
 </script>
