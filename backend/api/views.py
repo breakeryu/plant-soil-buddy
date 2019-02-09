@@ -245,6 +245,9 @@ def get_all_values(request):
         if moist < 0:
             moist = 0
 
+        if moist > 100:
+            moist = 100
+
         if acidity < 0:
             acidity = 0
 
@@ -254,6 +257,9 @@ def get_all_values(request):
         if fertility < 0:
             fertility = 0
 
+        if fertility > 100:
+            fertility = 100
+            
         soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
         record = SensorRecord.objects.create(soil_profile=soil_profile_on_use ,record_time=get_current_time(), moist=moist, ph=acidity, fertility=fertility)
