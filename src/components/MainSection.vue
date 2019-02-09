@@ -95,7 +95,10 @@ export default {
             .then((response) => {
 
               if (response.data > 0) {
-                  this.reloadGraph(this.selected)
+                  this.$refs.moist_ch.getData(this.selected)
+                  this.$refs.acidity_ch.getData(this.selected)
+                  this.$refs.fertility_ch.getData(this.selected)
+                  this.$store.state.selected_soil_profile = this.selected
                 }
             })
     },
@@ -124,7 +127,7 @@ export default {
     },
     triggerSensor() {
       if (this.timer_running) {
-        this.$refs.plant_rec.getData()
+        this.$refs.plant_rec.getData(this.selected)
         this.stopSensor()
         this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy of plant recommendation.'
       } else {
@@ -163,8 +166,10 @@ export default {
       this.$refs.moist_ch.getData(selected)
       this.$refs.acidity_ch.getData(selected)
       this.$refs.fertility_ch.getData(selected)
-      this.$refs.plant_rec.getData(selected)
       this.$store.state.selected_soil_profile = selected
+      
+      this.$refs.plant_rec.getData(selected)
+      
     }
   },
   mounted(){

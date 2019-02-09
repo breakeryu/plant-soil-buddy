@@ -232,9 +232,15 @@ def get_all_values(request):
     try :
         arduino = serial.Serial(data['port'], 9600)
         
-        moist = int(arduino.readline())
-        acidity = float(decimal.Decimal(random.randrange(500, 700))/100)
-        fertility = float(decimal.Decimal(random.randrange(7000, 9000))/100)
+        #moist = int(arduino.readline())
+        #acidity = float(decimal.Decimal(random.randrange(500, 700))/100)
+        #fertility = float(decimal.Decimal(random.randrange(7000, 9000))/100)
+
+        values = str(arduino.readline()).split(" ")
+
+        moist = int(values[0].split("b'")[1])
+        acidity = float(values[1])
+        fertility = int(values[2].split("\\r\\n")[0])
 
         if moist < 0:
             moist = 0
