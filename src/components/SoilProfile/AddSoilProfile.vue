@@ -5,7 +5,7 @@
     <h3>Soil Name : <input v-model="name"></h3>
     <h3>Soil Location : <input v-model="location"></h3>
 
-    <button id="trig-btn" class="normal-btn normal-btn soil-btn exit-btn" v-on:click="add">Add</button>
+    <button id="trig-btn" class="normal-btn normal-btn soil-btn submit-btn" v-on:click="add">Add</button>
     <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="cancel">Cancel</button>
     
   </div>
@@ -79,8 +79,8 @@ input:focus {
   font-size: 16px;
   height: 35px;
 }
-.exit-btn {
-  background-color: red;
+.submit-btn {
+  background-color: blue;
 }
 input, .normal-btn {
   width: 200px;

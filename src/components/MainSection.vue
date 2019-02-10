@@ -4,7 +4,7 @@
 
     <h3> Device Status: <a v-bind:style="{ color: status_color }">{{ status_msg }}</a></h3>
     <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager"></h3>
-    <button class="normal-btn" v-on:click="recheckConnection">Re-check Connection</button><br>
+    <button class="normal-btn submit-btn" v-on:click="recheckConnection">Re-check Connection</button><br>
     <p>
       <br>
 
@@ -14,8 +14,8 @@
       <p>
       <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileAdd">Add</button>
       <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileEdit">Edit</button>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileClear">Clear</button>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileDelete">Delete</button> 
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileClear">Clear</button>
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileDelete">Delete</button> 
     </p>
 
       <br><br>
@@ -276,6 +276,9 @@ input:focus {
   text-decoration: none;
   font-size: 16px;
   height: 35px;
+}
+.submit-btn {
+  background-color: blue;
 }
 .exit-btn {
 	background-color: red;
