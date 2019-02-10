@@ -145,6 +145,8 @@ export default {
       this.$refs.acidity_ch.current_data = 7
       this.$refs.fertility_ch.current_data = 0
 
+      this.recheckConnection()
+
     },
     triggerSensor() {
       if (this.timer_running) {
