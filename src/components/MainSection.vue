@@ -2,7 +2,7 @@
   <div class="hello">
     <h1>{{ msg }} {{ username }}!</h1>  
 
-    <h3> Device Status: {{ status_msg }}</h3>
+    <h3> Device Status: <a v-bind:style="{ color: status_color }">{{ status_msg }}</a></h3>
     <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager"></h3>
     <button class="normal-btn" v-on:click="recheckConnection">Re-check Connection</button><br>
     <p>
@@ -58,6 +58,7 @@ export default {
     return {
       username: '',
       status_msg: 'Unknown',
+      status_color: 'red',
       msg: 'Welcome,',
       btn_note: 'Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy of plant recommendation.',
       timer_running: false,
@@ -104,6 +105,7 @@ export default {
                   this.$store.state.selected_soil_profile = this.selected
                 } else {
                   this.status_msg = "Disconnected"
+                  this.status_color = 'red'
                   this.triggerSensor()
                 }
             })
@@ -158,12 +160,15 @@ export default {
               this.status_msg = response.data
 
               if (this.status_msg == 'Connected') {
+                  this.status_color = 'green'
                   this.connection_timer_idle_disable()
                   this.startSensor()
                   this.btn_note = 'Click "Stop" to see the result of the plant recommendation.'
 
                   this.$refs.plant_rec.reset()
 
+                } else {
+                  this.status_color = 'red'
                 }
             })
 
@@ -181,6 +186,12 @@ export default {
           })
             .then((response) => {
               this.status_msg = response.data
+
+              if (this.status_msg == 'Connected') {
+                this.status_color = 'green'
+              } else {
+                this.status_color = 'red'
+              }
             })
     },
     reloadGraph(selected) {
