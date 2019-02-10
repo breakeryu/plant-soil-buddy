@@ -530,6 +530,8 @@ def get_connection_status(request):
             arduino = serial.Serial(data['port'], 9600)
 
             status = 'Connected'
+
+            arduino.close()
            
         except serial.serialutil.SerialException :
             status = 'Disconnected'
