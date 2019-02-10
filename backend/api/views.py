@@ -264,6 +264,8 @@ def get_all_values(request):
 
         record = SensorRecord.objects.create(soil_profile=soil_profile_on_use ,record_time=get_current_time(), moist=moist, ph=acidity, fertility=fertility)
 
+        arduino.close()
+
         return HttpResponse(1)
             
     except serial.serialutil.SerialException :

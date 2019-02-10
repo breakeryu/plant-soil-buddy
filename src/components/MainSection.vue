@@ -21,6 +21,7 @@
       <br><br>
     <button id="trig-btn" class="normal-btn normal-btn" v-on:click="triggerSensor">{{ btn_text }}</button>  
   </p>
+    <h4> Record snap time : {{ time }} </h4>
     <h4> {{ btn_note }} </h4>
 
     <br><br>
@@ -61,7 +62,7 @@ export default {
       btn_note: 'Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy of plant recommendation.',
       timer_running: false,
       timer: null,
-      time: 1,
+      time: 6,
       btn_text: "Start",
       port: 'COM8',
       soil_profiles : [],
@@ -99,6 +100,9 @@ export default {
                   this.$refs.acidity_ch.getData(this.selected)
                   this.$refs.fertility_ch.getData(this.selected)
                   this.$store.state.selected_soil_profile = this.selected
+                } else {
+                  this.status_msg = "Disconnected"
+                  this.triggerSensor()
                 }
             })
     },
@@ -112,7 +116,7 @@ export default {
             if (this.time > 0) {
                this.time--
             } else {
-               this.time = 1
+               this.time = 6
                this.readFromSensors()
             }
           }, 1000 )
@@ -121,7 +125,7 @@ export default {
     stopSensor() {
       this.btn_text = "Start"
       this.timer_running = false
-      this.time = 1
+      this.time = 6
       clearInterval(this.timer)
       this.timer = null
     },
