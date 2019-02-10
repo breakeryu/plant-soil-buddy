@@ -66,7 +66,9 @@ export default {
       btn_text: "Start",
       port: 'COM8',
       soil_profiles : [],
-      selected: 1
+      selected: 1,
+      timer_connection: null,
+      time_connection: 4
     }
   },
   methods: {
@@ -107,6 +109,10 @@ export default {
             })
     },
     startSensor() {
+      this.$refs.moist_ch.triggerStartStop()
+      this.$refs.acidity_ch.triggerStartStop()
+      this.$refs.fertility_ch.triggerStartStop()
+
       this.snapReset()
       this.btn_text = "Stop"
       this.timer_running = true
@@ -123,6 +129,10 @@ export default {
        }
     },
     stopSensor() {
+      this.$refs.moist_ch.triggerStartStop()
+      this.$refs.acidity_ch.triggerStartStop()
+      this.$refs.fertility_ch.triggerStartStop()
+
       this.btn_text = "Start"
       this.timer_running = false
       this.time = 6
@@ -132,16 +142,14 @@ export default {
       this.$refs.moist_ch.current_data = 0
       this.$refs.acidity_ch.current_data = 7
       this.$refs.fertility_ch.current_data = 0
+
     },
     triggerSensor() {
-      this.$refs.moist_ch.triggerStartStop()
-      this.$refs.acidity_ch.triggerStartStop()
-      this.$refs.fertility_ch.triggerStartStop()
-
       if (this.timer_running) {
         this.$refs.plant_rec.getData(this.selected)
         this.stopSensor()
         this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy of plant recommendation.'
+        this.connection_timer_idle_enable()
       } else {
         axios.post("/get_connection_status", {
             'port': this.port
@@ -149,11 +157,13 @@ export default {
             .then((response) => {
               this.status_msg = response.data
 
-              this.$refs.plant_rec.reset()
-
               if (this.status_msg == 'Connected') {
+                  this.connection_timer_idle_disable()
                   this.startSensor()
                   this.btn_note = 'Click "Stop" to see the result of the plant recommendation.'
+
+                  this.$refs.plant_rec.reset()
+
                 }
             })
 
@@ -181,16 +191,28 @@ export default {
       
       this.$refs.plant_rec.getData(selected)
       
+    },
+    connection_timer_idle_enable() {
+      if (!this.timer_connection) {
+          this.timer_connection = setInterval( () => {
+            if (this.time_connection > 0) {
+               this.time_connection--
+            } else {
+               this.time_connection = 4
+               this.recheckConnection()
+            }
+          }, 1000 )
+       }
+    },
+    connection_timer_idle_disable() {
+      this.time_connection = 4
+      clearInterval(this.timer_connection)
+      this.timer_connection = null
     }
   },
   mounted(){
     this.username = this.$store.state.authUser
-    axios.post("/get_connection_status", {
-            'port': this.port
-          })
-            .then((response) => {
-              this.status_msg = response.data
-            })
+    this.recheckConnection()
 
     axios.post("/get_soil_profiles", {
             'username': this.username
@@ -200,6 +222,8 @@ export default {
             })
 
     this.reloadGraph(this.selected)
+
+    this.connection_timer_idle_enable()
     
   }
 }
