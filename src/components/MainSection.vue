@@ -3,23 +3,23 @@
     <h1>{{ msg }} {{ username }}!</h1>  
 
     <h3> Device Status: <a v-bind:style="{ color: status_color }">{{ status_msg }}</a></h3>
-    <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager"></h3>
+    <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager" :disabled="timer_running"></h3>
     <button class="normal-btn submit-btn" v-on:click="recheckConnection">Re-check Connection</button><br>
     <p>
       <br>
 
-      <h3> Soil Profile : <select v-model="selected" v-on:change="reloadGraph(selected)">
+      <h3> Soil Profile : <select v-model="selected" v-on:change="reloadGraph(selected)" :disabled="timer_running">
         <option v-for="soil_profile in soil_profiles" v-bind:value="soil_profile.id"> {{ soil_profile.name }}, at {{ soil_profile.location }}</option>
       </select> </h3>
       <p>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileAdd">Add</button>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileEdit">Edit</button>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileClear">Clear</button>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileDelete">Delete</button> 
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileAdd" :disabled="timer_running">Add</button>
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileEdit" :disabled="timer_running || selected == 0">Edit</button>
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileClear" :disabled="timer_running || selected == 0">Clear</button>
+      <button id="trig-btn" class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileDelete" :disabled="timer_running || selected == 0">Delete</button> 
     </p>
 
       <br><br>
-    <button id="trig-btn" v-on:click="triggerSensor" v-bind:style="{ backgroundColor: trig_btn_color }">{{ btn_text }}</button>  
+    <button id="trig-btn" class="normal-btn" v-on:click="triggerSensor" v-bind:class="{ stop: timer_running }" :disabled='status_msg != "Connected" || selected == 0'>{{ btn_text }}</button>  
   </p>
     <h4> Record snap time : {{ time }} </h4>
     <h4> {{ btn_note }} </h4>
@@ -67,10 +67,9 @@ export default {
       btn_text: "Start",
       port: 'COM8',
       soil_profiles : [],
-      selected: 1,
+      selected: 0,
       timer_connection: null,
-      time_connection: 4,
-      trig_btn_color: '\#4CAF50'
+      time_connection: 4
     }
   },
   methods: {
@@ -118,7 +117,6 @@ export default {
 
       this.snapReset()
       this.btn_text = "Stop"
-      this.trig_btn_color = 'red'
       this.timer_running = true
       this.readFromSensors()
       if (!this.timer) {
@@ -138,7 +136,6 @@ export default {
       this.$refs.fertility_ch.triggerStartStop()
 
       this.btn_text = "Start"
-      this.trig_btn_color = '\#4CAF50'
       this.timer_running = false
       this.time = 6
       clearInterval(this.timer)
@@ -148,10 +145,14 @@ export default {
       this.$refs.acidity_ch.current_data = 7
       this.$refs.fertility_ch.current_data = 0
 
-      this.recheckConnection()
+      //this.recheckConnection()
 
     },
     triggerSensor() {
+      if (this.selected <= 0) {
+        return
+      }
+
       if (this.timer_running) {
         this.$refs.plant_rec.getData(this.selected)
         this.stopSensor()
@@ -228,6 +229,7 @@ export default {
   },
   mounted(){
     this.username = this.$store.state.authUser
+    this.selected = this.$store.state.selected_soil_profile
     this.recheckConnection()
 
     axios.post("/get_soil_profiles", {
@@ -280,7 +282,7 @@ input:focus {
 .submit-btn {
   background-color: blue;
 }
-.exit-btn {
+.exit-btn, .stop {
 	background-color: red;
 }
 input, .normal-btn {
@@ -294,5 +296,8 @@ select {
   height: 45px;
   border: 3px solid #555;
   font-size: 16px;
+}
+button:disabled, #trig-btn:disabled {
+  background-color: grey;
 }
 </style>
