@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Soil Moist Level</h1>
-    <h3>Current: {{ current_data }} %</h3>
+    <h3>Current: <a v-if="recording">{{ current_data }} %</a><a v-if="!recording">-</a></h3>
     <h3>Average: {{ avg_data }} %</h3>
     <ve-line :data="chart_data"></ve-line>
   </div>
@@ -21,10 +21,18 @@ export default {
         columns: [],
         rows: [
         ]
-      }
+      },
+      recording: false
     }
   },
   methods: {
+    triggerStartStop() {
+      if (this.recording) {
+        this.recording = false
+      } else {
+        this.recording = true
+      }
+    },
     getData(selected) {
       axios.get("/get_moist_as_value")
             .then((response) => {

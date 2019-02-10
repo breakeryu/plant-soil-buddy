@@ -128,14 +128,21 @@ export default {
       this.time = 6
       clearInterval(this.timer)
       this.timer = null
+
+      this.$refs.moist_ch.current_data = 0
+      this.$refs.acidity_ch.current_data = 7
+      this.$refs.fertility_ch.current_data = 0
     },
     triggerSensor() {
+      this.$refs.moist_ch.triggerStartStop()
+      this.$refs.acidity_ch.triggerStartStop()
+      this.$refs.fertility_ch.triggerStartStop()
+
       if (this.timer_running) {
         this.$refs.plant_rec.getData(this.selected)
         this.stopSensor()
         this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy of plant recommendation.'
       } else {
-
         axios.post("/get_connection_status", {
             'port': this.port
           })
