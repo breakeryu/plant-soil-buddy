@@ -19,7 +19,7 @@
     </p>
 
       <br><br>
-    <button id="trig-btn" class="normal-btn normal-btn" v-on:click="triggerSensor">{{ btn_text }}</button>  
+    <button id="trig-btn" v-on:click="triggerSensor" v-bind:style="{ backgroundColor: trig_btn_color }">{{ btn_text }}</button>  
   </p>
     <h4> Record snap time : {{ time }} </h4>
     <h4> {{ btn_note }} </h4>
@@ -69,7 +69,8 @@ export default {
       soil_profiles : [],
       selected: 1,
       timer_connection: null,
-      time_connection: 4
+      time_connection: 4,
+      trig_btn_color: '\#4CAF50'
     }
   },
   methods: {
@@ -117,6 +118,7 @@ export default {
 
       this.snapReset()
       this.btn_text = "Stop"
+      this.trig_btn_color = 'red'
       this.timer_running = true
       this.readFromSensors()
       if (!this.timer) {
@@ -136,6 +138,7 @@ export default {
       this.$refs.fertility_ch.triggerStartStop()
 
       this.btn_text = "Start"
+      this.trig_btn_color = '\#4CAF50'
       this.timer_running = false
       this.time = 6
       clearInterval(this.timer)
@@ -256,6 +259,16 @@ input:focus {
 }
 .normal-btn {
   background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 5px 12px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  height: 35px;
+}
+#trig-btn {
+  width: 200px;
   border: none;
   color: white;
   padding: 5px 12px;
