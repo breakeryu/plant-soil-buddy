@@ -295,8 +295,9 @@ def get_moist_as_stats(request):
     }
 
     for record in records :
+        time_record = f"{record.record_time:%Y-%b-%d, %H:%M:%S}"
         if record.soil_profile == soil_profile_on_use :
-            moist_chart_data["rows"].append({'time':record.record_time, '%':record.moist})
+            moist_chart_data["rows"].append({'time':time_record, '%':record.moist})
     
     chart_data = moist_chart_data
     return JsonResponse(chart_data)
@@ -328,8 +329,9 @@ def get_acidity_as_stats(request):
     }
 
     for record in records :
+        time_record = f"{record.record_time:%Y-%b-%d, %H:%M:%S}"
         if record.soil_profile == soil_profile_on_use :
-            acidity_chart_data["rows"].append({'time':record.record_time, 'pH':record.ph})
+            acidity_chart_data["rows"].append({'time':time_record, 'pH':record.ph})
     
     chart_data = acidity_chart_data
     return JsonResponse(chart_data)
@@ -361,8 +363,9 @@ def get_fertility_as_stats(request):
     }
 
     for record in records :
+        time_record = f"{record.record_time:%Y-%b-%d, %H:%M:%S}"
         if record.soil_profile == soil_profile_on_use :
-            fertility_chart_data["rows"].append({'time':record.record_time, '%':record.fertility})
+            fertility_chart_data["rows"].append({'time':time_record, '%':record.fertility})
     
     chart_data = fertility_chart_data
     return JsonResponse(chart_data)
