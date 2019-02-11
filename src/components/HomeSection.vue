@@ -1,8 +1,7 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <br>  
-<h4>Soil-Plant-Buddy is a web application that will gather the soil’s quality data.</h4>
+    <h1>{{ msg }}</h1> 
+<h3>Soil-Plant-Buddy is a web application that will gather the soil’s quality data.</h3>
 <h4>And we have this system tells us what kinds of plants are suitable for the specific soil we are using.</h4>
 <h4>As we could use this before we decide to invest in gardening.</h4>
 <h4>This website requires <a class="item">Arduino Sensor Devices</a> to run the soil quality data records.</h4>
