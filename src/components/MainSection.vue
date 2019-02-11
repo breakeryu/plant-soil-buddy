@@ -2,7 +2,7 @@
   <div class="hello">
     <h1>{{ msg }} {{ username }}!</h1>  
 
-    <h3> Device Status: <a v-bind:style="{ color: status_color }">{{ status_msg }}</a></h3>
+    <h2> Device Status: <a v-bind:style="{ color: status_color }">{{ status_msg }}</a></h2>
     <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager" :disabled="timer_running"></h3>
     <button class="normal-btn submit-btn" v-on:click="recheckConnection" :disabled="timer_running">Re-check Connection</button><br>
     <p>

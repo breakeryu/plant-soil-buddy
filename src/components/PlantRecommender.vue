@@ -1,9 +1,9 @@
 <template>
   <div>
     <h1>Recommended Plants</h1>
-      <h3 v-for="plant in plants_list" :key="plant.id">= {{ plant.name }} =</h3>
+      <h3 v-for="plant in plants_list" :key="plant.id">= <a class="plant">{{ plant.name }}</a> =</h3>
       <h3 v-if="!showing_results">-Results are not shown while recording-</h3>
-      <h3 v-if="empty && showing_results">-None-</h3>
+      <h3 id="none" v-if="empty && showing_results">-None-</h3>
   </div>
 </template>
 
@@ -53,3 +53,12 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+#none {
+  color: red;
+}
+.plant {
+  color: blue;
+}
+</style>
