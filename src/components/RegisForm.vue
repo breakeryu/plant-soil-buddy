@@ -4,16 +4,16 @@
     <h3 class="warning" v-if="failed">{{ failed_msg }}</h3>
     <form class="form-regis" v-on:submit.prevent="register">
       <h3>Username</h3>
-      <h5>Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</h5>
+      <h5 class="info">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</h5>
       <input v-model="username" type="text" name="username"><br>
       <h3>Password</h3>
-      <h5>Your password can't be too similar to your other personal information.</h5>
-      <h5>Your password must contain at least 8 characters.</h5>
-      <h5>Your password can't be a commonly used password.</h5>
-      <h5>Your password can't be entirely numeric.</h5>
+      <h5 class="info">Your password can't be too similar to your other personal information.</h5>
+      <h5 class="info">Your password must contain at least 8 characters.</h5>
+      <h5 class="info">Your password can't be a commonly used password.</h5>
+      <h5 class="info">Your password can't be entirely numeric.</h5>
       <input v-model="password" type="password" name="password"><br>
       <h3>Confirm Password</h3>
-      <h5>Enter the same password as before, for verification.</h5>
+      <h5 class="info">Enter the same password as before, for verification.</h5>
       <input v-model="confirm_password" type="password" name="password"><br><br>
       <button class="normal-btn submit-btn" type="submit">Register</button>
     </form>
@@ -111,6 +111,9 @@ input:focus {
 }
 .warning {
   color: red;
+}
+.info {
+  color: blue;
 }
 input, .normal-btn {
   width: 200px;

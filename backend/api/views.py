@@ -19,6 +19,7 @@ import math
 import random
 import decimal
 import serial
+import re
 
 from .models import *
 from django.contrib.auth.models import User
@@ -78,6 +79,29 @@ def register(request):
 
         if data['username'] == '' or data['password'] == '' or data['confirm_password'] == '' :
             return HttpResponse('Missing Fields')
+
+        if len(data['username']) > 150 :
+            return HttpResponse('Username exceeds 150 characters')
+
+        set_of_invalid_characters = re.findall('[^a-zA-Z0-9@/./+-/_]',data['username'])
+
+        if len(set_of_invalid_characters) > 0 :
+            return HttpResponse('Username contains invalid characters')
+
+        if data['username'] == data['password'] :
+            return HttpResponse('Password is too similar to your personal information')
+
+        if len(data['password']) < 8 :
+            return HttpResponse('Password must be at least 8 characters')
+
+        try:
+            pass_num = int(data['password'])
+            is_numeric = True
+        except ValueError:
+            is_numeric = False
+
+        if is_numeric :
+            return HttpResponse('Password is entirely numeric')
 
         if not (data['password'] == data['confirm_password']) :
             return HttpResponse('Password Confirm Failed')
