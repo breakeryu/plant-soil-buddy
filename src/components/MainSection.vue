@@ -6,32 +6,32 @@
     <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager" :disabled="timer_running"></h3>
     <button class="normal-btn submit-btn" v-on:click="recheckConnection" :disabled="timer_running">Re-check Connection</button><br>
     <p>
-      <br>
+      <hr>
 
       <h3> Soil Profile : <select v-model="selected" v-on:change="reloadGraph(selected)" :disabled="timer_running">
         <option v-for="soil_profile in soil_profiles" v-bind:value="soil_profile.id"> {{ soil_profile.name }}, at {{ soil_profile.location }}</option>
       </select> </h3>
       <p>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileAdd" :disabled="timer_running">Add</button>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="soilProfileEdit" :disabled="timer_running || selected == 0">Edit</button>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileClear" :disabled="timer_running || selected == 0">Clear</button>
-      <button id="trig-btn" class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileDelete" :disabled="timer_running || selected == 0">Delete</button> 
+      <button class="normal-btn normal-btn soil-btn" v-on:click="soilProfileAdd" :disabled="timer_running">Add</button>
+      <button class="normal-btn normal-btn soil-btn" v-on:click="soilProfileEdit" :disabled="timer_running || selected == 0">Edit</button>
+      <button class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileClear" :disabled="timer_running || selected == 0">Clear</button>
+      <button class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileDelete" :disabled="timer_running || selected == 0">Delete</button> 
     </p>
 
-      <br><br>
+      <hr><br><br>
     <button id="trig-btn" class="normal-btn" v-on:click="triggerSensor" v-bind:class="{ stop: timer_running }" :disabled='status_msg != "Connected" || selected == 0'>{{ btn_text }}</button>  
   </p>
-    <h4> Record snap time : {{ time }} </h4>
     <h4> {{ btn_note }} </h4>
+    <h4> Record snap time : {{ time }} </h4>
 
-    <br><br>
+    <br><hr>
 
     <plant-recommender ref="plant_rec"></plant-recommender>
 
-    <br><br>
-	<moist-chart ref="moist_ch"></moist-chart>
-  <acidity-chart ref="acidity_ch"></acidity-chart>
-  <fertility-chart ref="fertility_ch"></fertility-chart>
+    <br><hr>
+	<moist-chart ref="moist_ch"></moist-chart><hr>
+  <acidity-chart ref="acidity_ch"></acidity-chart><hr>
+  <fertility-chart ref="fertility_ch"></fertility-chart><hr>
   
   <br><br>
     <button class="normal-btn exit-btn" v-on:click="doLogout">Logout</button><br>
@@ -60,11 +60,11 @@ export default {
       status_msg: 'Unknown',
       status_color: 'red',
       msg: 'Welcome,',
-      btn_note: 'Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy of plant recommendation.',
+      btn_note: 'Make sure the sensors are all attached to the soil before clicking "Start Sensors" for the best accuracy of plant recommendation.',
       timer_running: false,
       timer: null,
       time: 6,
-      btn_text: "Start",
+      btn_text: "Start Sensors",
       port: 'COM8',
       soil_profiles : [],
       selected: 0,
@@ -116,7 +116,7 @@ export default {
       this.$refs.fertility_ch.triggerStartStop()
 
       this.snapReset()
-      this.btn_text = "Stop"
+      this.btn_text = "Stop Sensors"
       this.timer_running = true
       this.readFromSensors()
       if (!this.timer) {
@@ -135,7 +135,7 @@ export default {
       this.$refs.acidity_ch.triggerStartStop()
       this.$refs.fertility_ch.triggerStartStop()
 
-      this.btn_text = "Start"
+      this.btn_text = "Start Sensors"
       this.timer_running = false
       this.time = 6
       clearInterval(this.timer)
@@ -156,7 +156,7 @@ export default {
       if (this.timer_running) {
         this.$refs.plant_rec.getData(this.selected)
         this.stopSensor()
-        this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start" for the best accuracy of plant recommendation.'
+        this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start Sensors" for the best accuracy of plant recommendation.'
         this.connection_timer_idle_enable()
       } else {
         axios.post("/get_connection_status", {
@@ -169,7 +169,7 @@ export default {
                   this.status_color = 'green'
                   this.connection_timer_idle_disable()
                   this.startSensor()
-                  this.btn_note = 'Click "Stop" to see the result of the plant recommendation.'
+                  this.btn_note = 'Click "Stop Sensors" to see the result of the plant recommendation.'
 
                   this.$refs.plant_rec.reset()
 
@@ -271,14 +271,14 @@ input:focus {
   margin-bottom: 30px;
 }
 #trig-btn {
-  width: 200px;
+  width: 350px;
   border: none;
   color: white;
   padding: 5px 12px;
   text-align: center;
   text-decoration: none;
-  font-size: 16px;
-  height: 35px;
+  font-size: 20px;
+  height: 60px;
 }
 .submit-btn {
   background-color: blue;

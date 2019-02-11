@@ -2,7 +2,7 @@
   <div class="hello">
     <h1>{{ msg }}</h1>  
 <br><br><br>
-      <button class="normal-btn" v-on:click="toLogin">Login</button>
+      <button class="normal-btn login-btn" v-on:click="toLogin">Login</button>
 
     <br>
     <button class="normal-btn" v-on:click="toRegis">Register</button>
@@ -54,6 +54,10 @@ input:focus {
   font-size: 16px;
   height: 35px;
   margin-bottom: 30px;
+}
+.login-btn {
+  font-size: 18px;
+  height: 55px;
 }
 input, .normal-btn {
   width: 200px;

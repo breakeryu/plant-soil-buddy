@@ -128,6 +128,8 @@ input:focus {
 }
 .submit-btn {
   background-color: blue;
+  font-size: 18px;
+  height: 55px;
 }
 .warning {
   color: red;
