@@ -1,6 +1,8 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+    <h3 class="warning" v-if="bad">Invalid Username or Password</h3>
+    <h3 class="warning" v-if="error">Internal Server Error</h3>
     <form class="form-signin" v-on:submit.prevent="doLogin">
       <h3>Username</h3>
       <input v-model="username" type="text" name="username"><br>
@@ -22,7 +24,9 @@ export default {
     return {
       username: '',
       password: '',
-      msg: 'Login'
+      msg: 'Login',
+      bad: false,
+      error: false
     }
   },
   methods: {
@@ -81,9 +85,15 @@ export default {
 
         })
         .catch((error) => {
-          console.log(error);
-          console.debug(error);
-          console.dir(error);
+          if (error.response.status >= 400 && error.response.status < 500) {
+            this.bad = true
+            this.error = false
+          } else {
+            this.bad = false
+            this.error = true
+          }
+          console.debug(error)
+          console.dir(error)
         })
 
       
@@ -119,6 +129,9 @@ input:focus {
 }
 .submit-btn {
   background-color: blue;
+}
+.warning {
+  color: red;
 }
 input, .normal-btn {
   width: 200px;
