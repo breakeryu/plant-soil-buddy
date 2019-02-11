@@ -200,6 +200,9 @@ def add_soil_profile(request):
         name = data['name']
         location = data['location']
 
+        if name == '' or location == '' :
+            return HttpResponseBadRequest("Missing Fields")
+
         SoilProfile.objects.create(owner=owner, name=name, location=location)
 
         return HttpResponse('Success')
@@ -215,6 +218,10 @@ def edit_soil_profile(request):
         soil_profile_id = data['soil_profile_id']
         name = data['name']
         location = data['location']
+
+        if soil_profile_id == '' or name == '' or location == '' :
+            return HttpResponseBadRequest("Missing Fields")
+        
         try:
             SoilProfile.objects.filter(pk=soil_profile_id).update(name=name, location=location)
         except SoilProfile.DoesNotExist:
@@ -231,6 +238,10 @@ def clear_soil_profile(request):
         data = json.loads(request.body)
 
         soil_profile_id = data['soil_profile_id']
+
+        if soil_profile_id == '':
+            return HttpResponseBadRequest("Missing Fields")
+        
         try:
             soil_profile = SoilProfile.objects.get(pk=soil_profile_id)
         except SoilProfile.DoesNotExist:
@@ -253,6 +264,10 @@ def delete_soil_profile(request):
         data = json.loads(request.body)
         
         soil_profile_id = data['soil_profile_id']
+
+        if soil_profile_id == '':
+            return HttpResponseBadRequest("Missing Fields")
+
         try:
             soil_profile = SoilProfile.objects.get(pk=soil_profile_id)
 

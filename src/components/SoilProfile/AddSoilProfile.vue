@@ -2,6 +2,8 @@
   <div>
     <h1>{{ username }} : Add Soil Profile</h1>
 
+    <h3 class="warning" v-if="failed">{{ failed_msg }}</h3>
+
     <h3>Soil Name : <input v-model="name"></h3>
     <h3>Soil Location : <input v-model="location"></h3>
 
@@ -23,7 +25,9 @@ export default {
     return {
       username: '',
       name: '',
-      location: ''
+      location: '',
+      failed: false,
+      failed_msg: ''
     }
   },
   methods: {
@@ -41,9 +45,11 @@ export default {
             })
             .catch((error) => {
           if (error.response.status >= 400 && error.response.status < 500) {
-            alert(error.response.data)
+            this.failed = true
+            this.failed_msg = error.response.data
           } else {
-            alert('Internal Server Error')
+            this.failed = true
+            this.failed_msg = 'Internal Server Error'
           }
         })
     },
@@ -91,5 +97,8 @@ input, .normal-btn {
 .soil-btn {
   margin-left: 10px;
   margin-right: 10px;
+}
+.warning {
+  color: red;
 }
 </style>
