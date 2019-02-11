@@ -94,6 +94,9 @@ def register(request):
         if len(data['password']) < 8 :
             return HttpResponse('Password must be at least 8 characters')
 
+        if data['password'] == 'password' :
+            return HttpResponse('This Password is a commonly used Password')
+
         try:
             pass_num = int(data['password'])
             is_numeric = True
