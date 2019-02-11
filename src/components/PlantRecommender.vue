@@ -14,7 +14,7 @@ export default {
   data () {
     return {
       plants_list: [],
-      showing_results: false,
+      showing_results: true,
       empty: true
     }
   },
