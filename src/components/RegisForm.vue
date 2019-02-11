@@ -67,7 +67,7 @@ export default {
       .catch((error) => {
           if (error.response.status >= 400 && error.response.status < 500) {
             this.failed = true
-            this.failed_msg = 'Bad Request'
+            this.failed_msg = error.response.data
           } else {
             this.failed = true
             this.failed_msg = 'Internal Server Error'

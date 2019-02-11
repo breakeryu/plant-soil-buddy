@@ -1,5 +1,6 @@
 from django.views.generic import TemplateView
 from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
 from django.http import JsonResponse
 from django.views.decorators.cache import never_cache
 
@@ -23,6 +24,12 @@ import re
 
 from .models import *
 from django.contrib.auth.models import User
+
+import gzip
+from pathlib import Path
+from django.core.exceptions import (
+    FieldDoesNotExist, ImproperlyConfigured, ValidationError,
+)
 
 class MessageViewSet(viewsets.ModelViewSet):
     """
@@ -78,36 +85,43 @@ def register(request):
         data = json.loads(request.body)
 
         if data['username'] == '' or data['password'] == '' or data['confirm_password'] == '' :
-            return HttpResponse('Missing Fields')
+            return HttpResponseBadRequest("Missing Fields")
 
         if len(data['username']) > 150 :
-            return HttpResponse('Username exceeds 150 characters')
+            return HttpResponseBadRequest('Username exceeds 150 characters')
 
         set_of_invalid_characters = re.findall('[^a-zA-Z0-9@/./+-/_]',data['username'])
 
         if len(set_of_invalid_characters) > 0 :
-            return HttpResponse('Username contains invalid characters')
+            return HttpResponseBadRequest('Username contains invalid characters')
 
         if data['username'] == data['password'] :
-            return HttpResponse('Password is too similar to your personal information')
+            return HttpResponseBadRequest('Password is too similar to your personal information')
 
         if len(data['password']) < 8 :
-            return HttpResponse('Password must be at least 8 characters')
+            return HttpResponseBadRequest('Password must be at least 8 characters')
 
-        if data['password'] == 'password' :
-            return HttpResponse('This Password is a commonly used Password')
+        password_list_path=Path(__file__).resolve().parent / 'common-passwords.txt.gz'
+        try:
+            with gzip.open(str(password_list_path)) as f:
+                common_passwords_lines = f.read().decode().splitlines()
+        except OSError:
+            with open(str(password_list_path)) as f:
+                common_passwords_lines = f.readlines()
+        passwords = {p.strip() for p in common_passwords_lines}
+        if data['password'].lower().strip() in passwords:
+            return HttpResponseBadRequest('This Password is too common')
 
         try:
             pass_num = int(data['password'])
             is_numeric = True
         except ValueError:
             is_numeric = False
-
         if is_numeric :
-            return HttpResponse('Password is entirely numeric')
+            return HttpResponseBadRequest('Password is entirely numeric')
 
         if not (data['password'] == data['confirm_password']) :
-            return HttpResponse('Password Confirm Failed')
+            return HttpResponseBadRequest('Password Confirm Failed')
         
         try:
             user = User.objects.get(username=data['username'])
@@ -115,7 +129,7 @@ def register(request):
             user = None
 
         if user :
-            return HttpResponse('User Already Exists')
+            return HttpResponseBadRequest('User Already Exists')
         else :
             #encrypt_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
             
