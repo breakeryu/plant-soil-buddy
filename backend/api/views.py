@@ -75,6 +75,12 @@ def home(request):
 def register(request):
     if request.method == 'POST':
         data = json.loads(request.body)
+
+        if data['username'] == '' or data['password'] == '' or data['confirm_password'] == '' :
+            return HttpResponse('Missing Fields')
+
+        if not (data['password'] == data['confirm_password']) :
+            return HttpResponse('Password Confirm Failed')
         
         try:
             user = User.objects.get(username=data['username'])
@@ -82,7 +88,7 @@ def register(request):
             user = None
 
         if user :
-            return HttpResponse('User already Exists')
+            return HttpResponse('User Already Exists')
         else :
             #encrypt_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
             

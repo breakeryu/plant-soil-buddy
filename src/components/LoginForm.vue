@@ -1,8 +1,7 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <h3 class="warning" v-if="bad">Invalid Username or Password</h3>
-    <h3 class="warning" v-if="error">Internal Server Error</h3>
+    <h3 class="warning" v-if="failed">{{ failed_msg }}</h3>
     <form class="form-signin" v-on:submit.prevent="doLogin">
       <h3>Username</h3>
       <input v-model="username" type="text" name="username"><br>
@@ -10,7 +9,6 @@
       <input v-model="password" type="password" name="password"><br><br>
       <button class="normal-btn submit-btn" type="submit">Login</button>
     </form>
-    <br>
     <button class="normal-btn" v-on:click="toRegis">Register</button>
   </div>
 </template>
@@ -25,8 +23,8 @@ export default {
       username: '',
       password: '',
       msg: 'Login',
-      bad: false,
-      error: false
+      failed: false,
+      failed_msg: ''
     }
   },
   methods: {
@@ -86,14 +84,12 @@ export default {
         })
         .catch((error) => {
           if (error.response.status >= 400 && error.response.status < 500) {
-            this.bad = true
-            this.error = false
+            this.failed = true
+            this.failed_msg = 'Invalid Username or Password'
           } else {
-            this.bad = false
-            this.error = true
+            this.failed = true
+            this.failed_msg = 'Internal Server Error'
           }
-          console.debug(error)
-          console.dir(error)
         })
 
       
@@ -126,6 +122,9 @@ input:focus {
   text-decoration: none;
   font-size: 16px;
   height: 35px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 30px;
 }
 .submit-btn {
   background-color: blue;

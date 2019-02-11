@@ -95,6 +95,7 @@ input:focus {
   text-decoration: none;
   font-size: 16px;
   height: 35px;
+  margin-bottom: 30px;
 }
 .submit-btn {
   background-color: blue;

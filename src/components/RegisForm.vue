@@ -1,16 +1,22 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+    <h3 class="warning" v-if="failed">{{ failed_msg }}</h3>
     <form class="form-regis" v-on:submit.prevent="register">
       <h3>Username</h3>
+      <h5>Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</h5>
       <input v-model="username" type="text" name="username"><br>
       <h3>Password</h3>
+      <h5>Your password can't be too similar to your other personal information.</h5>
+      <h5>Your password must contain at least 8 characters.</h5>
+      <h5>Your password can't be a commonly used password.</h5>
+      <h5>Your password can't be entirely numeric.</h5>
       <input v-model="password" type="password" name="password"><br>
       <h3>Confirm Password</h3>
+      <h5>Enter the same password as before, for verification.</h5>
       <input v-model="confirm_password" type="password" name="password"><br><br>
       <button class="normal-btn submit-btn" type="submit">Register</button>
     </form>
-    <br>
     <button class="normal-btn" v-on:click="toLogin">Login</button>
   </div>
 </template>
@@ -25,7 +31,9 @@ export default {
       username: '',
       password: '',
       confirm_password: '',
-      msg: 'Registeration'
+      msg: 'Registeration',
+      failed: false,
+      failed_msg: ''
     }
   },
   methods: {
@@ -34,14 +42,10 @@ export default {
       //alert(this.password)
       var self = this
 
-      if (this.password != this.confirm_password) {
-        alert('Password Failed')
-        return
-      }
-
       const input = {
         'username': this.username,
         'password' : this.password,
+        'confirm_password': this.confirm_password
       }
       //alert(input['name']);
       //alert(input['password']);
@@ -55,11 +59,20 @@ export default {
           alert('Success')
           router.push("/login")
         } else {
-          alert('Failed')
-          router.push("/regis")
+          this.failed = true
+          this.failed_msg = req.data
         }
         return req
       })
+      .catch((error) => {
+          if (error.response.status >= 400 && error.response.status < 500) {
+            this.failed = true
+            this.failed_msg = 'Bad Request'
+          } else {
+            this.failed = true
+            this.failed_msg = 'Internal Server Error'
+          }
+        })
     },
     toLogin () {
       router.push("/login")
@@ -89,9 +102,15 @@ input:focus {
   text-decoration: none;
   font-size: 16px;
   height: 35px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 30px;
 }
 .submit-btn {
   background-color: blue;
+}
+.warning {
+  color: red;
 }
 input, .normal-btn {
   width: 200px;
