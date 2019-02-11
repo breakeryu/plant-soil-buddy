@@ -184,6 +184,7 @@ export default {
     doLogout() {
     	this.$store.commit('updateToken', '')
     	this.$store.commit("setAuthUser", {authUser: '', isAuthenticated: false})
+      this.$store.state.selected_soil_profile = 0
     	router.push('/')
     },
     recheckConnection() {
