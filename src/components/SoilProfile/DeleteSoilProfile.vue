@@ -27,7 +27,6 @@ export default {
       username: '',
       old_name: '',
       old_location: '',
-      status: 0,
       soil_profile_id: 0,
       soil_profile: []
     }
@@ -38,15 +37,16 @@ export default {
         'soil_profile_id' : this.soil_profile_id
       })
             .then((response) => {
-              this.status = response.data['status']
-
-              if (this.status == 200) {
-                alert('Success')
-                router.push('main')
-              } else {
-                alert('Failed')
-              }
+              alert(response.data)
+              router.push('main')
             })
+            .catch((error) => {
+          if (error.response.status >= 400 && error.response.status < 500) {
+            alert(error.response.data)
+          } else {
+            alert('Internal Server Error')
+          }
+        })
     },
     cancel() {
       router.push('main')

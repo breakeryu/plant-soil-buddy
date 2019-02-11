@@ -195,14 +195,14 @@ def add_soil_profile(request):
         try:
             owner = User.objects.get(username=data['username'])
         except User.DoesNotExist:
-            return JsonResponse({'status': 400, 'message':'User does not exist'}, safe=False)
+            return HttpResponseBadRequest('User does not exist')
         
         name = data['name']
         location = data['location']
 
         SoilProfile.objects.create(owner=owner, name=name, location=location)
 
-        return JsonResponse({'status': 200, 'message':'OK'}, safe=False)
+        return HttpResponse('Success')
 
     else:
         return None
@@ -218,9 +218,9 @@ def edit_soil_profile(request):
         try:
             SoilProfile.objects.filter(pk=soil_profile_id).update(name=name, location=location)
         except SoilProfile.DoesNotExist:
-            return JsonResponse({'status': 400, 'message':'Soil Profile does not exist'}, safe=False)
+            return HttpResponseBadRequest('Soil Profile does not exist')
 
-        return JsonResponse({'status': 200, 'message':'OK'}, safe=False)
+        return HttpResponse('Success')
 
     else:
         return None
@@ -234,7 +234,7 @@ def clear_soil_profile(request):
         try:
             soil_profile = SoilProfile.objects.get(pk=soil_profile_id)
         except SoilProfile.DoesNotExist:
-            return JsonResponse({'status': 400, 'message':'Soil Profile does not exist'}, safe=False)
+            return HttpResponseBadRequest('Soil Profile does not exist')
 
         records = SensorRecord.objects.all()
 
@@ -242,7 +242,7 @@ def clear_soil_profile(request):
             if record.soil_profile == soil_profile :
                 record.delete()
 
-        return JsonResponse({'status': 200, 'message':'OK'}, safe=False)
+        return HttpResponse('Success')
 
     else:
         return None
@@ -259,9 +259,9 @@ def delete_soil_profile(request):
             soil_profile.delete()
             
         except SoilProfile.DoesNotExist:
-            return JsonResponse({'status': 400, 'message':'Soil Profile does not exist'}, safe=False)
+            return HttpResponseBadRequest('Soil Profile does not exist')
 
-        return JsonResponse({'status': 200, 'message':'OK'}, safe=False)
+        return HttpResponse('Success')
 
     else:
         return None

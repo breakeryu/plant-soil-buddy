@@ -34,6 +34,10 @@ export default {
       }
     },
     getData(selected) {
+      if (selected <= 0) {
+        return
+      }
+
       axios.get("/get_moist_as_value")
             .then((response) => {
               if (response.data >= 0)  {

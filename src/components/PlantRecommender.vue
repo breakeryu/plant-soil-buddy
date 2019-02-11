@@ -20,6 +20,10 @@ export default {
   },
   methods: {
     getData(selected) {
+      if (selected <= 0) {
+        return
+      }
+      
       axios.post("/get_recommended_plants", {
         'soil_profile_id' : selected
       })
