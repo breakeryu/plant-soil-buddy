@@ -19,7 +19,7 @@
       <input v-model="confirm_password" type="password" name="password"><br><br>
       <button class="normal-btn submit-btn" type="submit">Register</button>
     </form>
-    <button class="normal-btn" v-on:click="toLogin">Login</button>
+    <button class="normal-btn exit-btn" v-on:click="toHome">Back</button>
   </div>
 </template>
 
@@ -59,7 +59,7 @@ export default {
             
         if (req.data == 'Success'){
           alert('Success')
-          router.push("/login")
+          router.push("login")
         } else {
           this.failed = true
           this.failed_msg = req.data
@@ -76,8 +76,8 @@ export default {
           }
         })
     },
-    toLogin () {
-      router.push("/login")
+    toHome () {
+      router.push("/")
     },
   }
 }

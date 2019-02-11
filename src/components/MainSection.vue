@@ -11,6 +11,8 @@
       <h3> Soil Profile : <select v-model="selected" v-on:change="reloadGraph(selected)" :disabled="timer_running">
         <option v-for="soil_profile in soil_profiles" v-bind:value="soil_profile.id"> {{ soil_profile.name }}, at {{ soil_profile.location }}</option>
       </select> </h3>
+      <h5>This is the storage of the recorded soil quality data specific to each soil chunk you record.</h5>
+      <h5>Do not record more than 2 different soil chunks for one profile, otherwise the plant recommendation will be inaccurate.</h5>
       <p>
       <button class="normal-btn normal-btn soil-btn" v-on:click="soilProfileAdd" :disabled="timer_running">Add</button>
       <button class="normal-btn normal-btn soil-btn" v-on:click="soilProfileEdit" :disabled="timer_running || selected == 0">Edit</button>

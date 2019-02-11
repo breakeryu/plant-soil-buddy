@@ -9,7 +9,7 @@
       <input v-model="password" type="password" name="password"><br><br>
       <button class="normal-btn submit-btn" type="submit">Login</button>
     </form>
-    <button class="normal-btn" v-on:click="toRegis">Register</button>
+    <button class="normal-btn exit-btn" v-on:click="toHome">Back</button>
   </div>
 </template>
 
@@ -94,8 +94,8 @@ export default {
 
       
     },
-    toRegis () {
-      router.push("/regis")
+    toHome () {
+      router.push("/")
     },
   }
 }
