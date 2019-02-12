@@ -334,6 +334,28 @@ def get_all_values(request):
         return HttpResponse(-999)
 
 
+
+@csrf_exempt
+def get_all_values_as_scatter(request):
+
+    data = json.loads(request.body)
+
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+
+    records = SensorRecord.objects.all()
+
+    chart_data = []
+
+    for record in records :
+        if record.soil_profile == soil_profile_on_use :
+            chart_data.append({'moist':record.moist, 'acidity': record.ph, 'fertility':record.fertility})
+    
+    return JsonResponse(chart_data, safe=False)
+
+
+
+
+
 @csrf_exempt
 def get_moist_as_value(request):
     global moist

@@ -208,6 +208,7 @@ export default {
             })
     },
     reloadGraph(selected) {
+      this.$refs.all_ch.getData(selected)
       this.$refs.moist_ch.getData(selected)
       this.$refs.acidity_ch.getData(selected)
       this.$refs.fertility_ch.getData(selected)
