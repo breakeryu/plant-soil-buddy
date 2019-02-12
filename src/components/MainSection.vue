@@ -30,6 +30,8 @@
 
     <plant-recommender ref="plant_rec"></plant-recommender>
 
+    <all-chart ref="all_ch"></all-chart>
+
     <br><hr>
 	<moist-chart ref="moist_ch"></moist-chart><hr>
   <acidity-chart ref="acidity_ch"></acidity-chart><hr>
@@ -43,6 +45,7 @@
 <script>
 import axios from 'axios'
 import router from '@/router'
+import AllChart from '@/components/Charts/AllChart'
 import MoistChart from '@/components/Charts/MoistChart'
 import AcidityChart from '@/components/Charts/AcidityChart'
 import FertilityChart from '@/components/Charts/FertilityChart'
@@ -51,6 +54,7 @@ import PlantRecommender from '@/components/PlantRecommender'
 export default {
   name: 'Welcome',
   components: {
+    AllChart,
     MoistChart,
     AcidityChart,
     FertilityChart,
