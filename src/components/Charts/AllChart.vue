@@ -34,7 +34,6 @@ export default {
               var pow = Math.pow;
 
               for (var d in response.data) {
-                console.log(response.data[d].moist)
                 var x = parseInt(response.data[d].moist);
                 var z = parseFloat(response.data[d].acidity);
                 var y = parseInt(response.data[d].fertility);
@@ -43,8 +42,6 @@ export default {
                 var range = sqrt(2) + dist;
                 data.add({x:x, y:y, z:z, style:range});
               }
-
-              console.log(data)
 
               var options = {
                 width:  '600px',
