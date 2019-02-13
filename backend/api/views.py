@@ -350,31 +350,21 @@ def get_all_values_as_scatter(request):
 
     raw_chart_data = np.array([[float('NaN'),float('NaN'),float('NaN')]])
     chart_data = []
-    #chart_data_csv = []
-    #chart_data_csv.append(['moist','acidity','fertiliy'])
 
     for record in records :
         if record.soil_profile == soil_profile_on_use :
             values = np.array([[float(record.moist), float(record.ph), float(record.fertility)]])
             raw_chart_data = np.append(raw_chart_data, values, axis=0)
-            #chart_data.append({'moist':record.moist, 'acidity': record.ph, 'fertility':record.fertility})
-
-            #chart_data_csv.append([record.moist, record.ph, record.fertility])
 
     fresh_data = raw_chart_data[~np.isnan(raw_chart_data).any(axis=1)]
 
-    #with open(Path(__file__).resolve().parent / 'record.csv', 'w', newline='', encoding="utf-8") as myfile:
-    #    cw = csv.writer(myfile)
-    #    for row in chart_data_csv :
-    #        cw.writerow([item for item in row])
-
     cluster = None
-    i = 1
+    k = 1
     got_k = False
     last_cost = float('inf')
 
     while not got_k :
-        cluster = KMeans(n_clusters = i, random_state=0).fit(fresh_data)
+        cluster = KMeans(n_clusters = k, random_state=0).fit(fresh_data)
 
         result_cost_difference_from_last = last_cost - cluster.inertia_
 
@@ -382,7 +372,7 @@ def get_all_values_as_scatter(request):
             got_k = True
         
         last_cost = cluster.inertia_
-        i += 1
+        k += 1
 
     cluster_labels = cluster.labels_
 
@@ -582,35 +572,80 @@ def get_recommended_plants(request):
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
     records = SensorRecord.objects.all()
-    target_records = []
 
-    total_moist_data = 0
-    total_acidity_data = 0
-    total_fertility_data = 0
+    raw_chart_data = np.array([[float('NaN'),float('NaN'),float('NaN')]])
+    good_data_moist = []
+    good_data_acidity = []
+    good_data_fertility = []
 
     for record in records :
         if record.soil_profile == soil_profile_on_use :
-            total_moist_data += record.moist
-            total_acidity_data += record.ph
-            total_fertility_data += record.fertility
-            target_records.append(record)
+            values = np.array([[float(record.moist), float(record.ph), float(record.fertility)]])
+            raw_chart_data = np.append(raw_chart_data, values, axis=0)
+
+    fresh_data = raw_chart_data[~np.isnan(raw_chart_data).any(axis=1)]
+
+    cluster = None
+    k = 1
+    got_k = False
+    last_cost = float('inf')
+
+    while not got_k :
+        cluster = KMeans(n_clusters = k, random_state=0).fit(fresh_data)
+
+        result_cost_difference_from_last = last_cost - cluster.inertia_
+
+        if result_cost_difference_from_last < 50 :
+            got_k = True
+        
+        last_cost = cluster.inertia_
+        k += 1
+
+    cluster_labels = cluster.labels_
+    most_frequent_cluster_index = np.argmax(np.bincount(cluster_labels))
+
+    i = 0
+    for data_row in fresh_data :
+        if cluster_labels[i] == most_frequent_cluster_index :
+            good_data_moist.append(data_row[0])
+            good_data_acidity.append(data_row[1])
+            good_data_fertility.append(data_row[2])
+        i += 1
+
+    good_data_min = [min(good_data_moist), min(good_data_acidity), min(good_data_fertility)] #[float('-inf'),float('-inf'),float('-inf')]
+    good_data_max = [max(good_data_moist), max(good_data_acidity), max(good_data_fertility)] #[float('inf'),float('inf'),float('inf')]
+
+    
+    #target_records = []
+
+    #total_moist_data = 0
+    #total_acidity_data = 0
+    #total_fertility_data = 0
+
+    #for record in records :
+    #    if record.soil_profile == soil_profile_on_use :
+    #        total_moist_data += record.moist
+    #        total_acidity_data += record.ph
+    #        total_fertility_data += record.fertility
+    #        target_records.append(record)
             
-    if len(target_records) > 0 :
-        avg_moist = total_moist_data / len(target_records)
-        avg_acidity = total_acidity_data / len(target_records)
-        avg_fertility = total_fertility_data / len(target_records)
-    else :
-        avg_moist = 0
-        avg_acidity = 0
-        avg_fertility = 0
+    #if len(target_records) > 0 :
+    #    avg_moist = total_moist_data / len(target_records)
+    #    avg_acidity = total_acidity_data / len(target_records)
+    #    avg_fertility = total_fertility_data / len(target_records)
+    #else :
+    #    avg_moist = 0
+    #    avg_acidity = 0
+    #    avg_fertility = 0
 
     plants_set = Plant.objects.all()
     plants_list = []
     
     for plant in plants_set :
-        if avg_moist < plant.min_moist or avg_moist > plant.max_moist or avg_acidity < plant.min_ph or avg_acidity > plant.max_ph or avg_fertility < plant.min_fertility or avg_fertility > plant.max_fertility :
-            continue
-        plants_list.append({'id':plant.id, 'name':plant.name})
+        #if avg_moist < plant.min_moist or avg_moist > plant.max_moist or avg_acidity < plant.min_ph or avg_acidity > plant.max_ph or avg_fertility < plant.min_fertility or avg_fertility > plant.max_fertility :
+        #    continue
+        if good_data_min[0] > plant.min_moist and good_data_max[0] < plant.max_moist and good_data_min[1] > plant.min_ph and good_data_max[1] < plant.max_ph and good_data_min[2] > plant.min_fertility and good_data_max[2] < plant.max_fertility :
+            plants_list.append({'id':plant.id, 'name':plant.name})
 
     return JsonResponse(plants_list, safe=False)
 
