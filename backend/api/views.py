@@ -348,20 +348,48 @@ def get_all_values_as_scatter(request):
 
     records = SensorRecord.objects.all()
 
+    raw_chart_data = np.array([[float('NaN'),float('NaN'),float('NaN')]])
     chart_data = []
-    chart_data_csv = []
-    chart_data_csv.append(['moist','acidity','fertiliy'])
+    #chart_data_csv = []
+    #chart_data_csv.append(['moist','acidity','fertiliy'])
 
     for record in records :
         if record.soil_profile == soil_profile_on_use :
-            chart_data.append({'moist':record.moist, 'acidity': record.ph, 'fertility':record.fertility})
+            values = np.array([[float(record.moist), float(record.ph), float(record.fertility)]])
+            raw_chart_data = np.append(raw_chart_data, values, axis=0)
+            #chart_data.append({'moist':record.moist, 'acidity': record.ph, 'fertility':record.fertility})
 
-            chart_data_csv.append([record.moist, record.ph, record.fertility])
+            #chart_data_csv.append([record.moist, record.ph, record.fertility])
 
-    with open(Path(__file__).resolve().parent / 'record.csv', 'w', newline='', encoding="utf-8") as myfile:
-        cw = csv.writer(myfile)
-        for row in chart_data_csv :
-            cw.writerow([item for item in row])
+    fresh_data = raw_chart_data[~np.isnan(raw_chart_data).any(axis=1)]
+
+    #with open(Path(__file__).resolve().parent / 'record.csv', 'w', newline='', encoding="utf-8") as myfile:
+    #    cw = csv.writer(myfile)
+    #    for row in chart_data_csv :
+    #        cw.writerow([item for item in row])
+
+    cluster = None
+    i = 1
+    got_k = False
+    last_cost = float('inf')
+
+    while not got_k :
+        cluster = KMeans(n_clusters = i, random_state=0).fit(fresh_data)
+
+        result_cost_difference_from_last = last_cost - cluster.inertia_
+
+        if result_cost_difference_from_last < 50 :
+            got_k = True
+        
+        last_cost = cluster.inertia_
+        i += 1
+
+    cluster_labels = cluster.labels_
+
+    i = 0
+    for data_row in fresh_data :
+        chart_data.append({'moist':str(data_row[0]), 'acidity': str(data_row[1]), 'fertility':str(data_row[2]), 'cluster_group': str(cluster_labels[i])})
+        i += 1
     
     return JsonResponse(chart_data, safe=False)
 

@@ -13,7 +13,8 @@ export default {
   components: { vis },
   data () {
     return {
-      container: null
+      container: null,
+      color: []
     }
   },
   methods: {
@@ -38,15 +39,18 @@ export default {
                 var z = parseFloat(response.data[d].acidity);
                 var y = parseInt(response.data[d].fertility);
 
-                var dist = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-                var range = sqrt(2) + dist;
-                data.add({x:x, y:y, z:z, style:range});
+                var cluster_group = parseInt(response.data[d].cluster_group);
+
+                var style = this.color[cluster_group]
+                //var dist = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+                //var range = sqrt(2) + dist;
+                data.add({x:x, y:y, z:z, style:style});
               }
 
               var options = {
                 width:  '600px',
                 height: '600px',
-                style: 'dot-size',
+                style: 'dot-color',
                 showPerspective: false,
                 showGrid: true,
                 keepAspectRatio: true,
@@ -75,6 +79,25 @@ export default {
   },
   mounted(){
       this.container = document.getElementById('graph')
+
+      this.color[0] = '#808080'
+      this.color[1] = '#000000'
+      this.color[2] = '#FF0000'
+      this.color[3] = '#008000'
+      this.color[4] = '#00FFFF'
+      this.color[5] = '#008080'
+      this.color[6] = '#800080'
+      this.color[7] = '#0000FF'
+      this.color[8] = '#FF00FF'
+      this.color[9] = '#000080'
+      this.color[10] = '#00FF00'
+      this.color[11] = '#808000'
+      this.color[12] = '#FFFF00'
+      this.color[13] = '#800000'
+
+      for (var i = 14; i < 1000; i++) {
+        this.color[i] = '#'+Math.floor(Math.random()*16777215).toString(16)
+      }
 
   }
 
