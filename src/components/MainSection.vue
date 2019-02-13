@@ -49,7 +49,7 @@ import AllChart from '@/components/Charts/AllChart'
 import MoistChart from '@/components/Charts/MoistChart'
 import AcidityChart from '@/components/Charts/AcidityChart'
 import FertilityChart from '@/components/Charts/FertilityChart'
-import PlantRecommender from '@/components/PlantRecommender'
+import PlantRecommender from '@/components/Charts/PlantRecommender'
 
 export default {
   name: 'Welcome',

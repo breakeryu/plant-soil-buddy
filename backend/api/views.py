@@ -341,59 +341,6 @@ def get_all_values(request):
 
 
 
-@csrf_exempt
-def get_all_values_as_scatter(request):
-
-    data = json.loads(request.body)
-    global k_diff_min
-
-    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
-
-    records = SensorRecord.objects.all()
-
-    raw_chart_data = np.array([[float('NaN'),float('NaN'),float('NaN')]])
-    chart_data = []
-
-    for record in records :
-        if record.soil_profile == soil_profile_on_use :
-            values = np.array([[float(record.moist), float(record.ph), float(record.fertility)]])
-            raw_chart_data = np.append(raw_chart_data, values, axis=0)
-
-    fresh_data = raw_chart_data[~np.isnan(raw_chart_data).any(axis=1)]
-
-    cluster = None
-    k = 1
-    got_k = False
-    last_cost = float('inf')
-
-    while not got_k :
-        cluster = KMeans(n_clusters = k, random_state=0).fit(fresh_data)
-
-        result_cost_difference_from_last = last_cost - cluster.inertia_
-
-        if result_cost_difference_from_last < k_diff_min :
-            got_k = True
-        
-        last_cost = cluster.inertia_
-        k += 1
-
-    cluster_labels = cluster.labels_
-    most_frequent_cluster_index = np.argmax(np.bincount(cluster_labels))
-
-    i = 0
-    for data_row in fresh_data :
-        if cluster_labels[i] == most_frequent_cluster_index :
-            good = '1'
-        else :
-            good = '0'
-        chart_data.append({'moist':str(data_row[0]), 'acidity': str(data_row[1]), 'fertility':str(data_row[2]), 'cluster_group': str(cluster_labels[i]), 'good':good})
-        i += 1
-    
-    return JsonResponse(chart_data, safe=False)
-
-
-
-
 
 @csrf_exempt
 def get_moist_as_value(request):
@@ -573,8 +520,10 @@ def get_average_fertility(request):
     return HttpResponse(round_two_decimal_digits(avg_fertility))
 
 
+
 @csrf_exempt
-def get_recommended_plants(request):
+def get_all_values_as_scatter(request):
+
     data = json.loads(request.body)
     global k_diff_min
 
@@ -583,9 +532,6 @@ def get_recommended_plants(request):
     records = SensorRecord.objects.all()
 
     raw_chart_data = np.array([[float('NaN'),float('NaN'),float('NaN')]])
-    good_data_moist = []
-    good_data_acidity = []
-    good_data_fertility = []
 
     for record in records :
         if record.soil_profile == soil_profile_on_use :
@@ -612,6 +558,67 @@ def get_recommended_plants(request):
 
     cluster_labels = cluster.labels_
     most_frequent_cluster_index = np.argmax(np.bincount(cluster_labels))
+
+
+
+    i = 0
+    chart_data = []
+    for data_row in fresh_data :
+        if cluster_labels[i] == most_frequent_cluster_index :
+            good = '1'
+        else :
+            good = '0'
+        chart_data.append({'moist':str(data_row[0]), 'acidity': str(data_row[1]), 'fertility':str(data_row[2]), 'cluster_group': str(cluster_labels[i]), 'good':good})
+        i += 1
+    
+    return JsonResponse(chart_data, safe=False)
+
+
+
+
+
+@csrf_exempt
+def get_recommended_plants(request):
+    data = json.loads(request.body)
+    global k_diff_min
+
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+
+    records = SensorRecord.objects.all()
+
+    raw_chart_data = np.array([[float('NaN'),float('NaN'),float('NaN')]])
+
+    for record in records :
+        if record.soil_profile == soil_profile_on_use :
+            values = np.array([[float(record.moist), float(record.ph), float(record.fertility)]])
+            raw_chart_data = np.append(raw_chart_data, values, axis=0)
+
+    fresh_data = raw_chart_data[~np.isnan(raw_chart_data).any(axis=1)]
+
+    cluster = None
+    k = 1
+    got_k = False
+    last_cost = float('inf')
+
+    while not got_k :
+        cluster = KMeans(n_clusters = k, random_state=0).fit(fresh_data)
+
+        result_cost_difference_from_last = last_cost - cluster.inertia_
+
+        if result_cost_difference_from_last < k_diff_min :
+            got_k = True
+        
+        last_cost = cluster.inertia_
+        k += 1
+
+    cluster_labels = cluster.labels_
+    most_frequent_cluster_index = np.argmax(np.bincount(cluster_labels))
+
+
+
+    good_data_moist = []
+    good_data_acidity = []
+    good_data_fertility = []
 
     i = 0
     for data_row in fresh_data :
