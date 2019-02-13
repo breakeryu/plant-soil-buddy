@@ -612,38 +612,13 @@ def get_recommended_plants(request):
             good_data_fertility.append(data_row[2])
         i += 1
 
-    good_data_min = [min(good_data_moist), min(good_data_acidity), min(good_data_fertility)] #[float('-inf'),float('-inf'),float('-inf')]
-    good_data_max = [max(good_data_moist), max(good_data_acidity), max(good_data_fertility)] #[float('inf'),float('inf'),float('inf')]
-
-    
-    #target_records = []
-
-    #total_moist_data = 0
-    #total_acidity_data = 0
-    #total_fertility_data = 0
-
-    #for record in records :
-    #    if record.soil_profile == soil_profile_on_use :
-    #        total_moist_data += record.moist
-    #        total_acidity_data += record.ph
-    #        total_fertility_data += record.fertility
-    #        target_records.append(record)
-            
-    #if len(target_records) > 0 :
-    #    avg_moist = total_moist_data / len(target_records)
-    #    avg_acidity = total_acidity_data / len(target_records)
-    #    avg_fertility = total_fertility_data / len(target_records)
-    #else :
-    #    avg_moist = 0
-    #    avg_acidity = 0
-    #    avg_fertility = 0
+    good_data_min = [min(good_data_moist), min(good_data_acidity), min(good_data_fertility)]
+    good_data_max = [max(good_data_moist), max(good_data_acidity), max(good_data_fertility)]
 
     plants_set = Plant.objects.all()
     plants_list = []
     
     for plant in plants_set :
-        #if avg_moist < plant.min_moist or avg_moist > plant.max_moist or avg_acidity < plant.min_ph or avg_acidity > plant.max_ph or avg_fertility < plant.min_fertility or avg_fertility > plant.max_fertility :
-        #    continue
         if good_data_min[0] > plant.min_moist and good_data_max[0] < plant.max_moist and good_data_min[1] > plant.min_ph and good_data_max[1] < plant.max_ph and good_data_min[2] > plant.min_fertility and good_data_max[2] < plant.max_fertility :
             plants_list.append({'id':plant.id, 'name':plant.name})
 
