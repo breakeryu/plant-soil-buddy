@@ -21,6 +21,7 @@ import random
 import decimal
 import serial
 import re
+import csv
 
 from .models import *
 from django.contrib.auth.models import User
@@ -30,6 +31,9 @@ from pathlib import Path
 from django.core.exceptions import (
     FieldDoesNotExist, ImproperlyConfigured, ValidationError,
 )
+
+import numpy as np
+from sklearn.cluster import KMeans
 
 class MessageViewSet(viewsets.ModelViewSet):
     """
@@ -345,10 +349,19 @@ def get_all_values_as_scatter(request):
     records = SensorRecord.objects.all()
 
     chart_data = []
+    chart_data_csv = []
+    chart_data_csv.append(['moist','acidity','fertiliy'])
 
     for record in records :
         if record.soil_profile == soil_profile_on_use :
             chart_data.append({'moist':record.moist, 'acidity': record.ph, 'fertility':record.fertility})
+
+            chart_data_csv.append([record.moist, record.ph, record.fertility])
+
+    with open(Path(__file__).resolve().parent / 'record.csv', 'w', newline='', encoding="utf-8") as myfile:
+        cw = csv.writer(myfile)
+        for row in chart_data_csv :
+            cw.writerow([item for item in row])
     
     return JsonResponse(chart_data, safe=False)
 

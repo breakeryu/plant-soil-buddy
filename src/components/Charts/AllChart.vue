@@ -55,7 +55,7 @@ export default {
                 cameraPosition: {
                   horizontal: -0.35,
                   vertical: 0.22,
-                  distance: 3.0
+                  distance: 1.0
                 },
                 valueMax: 100,
                 valueMin: 0,
