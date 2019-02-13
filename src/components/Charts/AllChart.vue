@@ -40,8 +40,17 @@ export default {
                 var y = parseInt(response.data[d].fertility);
 
                 var cluster_group = parseInt(response.data[d].cluster_group);
+                var good = parseInt(response.data[d].good);
 
-                var style = this.color[cluster_group]
+                var style = 0
+
+                if (good == 1) {
+                  style = '#008000'
+                } else if (good == 0) {
+                  style = this.color[cluster_group]
+                } else {
+                  style = '#FF0000'
+                }
                 //var dist = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
                 //var range = sqrt(2) + dist;
                 data.add({x:x, y:y, z:z, style:style});
@@ -80,6 +89,22 @@ export default {
   mounted(){
       this.container = document.getElementById('graph')
 
+      this.color[0] = '#000000'
+      this.color[1] = '#111111'
+      this.color[2] = '#222222'
+      this.color[3] = '#333333'
+      this.color[4] = '#444444'
+      this.color[5] = '#555555'
+      this.color[6] = '#666666'
+      this.color[7] = '#777777'
+      this.color[8] = '#888888'
+      this.color[9] = '#999999'
+      this.color[10] = '#aaaaaa'
+      this.color[11] = '#bbbbbb'
+      this.color[12] = '#cccccc'
+      this.color[13] = '#dddddd'
+
+/*
       this.color[0] = '#808080'
       this.color[1] = '#000000'
       this.color[2] = '#FF0000'
@@ -93,7 +118,7 @@ export default {
       this.color[10] = '#00FF00'
       this.color[11] = '#808000'
       this.color[12] = '#FFFF00'
-      this.color[13] = '#800000'
+      this.color[13] = '#800000' */
 
       for (var i = 14; i < 1000; i++) {
         this.color[i] = '#'+Math.floor(Math.random()*16777215).toString(16)

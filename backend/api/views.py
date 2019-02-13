@@ -71,6 +71,8 @@ avg_moist = 0
 avg_acidity = 7
 avg_fertility = 0
 
+k_diff_min = 75
+
 def round_two_decimal_digits(number) :
     return math.ceil(number*100)/100
 
@@ -343,6 +345,7 @@ def get_all_values(request):
 def get_all_values_as_scatter(request):
 
     data = json.loads(request.body)
+    global k_diff_min
 
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
@@ -368,17 +371,22 @@ def get_all_values_as_scatter(request):
 
         result_cost_difference_from_last = last_cost - cluster.inertia_
 
-        if result_cost_difference_from_last < 50 :
+        if result_cost_difference_from_last < k_diff_min :
             got_k = True
         
         last_cost = cluster.inertia_
         k += 1
 
     cluster_labels = cluster.labels_
+    most_frequent_cluster_index = np.argmax(np.bincount(cluster_labels))
 
     i = 0
     for data_row in fresh_data :
-        chart_data.append({'moist':str(data_row[0]), 'acidity': str(data_row[1]), 'fertility':str(data_row[2]), 'cluster_group': str(cluster_labels[i])})
+        if cluster_labels[i] == most_frequent_cluster_index :
+            good = '1'
+        else :
+            good = '0'
+        chart_data.append({'moist':str(data_row[0]), 'acidity': str(data_row[1]), 'fertility':str(data_row[2]), 'cluster_group': str(cluster_labels[i]), 'good':good})
         i += 1
     
     return JsonResponse(chart_data, safe=False)
@@ -568,6 +576,7 @@ def get_average_fertility(request):
 @csrf_exempt
 def get_recommended_plants(request):
     data = json.loads(request.body)
+    global k_diff_min
 
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
@@ -595,7 +604,7 @@ def get_recommended_plants(request):
 
         result_cost_difference_from_last = last_cost - cluster.inertia_
 
-        if result_cost_difference_from_last < 50 :
+        if result_cost_difference_from_last < k_diff_min :
             got_k = True
         
         last_cost = cluster.inertia_
