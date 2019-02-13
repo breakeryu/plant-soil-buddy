@@ -44,6 +44,12 @@ export default {
 
                 var style = 0
 
+                /*
+                  TO ADD
+
+                  Telling each color its frequency, use color from back-end
+                  This will look to makemore sense, as sometimes the chart colors weird 
+                */
                 if (good == 1) {
                   style = '#008000'
                 } else if (good == 0) {
