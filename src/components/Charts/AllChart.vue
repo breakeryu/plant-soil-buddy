@@ -51,7 +51,7 @@ export default {
                   This will look to makemore sense, as sometimes the chart colors weird 
                 */
                 if (good == 1) {
-                  style = '#008000'
+                  style = '#00FF00'
                 } else if (good == 0) {
                   style = this.color[cluster_group]
                 } else {
@@ -63,14 +63,14 @@ export default {
               }
 
               var options = {
-                width:  '600px',
+                width:  '1000px',
                 height: '600px',
                 style: 'dot-color',
                 showPerspective: false,
                 showGrid: true,
                 keepAspectRatio: true,
                 verticalRatio: 1.0,
-                legendLabel: 'value',
+                legendLabel: 'cluster group',
                 cameraPosition: {
                   horizontal: -0.35,
                   vertical: 0.22,
@@ -96,19 +96,16 @@ export default {
       this.container = document.getElementById('graph')
 
       this.color[0] = '#000000'
-      this.color[1] = '#111111'
-      this.color[2] = '#222222'
-      this.color[3] = '#333333'
-      this.color[4] = '#444444'
-      this.color[5] = '#555555'
-      this.color[6] = '#666666'
-      this.color[7] = '#777777'
-      this.color[8] = '#888888'
-      this.color[9] = '#999999'
-      this.color[10] = '#aaaaaa'
-      this.color[11] = '#bbbbbb'
-      this.color[12] = '#cccccc'
-      this.color[13] = '#dddddd'
+      this.color[1] = '#B22222'
+      this.color[2] = '#32CD32'
+      this.color[3] = '#66CDAA'
+      this.color[4] = '#8A2BE2'
+      this.color[5] = '#FF1493'
+      this.color[6] = '#556B2F'
+      this.color[7] = '#008080'
+      this.color[8] = '#696969'
+      this.color[9] = '#A52A2A'
+      this.color[10] = '#6A5ACD'
 
 /*
       this.color[0] = '#808080'
@@ -126,10 +123,6 @@ export default {
       this.color[12] = '#FFFF00'
       this.color[13] = '#800000' */
 
-      for (var i = 14; i < 1000; i++) {
-        this.color[i] = '#'+Math.floor(Math.random()*16777215).toString(16)
-      }
-
   }
 
 }
@@ -138,7 +131,7 @@ export default {
 <style scoped>
 #graph {
   display: inline-block;
-  width: 600px;
+  width: 1000px;
   height: 600px;
 }
 </style>
