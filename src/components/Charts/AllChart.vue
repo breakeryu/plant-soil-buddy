@@ -1,6 +1,9 @@
 <template>
   <div>
     <a><div id="graph"></div></a>
+    <p>
+    <a v-for="i in 10"><a v-if="clusters_count[i-1] > 0">#{{ i }} &#9673; : {{ clusters_count[i-1] }},   </a> </a>
+    <p>Good &#9673; : #{{ good_cluster }}</p></p>
   </div>
 </template>
 
@@ -14,7 +17,9 @@ export default {
   data () {
     return {
       container: null,
-      color: []
+      color: [],
+      clusters_count: [0,0,0,0,0,0,0,0,0,0],
+      good_cluster: 0
     }
   },
   methods: {
@@ -51,15 +56,17 @@ export default {
                   This will look to makemore sense, as sometimes the chart colors weird 
                 */
                 if (good == 1) {
-                  style = '#00FF00'
+                  style = '#00FF00' //Lime Green
+                  this.good_cluster = cluster_group+1
                 } else if (good == 0) {
                   style = this.color[cluster_group]
                 } else {
-                  style = '#FF0000'
+                  style = '#FF0000' //Red
                 }
                 //var dist = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
                 //var range = sqrt(2) + dist;
                 data.add({x:x, y:y, z:z, style:style});
+                this.clusters_count[cluster_group]++;
               }
 
               var options = {
@@ -95,33 +102,16 @@ export default {
   mounted(){
       this.container = document.getElementById('graph')
 
-      this.color[0] = '#000000'
-      this.color[1] = '#B22222'
-      this.color[2] = '#32CD32'
-      this.color[3] = '#66CDAA'
-      this.color[4] = '#8A2BE2'
-      this.color[5] = '#FF1493'
-      this.color[6] = '#556B2F'
-      this.color[7] = '#008080'
-      this.color[8] = '#696969'
-      this.color[9] = '#A52A2A'
-      this.color[10] = '#6A5ACD'
-
-/*
-      this.color[0] = '#808080'
-      this.color[1] = '#000000'
-      this.color[2] = '#FF0000'
-      this.color[3] = '#008000'
-      this.color[4] = '#00FFFF'
-      this.color[5] = '#008080'
-      this.color[6] = '#800080'
-      this.color[7] = '#0000FF'
-      this.color[8] = '#FF00FF'
-      this.color[9] = '#000080'
-      this.color[10] = '#00FF00'
-      this.color[11] = '#808000'
-      this.color[12] = '#FFFF00'
-      this.color[13] = '#800000' */
+      this.color[0] = '#000000' //Black
+      this.color[1] = '#B22222' //Fire Brick
+      this.color[2] = '#006400' //Dark Green
+      this.color[3] = '#008B8B' //Dark Cyan
+      this.color[4] = '#000080' //Navy
+      this.color[5] = '#8B008B' //Dark Magneta
+      this.color[6] = '#4B0082' //Indigo
+      this.color[7] = '#C71585' //Medium Violet Red
+      this.color[8] = '#800000' //Maroon
+      this.color[9] = '#2F4F4F' //Dark Slate Grey
 
   }
 
@@ -133,5 +123,6 @@ export default {
   display: inline-block;
   width: 1000px;
   height: 600px;
+  border-style: inset;
 }
 </style>
