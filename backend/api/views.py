@@ -34,6 +34,7 @@ from django.core.exceptions import (
 
 import numpy as np
 from sklearn.cluster import KMeans
+from scipy.spatial.distance import cdist
 
 class MessageViewSet(viewsets.ModelViewSet):
     """
@@ -70,8 +71,6 @@ fertility_chart_data = {
 avg_moist = 0
 avg_acidity = 7
 avg_fertility = 0
-
-k_diff_min = 75
 
 def round_two_decimal_digits(number) :
     return math.ceil(number*100)/100
@@ -521,14 +520,12 @@ def get_average_fertility(request):
 
 
 
-@csrf_exempt
-def get_all_values_as_scatter(request):
 
-    data = json.loads(request.body)
-    global k_diff_min
 
-    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
-
+def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
+    
+    soil_profile_on_use = SoilProfile.objects.get(pk=soil_profile_id)
+    
     records = SensorRecord.objects.all()
 
     raw_chart_data = np.array([[float('NaN'),float('NaN'),float('NaN')]])
@@ -538,32 +535,58 @@ def get_all_values_as_scatter(request):
             values = np.array([[float(record.moist), float(record.ph), float(record.fertility)]])
             raw_chart_data = np.append(raw_chart_data, values, axis=0)
 
-    fresh_data = raw_chart_data[~np.isnan(raw_chart_data).any(axis=1)]
+    fresh_numpy_data = raw_chart_data[~np.isnan(raw_chart_data).any(axis=1)]
+    
+    return fresh_numpy_data
 
-    cluster = None
-    k = 1
-    got_k = False
-    last_cost = float('inf')
 
-    while not got_k :
-        cluster = KMeans(n_clusters = k, random_state=0).fit(fresh_data)
+def get_cluster_group_labels_and_most_frequent(fresh_numpy_data) :
+    #find best k, first assume k is maximum of 10
+    distortions = []
+    for k in range(1,11):
+        kmeanModel = KMeans(n_clusters=k, random_state=0).fit(fresh_numpy_data)
+        kmeanModel.fit(fresh_numpy_data)
+        distortions.append(sum(np.min(cdist(fresh_numpy_data, kmeanModel.cluster_centers_, 'euclidean'), axis=1)) / fresh_numpy_data.shape[0])
 
-        result_cost_difference_from_last = last_cost - cluster.inertia_
+    # Plot the elbow
+    distort_angle = [90]
+    distort_angle_diff = [90]
+    for k in range(1, len(distortions)) :
+        prev = distortions[k-1]
+        curr = distortions[k]
+        diff = prev - curr
+        angle = math.atan(diff)*180 / math.pi
+        distort_angle.append(angle)
+        distort_angle_diff.append(abs(distort_angle_diff[k-1] - angle))
 
-        if result_cost_difference_from_last < k_diff_min :
-            got_k = True
-        
-        last_cost = cluster.inertia_
-        k += 1
+    k = 10
+    for i in range(len(distort_angle_diff)) :
+        if distort_angle[i] < 30 and distort_angle_diff[i] < 5 :
+            k = i
+            break
+
+    #get clusters
+    cluster = KMeans(n_clusters=k, random_state=0).fit(fresh_numpy_data)
 
     cluster_labels = cluster.labels_
     most_frequent_cluster_index = np.argmax(np.bincount(cluster_labels))
 
+    return cluster_labels, most_frequent_cluster_index
+
+
+@csrf_exempt
+def get_all_values_as_scatter(request):
+
+    data = json.loads(request.body)
+
+    fresh_numpy_data = get_fresh_numpy_data_of_soil_profile(data['soil_profile_id'])
+
+    cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
 
 
     i = 0
     chart_data = []
-    for data_row in fresh_data :
+    for data_row in fresh_numpy_data :
         if cluster_labels[i] == most_frequent_cluster_index :
             good = '1'
         else :
@@ -574,45 +597,13 @@ def get_all_values_as_scatter(request):
     return JsonResponse(chart_data, safe=False)
 
 
-
-
-
 @csrf_exempt
 def get_recommended_plants(request):
     data = json.loads(request.body)
-    global k_diff_min
 
-    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+    fresh_numpy_data = get_fresh_numpy_data_of_soil_profile(data['soil_profile_id'])
 
-    records = SensorRecord.objects.all()
-
-    raw_chart_data = np.array([[float('NaN'),float('NaN'),float('NaN')]])
-
-    for record in records :
-        if record.soil_profile == soil_profile_on_use :
-            values = np.array([[float(record.moist), float(record.ph), float(record.fertility)]])
-            raw_chart_data = np.append(raw_chart_data, values, axis=0)
-
-    fresh_data = raw_chart_data[~np.isnan(raw_chart_data).any(axis=1)]
-
-    cluster = None
-    k = 1
-    got_k = False
-    last_cost = float('inf')
-
-    while not got_k :
-        cluster = KMeans(n_clusters = k, random_state=0).fit(fresh_data)
-
-        result_cost_difference_from_last = last_cost - cluster.inertia_
-
-        if result_cost_difference_from_last < k_diff_min :
-            got_k = True
-        
-        last_cost = cluster.inertia_
-        k += 1
-
-    cluster_labels = cluster.labels_
-    most_frequent_cluster_index = np.argmax(np.bincount(cluster_labels))
+    cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
 
 
 
@@ -621,7 +612,7 @@ def get_recommended_plants(request):
     good_data_fertility = []
 
     i = 0
-    for data_row in fresh_data :
+    for data_row in fresh_numpy_data :
         if cluster_labels[i] == most_frequent_cluster_index :
             good_data_moist.append(data_row[0])
             good_data_acidity.append(data_row[1])
