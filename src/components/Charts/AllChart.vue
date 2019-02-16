@@ -89,7 +89,10 @@ export default {
                 zLabel: 'Acidity (pH)'
               };
 
-              graph = new vis.Graph3d(this.container, data, options)
+              if (response.data.length > 0) {
+                graph = new vis.Graph3d(this.container, data, options)
+              }
+
             })
 
     }

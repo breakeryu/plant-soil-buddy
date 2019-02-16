@@ -542,8 +542,12 @@ def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
 
 def get_cluster_group_labels_and_most_frequent(fresh_numpy_data) :
     #find best k, first assume k is maximum of 10
+    total_rows = fresh_numpy_data.shape[0]
+    
     distortions = []
     for k in range(1,11):
+        if k > total_rows :
+            break
         kmeanModel = KMeans(n_clusters=k, random_state=0).fit(fresh_numpy_data)
         kmeanModel.fit(fresh_numpy_data)
         distortions.append(sum(np.min(cdist(fresh_numpy_data, kmeanModel.cluster_centers_, 'euclidean'), axis=1)) / fresh_numpy_data.shape[0])
@@ -559,7 +563,11 @@ def get_cluster_group_labels_and_most_frequent(fresh_numpy_data) :
         distort_angle.append(angle)
         distort_angle_diff.append(abs(distort_angle_diff[k-1] - angle))
 
-    k = 10
+    if total_rows > 10 :
+        k = 10
+    else :
+        k = total_rows
+
     for i in range(len(distort_angle_diff)) :
         if distort_angle[i] < 30 and distort_angle_diff[i] < 5 :
             k = i
@@ -580,6 +588,10 @@ def get_all_values_as_scatter(request):
     data = json.loads(request.body)
 
     fresh_numpy_data = get_fresh_numpy_data_of_soil_profile(data['soil_profile_id'])
+
+    total_rows = fresh_numpy_data.shape[0]
+    if total_rows <= 0 :
+        return JsonResponse([], safe=False)
 
     cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
 
@@ -602,6 +614,10 @@ def get_recommended_plants(request):
     data = json.loads(request.body)
 
     fresh_numpy_data = get_fresh_numpy_data_of_soil_profile(data['soil_profile_id'])
+
+    total_rows = fresh_numpy_data.shape[0]
+    if total_rows <= 0 :
+        return JsonResponse([], safe=False)
 
     cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
 
