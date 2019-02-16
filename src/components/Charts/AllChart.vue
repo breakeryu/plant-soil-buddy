@@ -2,8 +2,8 @@
   <div>
     <a><div id="graph"></div></a>
     <p>
-    <a v-for="i in 10"><a v-if="clusters_count[i-1] > 0">#{{ i }} &#9673; : {{ clusters_count[i-1] }},   </a> </a>
-    <p>Good &#9673; : #{{ good_cluster }}</p></p>
+    <a v-for="i in 10"><a :style="{color: color[i-1]}" v-if="clusters_count[i-1] > 0">  [#{{ i }} &#9673; : {{ clusters_count[i-1] }}]  </a> </a>
+    <p :style="{color: color[good_cluster-1]}" v-if="good_cluster > 0">The considered value group of &#9673; : #{{ good_cluster }}</p></p>
   </div>
 </template>
 
@@ -35,6 +35,8 @@ export default {
             .then((response) => {
               var data = new vis.DataSet();
               var graph = null;
+              this.clusters_count = [0,0,0,0,0,0,0,0,0,0]
+              this.good_cluster = 0
 
               var sqrt = Math.sqrt;
               var pow = Math.pow;
@@ -49,14 +51,9 @@ export default {
 
                 var style = 0
 
-                /*
-                  TO ADD
-
-                  Telling each color its frequency, use color from back-end
-                  This will look to makemore sense, as sometimes the chart colors weird 
-                */
                 if (good == 1) {
-                  style = '#00FF00' //Lime Green
+                  style = this.color[cluster_group]
+                  //style = '#00FF00' //Lime Green
                   this.good_cluster = cluster_group+1
                 } else if (good == 0) {
                   style = this.color[cluster_group]
