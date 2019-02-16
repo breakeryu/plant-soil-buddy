@@ -18,6 +18,28 @@ export default {
     return {
       container: null,
       color: [],
+      options: {
+                width:  '1000px',
+                height: '600px',
+                style: 'dot-color',
+                showPerspective: false,
+                showGrid: true,
+                keepAspectRatio: true,
+                verticalRatio: 1.0,
+                legendLabel: 'cluster group',
+                cameraPosition: {
+                  horizontal: -0.35,
+                  vertical: 0.22,
+                  distance: 2.0
+                },
+                valueMax: 100,
+                valueMin: 0,
+                dotSizeMinFraction: 0.5,
+                dotSizeMaxFraction: 2.5,
+                xLabel: 'Moist (\%)',
+                yLabel: 'Fertility (\%)',
+                zLabel: 'Acidity (pH)'
+              },
       clusters_count: [0,0,0,0,0,0,0,0,0,0],
       good_cluster: 0
     }
@@ -66,35 +88,21 @@ export default {
                 this.clusters_count[cluster_group]++;
               }
 
-              var options = {
-                width:  '1000px',
-                height: '600px',
-                style: 'dot-color',
-                showPerspective: false,
-                showGrid: true,
-                keepAspectRatio: true,
-                verticalRatio: 1.0,
-                legendLabel: 'cluster group',
-                cameraPosition: {
-                  horizontal: -0.35,
-                  vertical: 0.22,
-                  distance: 1.0
-                },
-                valueMax: 100,
-                valueMin: 0,
-                dotSizeMinFraction: 0.5,
-                dotSizeMaxFraction: 2.5,
-                xLabel: 'Moist (\%)',
-                yLabel: 'Fertility (\%)',
-                zLabel: 'Acidity (pH)'
-              };
+
 
               if (response.data.length > 0) {
-                graph = new vis.Graph3d(this.container, data, options)
+                graph = new vis.Graph3d(this.container, data, this.options)
               }
 
             })
 
+    },
+    reset() {
+      this.clusters_count = [0,0,0,0,0,0,0,0,0,0]
+      this.good_cluster = 0
+
+      this.container.innerHTML = "";
+      
     }
 
 

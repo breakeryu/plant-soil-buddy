@@ -161,6 +161,7 @@ export default {
 
       if (this.timer_running) {
         this.$refs.plant_rec.getData(this.selected)
+        this.$refs.all_ch.getData(this.selected)
         this.stopSensor()
         this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start Sensors" for the best accuracy of plant recommendation.'
         this.connection_timer_idle_enable()
@@ -178,6 +179,7 @@ export default {
                   this.btn_note = 'Click "Stop Sensors" to see the result of the plant recommendation.'
 
                   this.$refs.plant_rec.reset()
+                  this.$refs.all_ch.reset()
 
                 } else {
                   this.status_color = 'red'
