@@ -561,7 +561,7 @@ def get_cluster_group_labels_and_most_frequent(fresh_numpy_data) :
     
     cluster_labels_compare = cluster_labels[cluster_labels >= 0]
     
-    print(cluster_labels)
+    #print(cluster_labels)
     most_frequent_cluster_index = np.argmax(np.bincount(cluster_labels_compare))
 
     return cluster_labels, most_frequent_cluster_index
