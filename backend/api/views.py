@@ -13,7 +13,8 @@ from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 
-from datetime import datetime 
+from datetime import datetime
+
 
 import json
 import math
@@ -33,8 +34,15 @@ from django.core.exceptions import (
 )
 
 import numpy as np
-from sklearn.cluster import KMeans
+#from sklearn.cluster import KMeans
+from sklearn.cluster import AgglomerativeClustering
+#from sklearn.cluster import MeanShift
+#from sklearn.mixture import GaussianMixture
+#from sklearn.cluster import DBSCAN
 from scipy.spatial.distance import cdist
+from scipy.cluster.hierarchy import dendrogram, linkage
+
+
 
 class MessageViewSet(viewsets.ModelViewSet):
     """
@@ -541,43 +549,20 @@ def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
 
 
 def get_cluster_group_labels_and_most_frequent(fresh_numpy_data) :
-    #find best k, first assume k is maximum of 10
-    total_rows = fresh_numpy_data.shape[0]
-    
-    distortions = []
-    for k in range(1,11):
-        if k > total_rows :
-            break
-        kmeanModel = KMeans(n_clusters=k, random_state=0).fit(fresh_numpy_data)
-        kmeanModel.fit(fresh_numpy_data)
-        distortions.append(sum(np.min(cdist(fresh_numpy_data, kmeanModel.cluster_centers_, 'euclidean'), axis=1)) / fresh_numpy_data.shape[0])
-
-    # Plot the elbow
-    distort_angle = [90]
-    distort_angle_diff = [90]
-    for k in range(1, len(distortions)) :
-        prev = distortions[k-1]
-        curr = distortions[k]
-        diff = prev - curr
-        angle = math.atan(diff)*180 / math.pi
-        distort_angle.append(angle)
-        distort_angle_diff.append(abs(distort_angle_diff[k-1] - angle))
-
-    if total_rows > 10 :
-        k = 10
-    else :
-        k = total_rows
-
-    for i in range(len(distort_angle_diff)) :
-        if distort_angle[i] < 30 and distort_angle_diff[i] < 5 :
-            k = i
-            break
-
     #get clusters
-    cluster = KMeans(n_clusters=k, random_state=0).fit(fresh_numpy_data)
+    #cluster = KMeans(n_clusters=3).fit(fresh_numpy_data)
+    cluster = AgglomerativeClustering(linkage='complete', affinity='euclidean', n_clusters=3).fit(fresh_numpy_data)
+    #cluster = MeanShift(bandwidth=2).fit(fresh_numpy_data)
+    #cluster = GaussianMixture(n_components=3).fit(fresh_numpy_data)
+    #cluster = DBSCAN(eps=3, min_samples=2).fit(fresh_numpy_data)
 
     cluster_labels = cluster.labels_
-    most_frequent_cluster_index = np.argmax(np.bincount(cluster_labels))
+    #cluster_labels = cluster.weights_
+    
+    cluster_labels_compare = cluster_labels[cluster_labels >= 0]
+    
+    print(cluster_labels)
+    most_frequent_cluster_index = np.argmax(np.bincount(cluster_labels_compare))
 
     return cluster_labels, most_frequent_cluster_index
 
@@ -594,7 +579,6 @@ def get_all_values_as_scatter(request):
         return JsonResponse([], safe=False)
 
     cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
-
 
     i = 0
     chart_data = []
