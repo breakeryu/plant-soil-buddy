@@ -34,12 +34,13 @@ from django.core.exceptions import (
 )
 
 import numpy as np
+from scipy.spatial.distance import cdist
 #from sklearn.cluster import KMeans
 from sklearn.cluster import AgglomerativeClustering
 #from sklearn.cluster import MeanShift
 #from sklearn.mixture import GaussianMixture
 #from sklearn.cluster import DBSCAN
-from scipy.spatial.distance import cdist
+from scipy.cluster.hierarchy import fcluster
 from scipy.cluster.hierarchy import dendrogram, linkage
 
 
@@ -549,9 +550,11 @@ def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
 
 
 def get_cluster_group_labels_and_most_frequent(fresh_numpy_data) :
+    n = 3
+        
     #get clusters
     #cluster = KMeans(n_clusters=3).fit(fresh_numpy_data)
-    cluster = AgglomerativeClustering(linkage='complete', affinity='euclidean', n_clusters=3).fit(fresh_numpy_data)
+    cluster = AgglomerativeClustering(linkage='ward', affinity='euclidean', n_clusters=n).fit(fresh_numpy_data)
     #cluster = MeanShift(bandwidth=2).fit(fresh_numpy_data)
     #cluster = GaussianMixture(n_components=3).fit(fresh_numpy_data)
     #cluster = DBSCAN(eps=3, min_samples=2).fit(fresh_numpy_data)
