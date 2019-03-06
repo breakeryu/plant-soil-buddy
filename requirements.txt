@@ -1,5 +1,4 @@
 django
-pyswip
 cryptography
 whitenoise
 djangorestframework
@@ -11,3 +10,4 @@ pyserial
 numpy
 scipy
 scikit-learn
+xlrd

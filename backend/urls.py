@@ -53,11 +53,12 @@ urlpatterns = [
 
     path('get_average_moist', get_average_moist),
     path('get_average_acidity', get_average_acidity),
-    path('get_average_fertility', get_average_fertility),
 
     path('get_recommended_plants', get_recommended_plants),
 
     path('get_connection_status', get_connection_status),
+
+    path('push_ph_to_npk_into_database', push_ph_to_npk_into_database),
 
     path('snap_reset', snap_reset),
 

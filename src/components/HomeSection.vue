@@ -10,6 +10,9 @@
 
     <br>
     <button class="normal-btn" v-on:click="toRegis">Register</button>
+
+    <br>
+    <button class="normal-btn" v-on:click="pushPHtoNPKdata">Data pH to NPK Push</button>
   </div>
 </template>
 
@@ -32,6 +35,12 @@ export default {
     toRegis () {
       router.push("/regis")
     },
+    pushPHtoNPKdata() {
+      axios.get("/push_ph_to_npk_into_database")
+            .then((response) => {
+
+            })
+    }
   }
 }
 </script>

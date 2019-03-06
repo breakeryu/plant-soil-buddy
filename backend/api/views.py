@@ -23,6 +23,8 @@ import decimal
 import serial
 import re
 import csv
+import xlrd
+import os
 
 from .models import *
 from django.contrib.auth.models import User
@@ -502,33 +504,6 @@ def get_average_acidity(request):
 
     return HttpResponse(round_two_decimal_digits(avg_acidity))
 
-@csrf_exempt
-def get_average_fertility(request):
-    global avg_fertility
-
-    data = json.loads(request.body)
-
-    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
-
-    records = SensorRecord.objects.all()
-    target_records = []
-    
-    total_fertility_data = 0
-
-    for record in records :
-        if record.soil_profile == soil_profile_on_use :
-            total_fertility_data += record.fertility
-            target_records.append(record)
-            
-    if len(target_records) > 0 :
-        avg_fertility = total_fertility_data / len(target_records)
-    else :
-        avg_fertility = 0
-
-    return HttpResponse(round_two_decimal_digits(avg_fertility))
-
-
-
 
 
 def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
@@ -601,7 +576,7 @@ def get_recommended_plants(request):
     data = json.loads(request.body)
 
     fresh_numpy_data = get_fresh_numpy_data_of_soil_profile(data['soil_profile_id'])
-
+    
     total_rows = fresh_numpy_data.shape[0]
     if total_rows <= 0 :
         return JsonResponse([], safe=False)
@@ -633,7 +608,6 @@ def get_recommended_plants(request):
             plants_list.append({'id':plant.id, 'name':plant.name})
 
     return JsonResponse(plants_list, safe=False)
-
 
 
 @csrf_exempt
@@ -688,6 +662,29 @@ def get_connection_status(request):
         status = 'Disconnected'
 
     return HttpResponse(status)
+
+@csrf_exempt
+def push_ph_to_npk_into_database(request):
+    NpkPerPh.objects.all().delete()
+    
+    excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\pH-to-NPK.xlsx').sheet_by_index(0) 
+
+    ph_to_npk_dataset = []
+
+    for i in range(excel_dataset.nrows) :
+    
+        ph_to_npk_dataset.append([])
+    
+        for j in range(excel_dataset.ncols) :
+        
+            ph_to_npk_dataset[i].append(excel_dataset.cell_value(i,j))
+
+        if i > 0 :
+            print(ph_to_npk_dataset[i][0])
+            NpkPerPh.objects.create(ph=ph_to_npk_dataset[i][0], n_lvl=ph_to_npk_dataset[i][1], p_lvl=ph_to_npk_dataset[i][2], k_lvl=ph_to_npk_dataset[i][3])
+
+
+    return HttpResponse('')
 
 
 def public(request):
