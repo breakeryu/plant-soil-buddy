@@ -1,0 +1,13 @@
+django
+pyswip
+cryptography
+whitenoise
+djangorestframework
+markdown
+django-filter
+djangorestframework-jwt
+django-cors-headers
+pyserial
+numpy
+scipy
+scikit-learn

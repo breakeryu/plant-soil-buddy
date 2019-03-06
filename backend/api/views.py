@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 
 from datetime import datetime
-
+from pyswip import Prolog
 
 import json
 import math
