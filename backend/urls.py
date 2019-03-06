@@ -59,6 +59,7 @@ urlpatterns = [
     path('get_connection_status', get_connection_status),
 
     path('push_ph_to_npk_into_database', push_ph_to_npk_into_database),
+    path('push_plants_into_database', push_plants_into_database),
 
     path('snap_reset', snap_reset),
 

@@ -13,6 +13,9 @@
 
     <br>
     <button class="normal-btn" v-on:click="pushPHtoNPKdata">Data pH to NPK Push</button>
+
+    <br>
+    <button class="normal-btn" v-on:click="pushPlantsData">Data Plants Push</button>
   </div>
 </template>
 
@@ -37,6 +40,12 @@ export default {
     },
     pushPHtoNPKdata() {
       axios.get("/push_ph_to_npk_into_database")
+            .then((response) => {
+
+            })
+    },
+    pushPlantsData() {
+      axios.get("/push_plants_into_database")
             .then((response) => {
 
             })

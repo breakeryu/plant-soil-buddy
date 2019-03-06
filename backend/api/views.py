@@ -686,6 +686,61 @@ def push_ph_to_npk_into_database(request):
 
     return HttpResponse('')
 
+@csrf_exempt
+def push_plants_into_database(request):
+
+    Plant.objects.all().delete()
+    PlantMoistLvl.objects.all().delete()
+    PlantPh.objects.all().delete()
+
+    moist_excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\Moist-to-plant.xlsx').sheet_by_index(0) 
+    ph_excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\pH-to-plant.xlsx').sheet_by_index(0) 
+
+    #Push Plant name first
+    #No duplicate names
+    #Push ph according to matched Plant name
+    #Push moist_lvl according to matched Plant name
+    #done
+
+    moist_to_plant_dataset = []
+    for i in range(moist_excel_dataset.nrows) :
+    
+        moist_to_npk_dataset.append([])
+    
+        for j in range(moist_excel_dataset.ncols) :
+        
+            moist_to_npk_dataset[i].append(moist_excel_dataset.cell_value(i,j))
+
+        if i > 0 :
+            print(moist_to_npk_dataset[i][0])
+            #Plant.objects.create()
+            #PlantMoistLvl.objects.create()
+
+    ph_to_plant_dataset = []
+    for i in range(ph_excel_dataset.nrows) :
+    
+        ph_to_npk_dataset.append([])
+    
+        for j in range(ph_excel_dataset.ncols) :
+        
+            ph_to_npk_dataset[i].append(ph_excel_dataset.cell_value(i,j))
+
+        if i > 0 :
+            print(ph_to_npk_dataset[i][0])
+            #PlantPh.objects.create()
+            
+            try:
+                plant = Plant.objects.get(name=ph_to_npk_dataset[i][0])
+            except Plant.DoesNotExist:
+                plant = None
+            #if plant :
+                #continue
+            #else :
+                #Plant.objects.create()
+
+
+    return HttpResponse('')
+
 
 def public(request):
     return HttpResponse("You don't need to be authenticated to see this")
