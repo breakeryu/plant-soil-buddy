@@ -30,12 +30,12 @@
 
     <plant-recommender ref="plant_rec"></plant-recommender>
 
-    <all-chart ref="all_ch"></all-chart>
+    <!--<all-chart ref="all_ch"></all-chart>-->
 
     <br><hr>
 	<moist-chart ref="moist_ch"></moist-chart><hr>
   <acidity-chart ref="acidity_ch"></acidity-chart><hr>
-  <fertility-chart ref="fertility_ch"></fertility-chart><hr>
+  <!--<fertility-chart ref="fertility_ch"></fertility-chart><hr>-->
   
   <br><br>
     <button class="normal-btn exit-btn" v-on:click="doLogout">Logout</button><br>
@@ -45,19 +45,19 @@
 <script>
 import axios from 'axios'
 import router from '@/router'
-import AllChart from '@/components/Charts/AllChart'
+//import AllChart from '@/components/Charts/AllChart'
 import MoistChart from '@/components/Charts/MoistChart'
 import AcidityChart from '@/components/Charts/AcidityChart'
-import FertilityChart from '@/components/Charts/FertilityChart'
+//import FertilityChart from '@/components/Charts/FertilityChart'
 import PlantRecommender from '@/components/Charts/PlantRecommender'
 
 export default {
   name: 'Welcome',
   components: {
-    AllChart,
+    //AllChart,
     MoistChart,
     AcidityChart,
-    FertilityChart,
+    //FertilityChart,
     PlantRecommender
   },
   data () {
@@ -107,7 +107,7 @@ export default {
               if (response.data > 0) {
                   this.$refs.moist_ch.getData(this.selected)
                   this.$refs.acidity_ch.getData(this.selected)
-                  this.$refs.fertility_ch.getData(this.selected)
+                  //this.$refs.fertility_ch.getData(this.selected)
                   this.$store.state.selected_soil_profile = this.selected
                 } else {
                   this.status_msg = "Disconnected"
@@ -119,7 +119,7 @@ export default {
     startSensor() {
       this.$refs.moist_ch.triggerStartStop()
       this.$refs.acidity_ch.triggerStartStop()
-      this.$refs.fertility_ch.triggerStartStop()
+      //this.$refs.fertility_ch.triggerStartStop()
 
       this.snapReset()
       this.btn_text = "Stop Sensors"
@@ -139,7 +139,7 @@ export default {
     stopSensor() {
       this.$refs.moist_ch.triggerStartStop()
       this.$refs.acidity_ch.triggerStartStop()
-      this.$refs.fertility_ch.triggerStartStop()
+      //this.$refs.fertility_ch.triggerStartStop()
 
       this.btn_text = "Start Sensors"
       this.timer_running = false
@@ -149,7 +149,7 @@ export default {
 
       this.$refs.moist_ch.current_data = 0
       this.$refs.acidity_ch.current_data = 7
-      this.$refs.fertility_ch.current_data = 0
+      //this.$refs.fertility_ch.current_data = 0
 
       //this.recheckConnection()
 
@@ -210,10 +210,10 @@ export default {
             })
     },
     reloadGraph(selected) {
-      this.$refs.all_ch.getData(selected)
+      //this.$refs.all_ch.getData(selected)
       this.$refs.moist_ch.getData(selected)
       this.$refs.acidity_ch.getData(selected)
-      this.$refs.fertility_ch.getData(selected)
+      //this.$refs.fertility_ch.getData(selected)
       this.$store.state.selected_soil_profile = selected
       
       this.$refs.plant_rec.getData(selected)

@@ -62,7 +62,7 @@ class PostsView(ListAPIView):
 
 moist = 0
 acidity = 7
-fertility = 0
+#fertility = 0
 
 moist_chart_data = {
     'columns': ['time', '%'],
@@ -74,14 +74,14 @@ acidity_chart_data = {
     'rows': []
 }
 
-fertility_chart_data = {
-    'columns': ['time', '%'],
-    'rows': []
-}
+#fertility_chart_data = {
+#    'columns': ['time', '%'],
+#    'rows': []
+#}
 
 avg_moist = 0
 avg_acidity = 7
-avg_fertility = 0
+#avg_fertility = 0
 
 def round_two_decimal_digits(number) :
     return math.ceil(number*100)/100
@@ -303,8 +303,8 @@ def get_all_values(request):
     global moist
     global acidity_chart_data
     global acidity
-    global fertility_chart_data
-    global fertility
+    #global fertility_chart_data
+    #global fertility
     
     data = json.loads(request.body)
     try :
@@ -318,7 +318,7 @@ def get_all_values(request):
 
         moist = int(values[0].split("b'")[1])
         acidity = float(values[1])
-        fertility = int(values[2].split("\\r\\n")[0])
+        #fertility = int(values[2].split("\\r\\n")[0])
 
         if moist < 0:
             moist = 0
@@ -332,15 +332,15 @@ def get_all_values(request):
         if acidity > 14:
             acidity = 14
 
-        if fertility < 0:
-            fertility = 0
+        #if fertility < 0:
+        #    fertility = 0
 
-        if fertility > 100:
-            fertility = 100
+        #if fertility > 100:
+        #    fertility = 100
             
         soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
-        record = SensorRecord.objects.create(soil_profile=soil_profile_on_use ,record_time=get_current_time(), moist=moist, ph=acidity, fertility=fertility)
+        record = SensorRecord.objects.create(soil_id=soil_profile_on_use ,record_date=get_current_time(), moist=moist, ph=acidity)
 
         arduino.close()
 
@@ -375,9 +375,9 @@ def get_moist_as_stats(request):
     }
 
     for record in records :
-        time_record = f"{record.record_time:%Y-%b-%d, %H:%M:%S}"
-        if record.soil_profile == soil_profile_on_use :
-            moist_chart_data["rows"].append({'time':time_record, '%':record.moist})
+        time_record = f"{record.record_date:%Y-%b-%d}"
+        if record.soil_id == soil_profile_on_use :
+            moist_chart_data["rows"].append({'time':str(record.id)+' '+time_record, '%':record.moist})
     
     chart_data = moist_chart_data
     return JsonResponse(chart_data)
@@ -409,46 +409,14 @@ def get_acidity_as_stats(request):
     }
 
     for record in records :
-        time_record = f"{record.record_time:%Y-%b-%d, %H:%M:%S}"
-        if record.soil_profile == soil_profile_on_use :
-            acidity_chart_data["rows"].append({'time':time_record, 'pH':record.ph})
+        time_record = f"{record.record_date:%Y-%b-%d}"
+        if record.soil_id == soil_profile_on_use :
+            acidity_chart_data["rows"].append({'time':str(record.id)+' '+time_record, 'pH':record.ph})
     
     chart_data = acidity_chart_data
     return JsonResponse(chart_data)
 
 
-
-
-
-@csrf_exempt
-def get_fertility_as_value(request):
-    global fertility
-
-    value = fertility
-    return HttpResponse(value)
-
-@csrf_exempt
-def get_fertility_as_stats(request):
-    global fertility_chart_data
-
-    data = json.loads(request.body)
-
-    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
-
-    records = SensorRecord.objects.all()
-
-    fertility_chart_data = {
-    'columns': ['time', '%'],
-    'rows': []
-    }
-
-    for record in records :
-        time_record = f"{record.record_time:%Y-%b-%d, %H:%M:%S}"
-        if record.soil_profile == soil_profile_on_use :
-            fertility_chart_data["rows"].append({'time':time_record, '%':record.fertility})
-    
-    chart_data = fertility_chart_data
-    return JsonResponse(chart_data)
 
 
 
@@ -468,7 +436,7 @@ def get_average_moist(request):
     total_moist_data = 0
 
     for record in records :
-        if record.soil_profile == soil_profile_on_use :
+        if record.soil_id == soil_profile_on_use :
             total_moist_data += record.moist
             target_records.append(record)
             
@@ -493,7 +461,7 @@ def get_average_acidity(request):
     total_acidity_data = 0
 
     for record in records :
-        if record.soil_profile == soil_profile_on_use :
+        if record.soil_id == soil_profile_on_use :
             total_acidity_data += record.ph
             target_records.append(record)
             
@@ -512,11 +480,11 @@ def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
     
     records = SensorRecord.objects.all()
 
-    raw_chart_data = np.array([[float('NaN'),float('NaN'),float('NaN')]])
+    raw_chart_data = np.array([[float('NaN'),float('NaN')]])
 
     for record in records :
         if record.soil_profile == soil_profile_on_use :
-            values = np.array([[float(record.moist), float(record.ph), float(record.fertility)]])
+            values = np.array([[float(record.moist), float(record.ph)]])
             raw_chart_data = np.append(raw_chart_data, values, axis=0)
 
     fresh_numpy_data = raw_chart_data[~np.isnan(raw_chart_data).any(axis=1)]
@@ -565,7 +533,7 @@ def get_all_values_as_scatter(request):
             good = '1'
         else :
             good = '0'
-        chart_data.append({'moist':str(data_row[0]), 'acidity': str(data_row[1]), 'fertility':str(data_row[2]), 'cluster_group': str(cluster_labels[i]), 'good':good})
+        chart_data.append({'moist':str(data_row[0]), 'acidity': str(data_row[1]), 'cluster_group': str(cluster_labels[i]), 'good':good})
         i += 1
     
     return JsonResponse(chart_data, safe=False)
@@ -587,38 +555,40 @@ def get_recommended_plants(request):
 
     good_data_moist = []
     good_data_acidity = []
-    good_data_fertility = []
+    #good_data_fertility = []
 
     i = 0
     for data_row in fresh_numpy_data :
         if cluster_labels[i] == most_frequent_cluster_index :
             good_data_moist.append(data_row[0])
             good_data_acidity.append(data_row[1])
-            good_data_fertility.append(data_row[2])
+            #good_data_fertility.append(data_row[2])
         i += 1
 
-    good_data_min = [min(good_data_moist), min(good_data_acidity), min(good_data_fertility)]
-    good_data_max = [max(good_data_moist), max(good_data_acidity), max(good_data_fertility)]
+    good_data_min = [min(good_data_moist), min(good_data_acidity)]
+    good_data_max = [max(good_data_moist), max(good_data_acidity)]
 
     plants_set = Plant.objects.all()
     plants_list = []
+
+    #Need Rules
     
-    for plant in plants_set :
-        if good_data_min[0] > plant.min_moist and good_data_max[0] < plant.max_moist and good_data_min[1] > plant.min_ph and good_data_max[1] < plant.max_ph and good_data_min[2] > plant.min_fertility and good_data_max[2] < plant.max_fertility :
-            plants_list.append({'id':plant.id, 'name':plant.name})
+    #for plant in plants_set :
+    #    if good_data_min[0] > plant.min_moist and good_data_max[0] < plant.max_moist and good_data_min[1] > plant.min_ph and good_data_max[1] < plant.max_ph and good_data_min[2] > plant.min_fertility and good_data_max[2] < plant.max_fertility :
+    #        plants_list.append({'id':plant.id, 'name':plant.name})
 
     return JsonResponse(plants_list, safe=False)
 
 
 @csrf_exempt
 def snap_reset(request):
-    global moist, acidity, fertility
-    global moist_chart_data, acidity_chart_data, fertility_chart_data
-    global avg_moist, avg_acidity, avg_fertility
+    global moist, acidity#, fertility
+    global moist_chart_data, acidity_chart_data#, fertility_chart_data
+    global avg_moist, avg_acidity#, avg_fertility
     
     moist = 0
     acidity = 7
-    fertility = 0
+    #fertility = 0
 
     moist_chart_data = {
         'columns': ['time', '%'],
@@ -630,14 +600,14 @@ def snap_reset(request):
         'rows': []
     }
 
-    fertility_chart_data = {
-        'columns': ['time', '%'],
-        'rows': []
-    }
+    #fertility_chart_data = {
+    #    'columns': ['time', '%'],
+    #    'rows': []
+    #}
 
     avg_moist = 0
     avg_acidity = 7
-    avg_fertility = 0
+    #avg_fertility = 0
 
     return HttpResponse('Reset')
 

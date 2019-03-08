@@ -48,8 +48,6 @@ urlpatterns = [
     path('get_acidity_as_value', get_acidity_as_value),
     path('get_acidity_as_stats', get_acidity_as_stats),
 
-    path('get_fertility_as_value', get_fertility_as_value),
-    path('get_fertility_as_stats', get_fertility_as_stats),
 
     path('get_average_moist', get_average_moist),
     path('get_average_acidity', get_average_acidity),
