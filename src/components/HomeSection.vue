@@ -16,6 +16,9 @@
 
     <br>
     <button class="normal-btn" v-on:click="pushPlantsData">Data Plants Push</button>
+
+    <br>
+    <button class="normal-btn" v-on:click="pushSoilTypesData">Data Soil Types Push</button>
   </div>
 </template>
 
@@ -46,6 +49,12 @@ export default {
     },
     pushPlantsData() {
       axios.get("/push_plants_into_database")
+            .then((response) => {
+
+            })
+    },
+    pushSoilTypesData() {
+      axios.get("/push_soil_types_into_database")
             .then((response) => {
 
             })

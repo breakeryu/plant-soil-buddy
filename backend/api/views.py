@@ -652,6 +652,7 @@ def push_ph_to_npk_into_database(request):
             print(ph_to_npk_dataset[i][0])
 
             try:
+                exist = NpkPerPh.objects.get(ph=ph_to_npk_dataset[i][0])
                 NpkPerPh.objects.filter(ph=ph_to_npk_dataset[i][0]).update(n_lvl=ph_to_npk_dataset[i][1], p_lvl=ph_to_npk_dataset[i][2], k_lvl=ph_to_npk_dataset[i][3])
             except NpkPerPh.DoesNotExist:
                 NpkPerPh.objects.create(ph=ph_to_npk_dataset[i][0], n_lvl=ph_to_npk_dataset[i][1], p_lvl=ph_to_npk_dataset[i][2], k_lvl=ph_to_npk_dataset[i][3])
@@ -717,6 +718,32 @@ def push_plants_into_database(request):
             except PlantPh.DoesNotExist:
                 PlantPh.objects.create(plant_id=plant, min_ph=ph_to_plant_dataset[i][1], max_ph=ph_to_plant_dataset[i][2])
 
+
+    return HttpResponse('')
+
+@csrf_exempt
+def push_soil_types_into_database(request):
+    
+    excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\Soil_type_to_moist.xlsx').sheet_by_index(0) 
+
+    soil_to_moist_dataset = []
+
+    for i in range(excel_dataset.nrows) :
+    
+        soil_to_moist_dataset.append([])
+    
+        for j in range(excel_dataset.ncols) :
+        
+            soil_to_moist_dataset[i].append(excel_dataset.cell_value(i,j))
+
+        if i > 0 :
+            print(soil_to_moist_dataset[i][0])
+
+            try:
+                exist = SoilType.objects.get(name=soil_to_moist_dataset[i][0])
+                SoilType.objects.filter(name=soil_to_moist_dataset[i][0]).update(good_for_min_moist_lvl=soil_to_moist_dataset[i][1], good_for_max_moist_lvl=soil_to_moist_dataset[i][2])
+            except SoilType.DoesNotExist:
+                SoilType.objects.create(name=soil_to_moist_dataset[i][0], good_for_min_moist_lvl=soil_to_moist_dataset[i][1], good_for_max_moist_lvl=soil_to_moist_dataset[i][2])
 
     return HttpResponse('')
 
