@@ -665,7 +665,6 @@ def get_connection_status(request):
 
 @csrf_exempt
 def push_ph_to_npk_into_database(request):
-    NpkPerPh.objects.all().delete()
     
     excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\pH-to-NPK.xlsx').sheet_by_index(0) 
 
@@ -681,17 +680,16 @@ def push_ph_to_npk_into_database(request):
 
         if i > 0 :
             print(ph_to_npk_dataset[i][0])
-            NpkPerPh.objects.create(ph=ph_to_npk_dataset[i][0], n_lvl=ph_to_npk_dataset[i][1], p_lvl=ph_to_npk_dataset[i][2], k_lvl=ph_to_npk_dataset[i][3])
 
+            try:
+                NpkPerPh.objects.filter(ph=ph_to_npk_dataset[i][0]).update(n_lvl=ph_to_npk_dataset[i][1], p_lvl=ph_to_npk_dataset[i][2], k_lvl=ph_to_npk_dataset[i][3])
+            except NpkPerPh.DoesNotExist:
+                NpkPerPh.objects.create(ph=ph_to_npk_dataset[i][0], n_lvl=ph_to_npk_dataset[i][1], p_lvl=ph_to_npk_dataset[i][2], k_lvl=ph_to_npk_dataset[i][3])
 
     return HttpResponse('')
 
 @csrf_exempt
 def push_plants_into_database(request):
-
-    Plant.objects.all().delete()
-    PlantMoistLvl.objects.all().delete()
-    PlantPh.objects.all().delete()
 
     moist_excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\Moist-to-plant.xlsx').sheet_by_index(0) 
     ph_excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\pH-to-plant.xlsx').sheet_by_index(0) 
@@ -703,40 +701,51 @@ def push_plants_into_database(request):
     #done
 
     moist_to_plant_dataset = []
+    
     for i in range(moist_excel_dataset.nrows) :
     
-        moist_to_npk_dataset.append([])
+        moist_to_plant_dataset.append([])
     
         for j in range(moist_excel_dataset.ncols) :
         
-            moist_to_npk_dataset[i].append(moist_excel_dataset.cell_value(i,j))
+            moist_to_plant_dataset[i].append(moist_excel_dataset.cell_value(i,j))
 
         if i > 0 :
-            print(moist_to_npk_dataset[i][0])
-            #Plant.objects.create()
-            #PlantMoistLvl.objects.create()
+            print(moist_to_plant_dataset[i][0])
+
+            try:
+                plant = Plant.objects.get(name=moist_to_plant_dataset[i][0])
+            except Plant.DoesNotExist:
+                plant = Plant.objects.create(name=moist_to_plant_dataset[i][0])
+
+            try:
+                exist = PlantMoistLvl.objects.get(plant_id=plant)
+                PlantMoistLvl.objects.filter(plant_id=plant).update(min_moist_lvl=moist_to_plant_dataset[i][1], max_moist_lvl=moist_to_plant_dataset[i][2])
+            except PlantMoistLvl.DoesNotExist:
+                PlantMoistLvl.objects.create(plant_id=plant, min_moist_lvl=moist_to_plant_dataset[i][1], max_moist_lvl=moist_to_plant_dataset[i][2])
 
     ph_to_plant_dataset = []
     for i in range(ph_excel_dataset.nrows) :
     
-        ph_to_npk_dataset.append([])
+        ph_to_plant_dataset.append([])
     
         for j in range(ph_excel_dataset.ncols) :
         
-            ph_to_npk_dataset[i].append(ph_excel_dataset.cell_value(i,j))
+            ph_to_plant_dataset[i].append(ph_excel_dataset.cell_value(i,j))
 
         if i > 0 :
-            print(ph_to_npk_dataset[i][0])
-            #PlantPh.objects.create()
-            
+            print(ph_to_plant_dataset[i][0])
+             
             try:
-                plant = Plant.objects.get(name=ph_to_npk_dataset[i][0])
+                plant = Plant.objects.get(name=ph_to_plant_dataset[i][0])
             except Plant.DoesNotExist:
-                plant = None
-            #if plant :
-                #continue
-            #else :
-                #Plant.objects.create()
+                plant = Plant.objects.create(name=ph_to_plant_dataset[i][0])
+
+            try:
+                exist = PlantPh.objects.get(plant_id=plant)
+                PlantPh.objects.filter(plant_id=plant).update(min_ph=ph_to_plant_dataset[i][1], max_ph=ph_to_plant_dataset[i][2])
+            except PlantPh.DoesNotExist:
+                PlantPh.objects.create(plant_id=plant, min_ph=ph_to_plant_dataset[i][1], max_ph=ph_to_plant_dataset[i][2])
 
 
     return HttpResponse('')

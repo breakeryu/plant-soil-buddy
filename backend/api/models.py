@@ -35,7 +35,7 @@ class PlantMoistLvl(models.Model):
         (HIGH, 'High'),
         (VERY_HIGH, 'Very High'),
     )
-    name = models.CharField(max_length=100)
+    plant_id = models.ForeignKey(Plant, on_delete=models.CASCADE, default=0)
     min_moist_lvl = models.CharField(
         max_length=10,
         choices= LEVEL_CHOICES,
@@ -47,14 +47,16 @@ class PlantMoistLvl(models.Model):
         default= VERY_HIGH
     )
     def __str__(self):
-        return self.name
+        plant = Plant.objects.get(pk=self.plant_id.pk)
+        return plant.name
 
 class PlantPh(models.Model):
-    name = models.CharField(max_length=100)
+    plant_id = models.ForeignKey(Plant, on_delete=models.CASCADE, default=0)
     min_ph = models.DecimalField(max_digits=10, decimal_places=2, default=0,validators=[MaxValueValidator(14), MinValueValidator(0)])
     max_ph = models.DecimalField(max_digits=10, decimal_places=2, default=14,validators=[MaxValueValidator(14), MinValueValidator(0)])
     def __str__(self):
-        return self.name
+        plant = Plant.objects.get(pk=self.plant_id.pk)
+        return plant.name
 
 class NpkPerPh(models.Model):
     LOW = 'low'
