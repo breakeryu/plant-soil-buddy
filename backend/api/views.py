@@ -551,7 +551,7 @@ def get_recommended_plants(request):
 
     cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
 
-
+    
 
     good_data_moist = []
     good_data_acidity = []
@@ -572,7 +572,56 @@ def get_recommended_plants(request):
     plants_list = []
 
     #Need Rules
-    
+
+    #valid_moist(PL, M) :- plant(PL), plant_moist_lvl(PL, MINL, MAXL), 
+    #           moist_min_range(MIN, MINL), M >= MIN, 
+    #           moist_max_range(MAX, MAXL), M =< MAX.
+
+    #valid_acid(PL, A) :- plant(PL), plant_ph(PL, MIN, MAX), A >= MIN, A =< MAX.
+
+    #recommend_plant(PL, M, A) :- plant(PL), valid_moist(PL, M), valid_acid(PL, A).
+
+
+
+    #nutrient_level(A, N, P, K) :- ph_NPK(MIN, MAX, N, P, K), A >= MIN, A =< MAX.
+
+    #recommend_nutrient(A, NX, PX, KX) :- nutrient_level(A, N, P, K),
+    #    opposite(N, NX), opposite(P, PX), opposite(K, KX).
+
+
+
+    #recommend(PL, NX, PX, KX, M, A) :- plant(PL),
+    #    recommend_plant(PL, M, A),
+    #    recommend_nutrient(A, NX, PX, KX).
+
+
+
+    #recommend_soil_type(PL, S) :- plant(PL), soil_type(S),
+    #    plant_moist_lvl(PL, MINL, MAXL), moist_lvl(MIN, MINL), moist_lvl(MAX, MAXL),
+    #    soil_good_for_moist(S, MINS, MAXS), MINS =< MIN, MAXS >= MAX.
+
+
+    #Configs Facts
+
+    #moist_min_range(0,very_low).
+    #moist_min_range(21,low).
+    #moist_min_range(41,mid).
+    #moist_min_range(61,high).
+    #moist_min_range(81,very_high).
+
+    #moist_max_range(20,very_low).
+    #moist_max_range(40,low).
+    #moist_max_range(60,mid).
+    #moist_max_range(80,high).
+    #moist_max_range(100,very_high).
+
+    #opposite(low, high).
+    #opposite(mid, mid).
+    #opposite(high, low).
+
+
+
+    #Scrap this
     #for plant in plants_set :
     #    if good_data_min[0] > plant.min_moist and good_data_max[0] < plant.max_moist and good_data_min[1] > plant.min_ph and good_data_max[1] < plant.max_ph and good_data_min[2] > plant.min_fertility and good_data_max[2] < plant.max_fertility :
     #        plants_list.append({'id':plant.id, 'name':plant.name})
