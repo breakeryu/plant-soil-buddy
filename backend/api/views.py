@@ -620,6 +620,8 @@ def get_recommended_plants(request):
     #opposite(high, low).
 
 
+    #also must record database
+
 
     #Scrap this
     #for plant in plants_set :
