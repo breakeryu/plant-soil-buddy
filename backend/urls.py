@@ -9,7 +9,6 @@ from django.urls import path, include
 from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 
-
 from .api.views import *
 
 router = routers.DefaultRouter()
