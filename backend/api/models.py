@@ -17,11 +17,6 @@ class MessageSerializer(serializers.HyperlinkedModelSerializer):
 class User(auth.models.User):
     user_ptr = None
 
-class Plant(models.Model):
-    name = models.CharField(max_length=100)
-    def __str__(self):
-        return self.name
-
 class PlantMoistLvl(models.Model):
     VERY_LOW = 'very_low'
     LOW = 'low'
@@ -35,7 +30,7 @@ class PlantMoistLvl(models.Model):
         (HIGH, 'High'),
         (VERY_HIGH, 'Very High'),
     )
-    plant_id = models.ForeignKey(Plant, on_delete=models.CASCADE, default=0)
+    plant_name = models.CharField(max_length=100, default='')
     min_moist_lvl = models.CharField(
         max_length=10,
         choices= LEVEL_CHOICES,
@@ -47,16 +42,23 @@ class PlantMoistLvl(models.Model):
         default= VERY_HIGH
     )
     def __str__(self):
-        plant = Plant.objects.get(pk=self.plant_id.pk)
-        return plant.name
+        return self.plant_name
 
 class PlantPh(models.Model):
-    plant_id = models.ForeignKey(Plant, on_delete=models.CASCADE, default=0)
+    plant_name = models.CharField(max_length=100, default='')
     min_ph = models.DecimalField(max_digits=10, decimal_places=2, default=0,validators=[MaxValueValidator(14), MinValueValidator(0)])
     max_ph = models.DecimalField(max_digits=10, decimal_places=2, default=14,validators=[MaxValueValidator(14), MinValueValidator(0)])
     def __str__(self):
-        plant = Plant.objects.get(pk=self.plant_id.pk)
-        return plant.name
+        return self.plant_name
+
+class Plant(models.Model):
+    moist_data = models.ForeignKey(PlantMoistLvl, on_delete=models.CASCADE, default=0)
+    ph_data = models.ForeignKey(PlantPh, on_delete=models.CASCADE, default=0)
+    def __str__(self):
+        data = PlantMoistLvl.objects.get(pk=self.moist_data.pk)
+        return data.plant_name
+
+
 
 class NpkPerPh(models.Model):
     LOW = 'low'
@@ -67,7 +69,8 @@ class NpkPerPh(models.Model):
         (MID, 'Medium'),
         (HIGH, 'High'),
     )
-    ph = models.DecimalField(max_digits=10, decimal_places=2,validators=[MaxValueValidator(14), MinValueValidator(0)])
+    min_ph = models.DecimalField(max_digits=10, decimal_places=2,validators=[MaxValueValidator(14), MinValueValidator(0)], default=0)
+    max_ph = models.DecimalField(max_digits=10, decimal_places=2,validators=[MaxValueValidator(14), MinValueValidator(0)], default=0)
     n_lvl = models.CharField(
         max_length=10,
         choices= LEVEL_CHOICES
