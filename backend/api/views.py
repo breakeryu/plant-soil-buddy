@@ -567,9 +567,38 @@ def get_recommended_plants(request):
 
     good_data_min = [min(good_data_moist), min(good_data_acidity)]
     good_data_max = [max(good_data_moist), max(good_data_acidity)]
+    
+    avg_moist = (min(good_data_moist)+max(good_data_moist))/2
+    avg_acidity = float((min(good_data_acidity)+max(good_data_acidity))/2)
 
-    plants_set = Plant.objects.all()
+    plants = Plant.objects.all()
     plants_list = []
+
+    #Configs Facts
+
+    #moist_min_range(0,very_low).
+    #moist_min_range(21,low).
+    #moist_min_range(41,mid).
+    #moist_min_range(61,high).
+    #moist_min_range(81,very_high).
+
+    min_moist_config = {'very_low':0,'low',20,'mid',40,'high',60,'very_high':80}
+
+    #moist_max_range(20,very_low).
+    #moist_max_range(40,low).
+    #moist_max_range(60,mid).
+    #moist_max_range(80,high).
+    #moist_max_range(100,very_high).
+
+    max_moist_config = {'very_low':21,'low',41,'mid',61,'high',81,'very_high':100}
+
+    #opposite(low, high).
+    #opposite(mid, mid).
+    #opposite(high, low).
+
+    opposite_config = {'low':'high', 'mid':'mid', 'high':'low'}
+
+    
 
     #Need Rules
 
@@ -577,10 +606,31 @@ def get_recommended_plants(request):
     #           moist_min_range(MIN, MINL), M >= MIN, 
     #           moist_max_range(MAX, MAXL), M =< MAX.
 
+    valid_moist = []
+
+    for plant in plants :
+        minimum = min_moist_config[plant.moist_data.min_moist_level]
+        maximum = max_moist_config[plant.moist_data.max_moist_level]
+        if avg_moist >= minimum and avg_moist <= maximum :
+            valid_moist.append(plant)
+    
+
     #valid_acid(PL, A) :- plant(PL), plant_ph(PL, MIN, MAX), A >= MIN, A =< MAX.
 
+    valid_ph = []
+    
+    for plant in plants :
+        minimum = float(plant.ph_data.min_ph)
+        maximum = float(plant.ph_data.max_ph)
+        if avg_acidity >= minimum and avg_acidity <= maximum :
+            valid_ph.append(plant)
+
+    
     #recommend_plant(PL, M, A) :- plant(PL), valid_moist(PL, M), valid_acid(PL, A).
 
+    recommended_plants = list(set(valid_moist) & set(valid_ph))
+
+    print(recommended_plants)
 
 
     #nutrient_level(A, N, P, K) :- ph_NPK(MIN, MAX, N, P, K), A >= MIN, A =< MAX.
@@ -599,25 +649,6 @@ def get_recommended_plants(request):
     #recommend_soil_type(PL, S) :- plant(PL), soil_type(S),
     #    plant_moist_lvl(PL, MINL, MAXL), moist_lvl(MIN, MINL), moist_lvl(MAX, MAXL),
     #    soil_good_for_moist(S, MINS, MAXS), MINS =< MIN, MAXS >= MAX.
-
-
-    #Configs Facts
-
-    #moist_min_range(0,very_low).
-    #moist_min_range(21,low).
-    #moist_min_range(41,mid).
-    #moist_min_range(61,high).
-    #moist_min_range(81,very_high).
-
-    #moist_max_range(20,very_low).
-    #moist_max_range(40,low).
-    #moist_max_range(60,mid).
-    #moist_max_range(80,high).
-    #moist_max_range(100,very_high).
-
-    #opposite(low, high).
-    #opposite(mid, mid).
-    #opposite(high, low).
 
 
     #also must record database
@@ -703,10 +734,10 @@ def push_ph_to_npk_into_database(request):
             print(ph_to_npk_dataset[i][0])
 
             try:
-                exist = NpkPerPh.objects.get(ph=ph_to_npk_dataset[i][0])
-                NpkPerPh.objects.filter(ph=ph_to_npk_dataset[i][0]).update(n_lvl=ph_to_npk_dataset[i][1], p_lvl=ph_to_npk_dataset[i][2], k_lvl=ph_to_npk_dataset[i][3])
+                exist = NpkPerPh.objects.get(min_ph=ph_to_npk_dataset[i][0], max_ph=ph_to_npk_dataset[i][1])
+                NpkPerPh.objects.filter(min_ph=ph_to_npk_dataset[i][0], max_ph=ph_to_npk_dataset[i][1]).update(n_lvl=ph_to_npk_dataset[i][2], p_lvl=ph_to_npk_dataset[i][3], k_lvl=ph_to_npk_dataset[i][4])
             except NpkPerPh.DoesNotExist:
-                NpkPerPh.objects.create(ph=ph_to_npk_dataset[i][0], n_lvl=ph_to_npk_dataset[i][1], p_lvl=ph_to_npk_dataset[i][2], k_lvl=ph_to_npk_dataset[i][3])
+                NpkPerPh.objects.create(min_ph=ph_to_npk_dataset[i][0], max_ph=ph_to_npk_dataset[i][1], n_lvl=ph_to_npk_dataset[i][2], p_lvl=ph_to_npk_dataset[i][3], k_lvl=ph_to_npk_dataset[i][4])
 
     return HttpResponse('')
 
