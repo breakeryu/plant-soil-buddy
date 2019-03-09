@@ -84,7 +84,7 @@ class NpkPerPh(models.Model):
         choices= LEVEL_CHOICES
     )
     def __str__(self):
-        return str(self.ph)
+        return str(self.min_ph) +' - '+str(self.max_ph)
 
 class SoilType(models.Model):
     VERY_LOW = 'very_low'

@@ -635,12 +635,26 @@ def get_recommended_plants(request):
 
     #nutrient_level(A, N, P, K) :- ph_NPK(MIN, MAX, N, P, K), A >= MIN, A =< MAX.
 
+    dataset = NpkPerPh.objects.all()
+    n_lvl = 'low'
+    p_lvl = 'low'
+    k_lvl = 'low'
 
-
+    for data in dataset :
+        minimum = float(data.min_ph)
+        maximum = float(data.max_ph)
+        if avg_acidity >= minimum and avg_acidity <= maximum :
+            n_lvl = data.n_lvl
+            p_lvl = data.p_lvl
+            k_lvl = data.k_lvl
+            break
 
     #recommend_nutrient(A, NX, PX, KX) :- nutrient_level(A, N, P, K),
     #    opposite(N, NX), opposite(P, PX), opposite(K, KX).
 
+    recommend_n_lvl = opposite_config[n_lvl]
+    recommend_p_lvl = opposite_config[p_lvl]
+    recommend_k_lvl = opposite_config[k_lvl]
 
 
     #recommend(PL, NX, PX, KX, M, A) :- plant(PL),
