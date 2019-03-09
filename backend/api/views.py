@@ -540,7 +540,7 @@ def get_all_values_as_scatter(request):
 
 
 @csrf_exempt
-def get_recommended_plants(request):
+def get_good_moist_ph_values(request):
     data = json.loads(request.body)
 
     fresh_numpy_data = get_fresh_numpy_data_of_soil_profile(data['soil_profile_id'])
@@ -550,8 +550,6 @@ def get_recommended_plants(request):
         return JsonResponse([], safe=False)
 
     cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
-
-    
 
     good_data_moist = []
     good_data_acidity = []
@@ -564,12 +562,18 @@ def get_recommended_plants(request):
             good_data_acidity.append(data_row[1])
             #good_data_fertility.append(data_row[2])
         i += 1
-
-    good_data_min = [min(good_data_moist), min(good_data_acidity)]
-    good_data_max = [max(good_data_moist), max(good_data_acidity)]
     
     avg_moist = (min(good_data_moist)+max(good_data_moist))/2
     avg_acidity = float((min(good_data_acidity)+max(good_data_acidity))/2)
+
+    return JsonResponse({'avg_good_moist':avg_moist, 'avg_good_acidity':avg_acidity}, safe=False)
+
+@csrf_exempt
+def get_recommend_plants(request):
+    data = json.loads(request.body)
+
+    avg_moist = float(data['good_avg_moist'])
+    avg_acidity = float(data['good_avg_acidity'])
 
     plants = Plant.objects.all()
     plants_list = []
@@ -661,7 +665,8 @@ def get_recommended_plants(request):
     #    recommend_plant(PL, M, A),
     #    recommend_nutrient(A, NX, PX, KX).
 
-
+    for plant in recommended_plants :
+        plants_list.append({'id':plant.id, 'name':plant.moist_data.plant_name})
 
     #recommend_soil_type(PL, S) :- plant(PL), soil_type(S),
     #    plant_moist_lvl(PL, MINL, MAXL), moist_lvl(MIN, MINL), moist_lvl(MAX, MAXL),
@@ -670,11 +675,8 @@ def get_recommended_plants(request):
 
     #also must record database
 
-
-    #Scrap this
-    #for plant in plants_set :
-    #    if good_data_min[0] > plant.min_moist and good_data_max[0] < plant.max_moist and good_data_min[1] > plant.min_ph and good_data_max[1] < plant.max_ph and good_data_min[2] > plant.min_fertility and good_data_max[2] < plant.max_fertility :
-    #        plants_list.append({'id':plant.id, 'name':plant.name})
+    #The Json Response is only limited to plant recommendation, ignores the soil and NPK
+    #The Json Response will return recommend_id rather than just plant list
 
     return JsonResponse(plants_list, safe=False)
 

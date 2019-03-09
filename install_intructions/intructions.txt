@@ -1,19 +1,33 @@
 
-=Install python libraries to run the web application backend=
+=Install python libraries to run the web applicationbackend=
+
 pip uninstall scipy
 pip install -r requirements.txt
 
+
+
 =Install npm modules to run web application frontend=
+
+npm install
 yarn install
 
 
+
+
 =Update frontend using=
+
 yarn build
 
+
+
 =Update database using=
+
 python manage.py makemigrations
 python manage.py migrate
 
+
+
 =Run using=
+
 python manage.py runserver
 

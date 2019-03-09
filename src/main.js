@@ -36,7 +36,7 @@ const store = new Vuex.Store({
     selected_soil_profile: 0 //soil_id
   },
   mutations: {
-  	setAuthUser(state, {
+    setAuthUser(state, {
       authUser,
       isAuthenticated
     }) {
@@ -63,7 +63,7 @@ const store = new Vuex.Store({
             this.commit('updateToken', response.data.token);
           })
         .catch((error)=>{
-            console.log(error);
+             //console.log(error);
           })
     },
     refreshToken() {
@@ -75,15 +75,15 @@ const store = new Vuex.Store({
             this.commit('updateToken', response.data.token)
           })
         .catch((error)=>{
-            console.log(error)
+            //console.log(error)
           })
     },
-	 inspectToken(){
+    inspectToken(){
       const token = this.state.jwt;
       if(token){
         const decoded = jwt_decode(token);
         const exp = decoded.exp
-        const orig_iat = decode.orig_iat
+        const orig_iat = decoded.orig_iat
         if(exp - (Date.now()/1000) < 1800 && (Date.now()/1000) - orig_iat < 628200){
           this.dispatch('refreshToken')
         } else if (exp -(Date.now()/1000) < 1800){
@@ -93,8 +93,8 @@ const store = new Vuex.Store({
         }
       }
     }
-  	}
-  })
+  }
+})
 
 const vue = new Vue({
   router,
