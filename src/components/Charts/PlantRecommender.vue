@@ -36,7 +36,8 @@ export default {
               this.good_avg_moist = parseFloat(response.data['avg_good_moist'])
               this.good_avg_acidity = parseFloat(response.data['avg_good_acidity'])
 
-              axios.post("/get_recommend_plants", {
+              axios.post("/get_recommendations", {
+                'soil_profile_id': selected,
                 'good_avg_moist': this.good_avg_moist,
                 'good_avg_acidity': this.good_avg_acidity
               })

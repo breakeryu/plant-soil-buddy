@@ -138,8 +138,8 @@ class Recommendation(models.Model):
         (HIGH, 'High'),
     )
     soil_id = models.ForeignKey(SoilProfile, on_delete=models.CASCADE)
-    recco_soil_type = models.ForeignKey(SoilType, on_delete=models.CASCADE)
     npk_match_ph = models.ForeignKey(NpkPerPh, on_delete=models.CASCADE)
+    recco_time = models.DateTimeField(default=datetime.now, blank=True)
     recco_n_lvl = models.CharField(
         max_length=10,
         choices= LEVEL_CHOICES
@@ -159,8 +159,9 @@ class Recommendation(models.Model):
 class RecommendedPlant(models.Model):
     recco_id = models.ForeignKey(Recommendation, on_delete=models.CASCADE)
     plant_id = models.ForeignKey(Plant, on_delete=models.CASCADE)
+    recco_soil_type = models.ForeignKey(SoilType, on_delete=models.CASCADE, blank=True)
     def __str__(self):
         plant = Plant.objects.get(pk=self.plant_id.pk)
         recco = Recommendation.objects.get(pk=self.recco_id.pk)
-        soil = SoilProfile.objects.get(pk=self.recco.soil_id.pk)
-        return plant.name + ", " + soil.name
+        soil = SoilProfile.objects.get(pk=recco.soil_id.pk)
+        return plant.moist_data.plant_name + ", " + soil.name

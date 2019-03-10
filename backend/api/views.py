@@ -568,12 +568,19 @@ def get_good_moist_ph_values(request):
 
     return JsonResponse({'avg_good_moist':avg_moist, 'avg_good_acidity':avg_acidity}, safe=False)
 
+#recommend(PL, NX, PX, KX, S, M, A) :- plant(PL),
+    #   recommend_plant(PL, M, A),
+    #   recommend_nutrient(A, NX, PX, KX),
+    #   recommend_soil_type(PL, S).
+
 @csrf_exempt
-def get_recommend_plants(request):
+def get_recommendations(request):
     data = json.loads(request.body)
 
     avg_moist = float(data['good_avg_moist'])
     avg_acidity = float(data['good_avg_acidity'])
+
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
     plants = Plant.objects.all()
     plants_list = []
@@ -602,7 +609,13 @@ def get_recommend_plants(request):
 
     opposite_config = {'low':'high', 'mid':'mid', 'high':'low'}
 
-    
+    #moist_lvl(0, very_low).
+    #moist_lvl(1, low).
+    #moist_lvl(2, mid).
+    #moist_lvl(3, high).
+    #moist_lvl(4, very_high).
+
+    moist_lvl_id_config = {'very_low':0,'low':1,'mid':2,'high':3,'very_high':4}
 
     #Need Rules
 
@@ -640,6 +653,7 @@ def get_recommend_plants(request):
     #nutrient_level(A, N, P, K) :- ph_NPK(MIN, MAX, N, P, K), A >= MIN, A =< MAX.
 
     dataset = NpkPerPh.objects.all()
+    npk_data = None
     n_lvl = 'low'
     p_lvl = 'low'
     k_lvl = 'low'
@@ -651,6 +665,7 @@ def get_recommend_plants(request):
             n_lvl = data.n_lvl
             p_lvl = data.p_lvl
             k_lvl = data.k_lvl
+            npk_data = data
             break
 
     #recommend_nutrient(A, NX, PX, KX) :- nutrient_level(A, N, P, K),
@@ -660,25 +675,58 @@ def get_recommend_plants(request):
     recommend_p_lvl = opposite_config[p_lvl]
     recommend_k_lvl = opposite_config[k_lvl]
 
+    
 
-    #recommend(PL, NX, PX, KX, M, A) :- plant(PL),
-    #    recommend_plant(PL, M, A),
-    #    recommend_nutrient(A, NX, PX, KX).
+
+    #recommend(PL, NX, PX, KX, S, M, A) :- plant(PL),
+    #   recommend_plant(PL, M, A),
+    #   recommend_nutrient(A, NX, PX, KX),
+    #   recommend_soil_type(PL, S).
+
+    soils_set = SoilType.objects.all()
+    
+    recommendation_obj = Recommendation.objects.create(soil_id=soil_profile_on_use, npk_match_ph=npk_data, recco_time=get_current_time(), recco_n_lvl=recommend_n_lvl, recco_p_lvl=recommend_p_lvl, recco_k_lvl=recommend_k_lvl)
 
     for plant in recommended_plants :
-        plants_list.append({'id':plant.id, 'name':plant.moist_data.plant_name})
+        #plants_list.append({'id':plant.id, 'name':plant.moist_data.plant_name})
 
-    #recommend_soil_type(PL, S) :- plant(PL), soil_type(S),
-    #    plant_moist_lvl(PL, MINL, MAXL), moist_lvl(MIN, MINL), moist_lvl(MAX, MAXL),
-    #    soil_good_for_moist(S, MINS, MAXS), MINS =< MIN, MAXS >= MAX.
+        #recommend_soil_type(PL, S) :- plant(PL), soil_type(S),
+        #    plant_moist_lvl(PL, MINL, MAXL), moist_lvl(MIN, MINL), moist_lvl(MAX, MAXL),
+        #    soil_good_for_moist(S, MINS, MAXS), MINS =< MIN, MAXS >= MAX.
 
+        for soil in soils_set :
+            soil_min_id = moist_lvl_id_config[soil.good_for_min_moist_lvl]
+            soil_max_id = moist_lvl_id_config[soil.good_for_max_moist_lvl]
+            plant_min_id = moist_lvl_id_config[plant.moist_data.min_moist_lvl]
+            plant_max_id = moist_lvl_id_config[plant.moist_data.max_moist_lvl]
+            if plant_min_id >= soil_min_id  and plant_max_id <= soil_max_id :
+                soil_data = soil
+
+        RecommendedPlant.objects.create(recco_id=recommendation_obj, plant_id=plant, recco_soil_type_id=soil_data.id)
 
     #also must record database
 
     #The Json Response is only limited to plant recommendation, ignores the soil and NPK
     #The Json Response will return recommend_id rather than just plant list
-
+    
     return JsonResponse(plants_list, safe=False)
+
+
+@csrf_exempt
+def load_latest_plants_recommendation(request):
+    data = json.loads(request.body)
+
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+
+    return JsonResponse([], safe=False)
+
+@csrf_exempt
+def load_latest_npk_recommendation(request):
+    data = json.loads(request.body)
+
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+
+    return JsonResponse([], safe=False)
 
 
 @csrf_exempt

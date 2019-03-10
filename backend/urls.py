@@ -52,7 +52,7 @@ urlpatterns = [
     path('get_average_acidity', get_average_acidity),
 
     path('get_good_moist_ph_values', get_good_moist_ph_values),
-    path('get_recommend_plants', get_recommend_plants),
+    path('get_recommendations', get_recommendations),
 
     path('get_connection_status', get_connection_status),
 
