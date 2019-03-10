@@ -583,7 +583,6 @@ def get_recommendations(request):
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
     plants = Plant.objects.all()
-    plants_list = []
 
     #Configs Facts
 
@@ -654,9 +653,9 @@ def get_recommendations(request):
 
     dataset = NpkPerPh.objects.all()
     npk_data = None
-    n_lvl = 'low'
-    p_lvl = 'low'
-    k_lvl = 'low'
+    n_lvl = 'none'
+    p_lvl = 'none'
+    k_lvl = 'none'
 
     for data in dataset :
         minimum = float(data.min_ph)
@@ -704,12 +703,8 @@ def get_recommendations(request):
 
         RecommendedPlant.objects.create(recco_id=recommendation_obj, plant_id=plant, recco_soil_type_id=soil_data.id)
 
-    #also must record database
-
-    #The Json Response is only limited to plant recommendation, ignores the soil and NPK
-    #The Json Response will return recommend_id rather than just plant list
     
-    return JsonResponse(plants_list, safe=False)
+    return JsonResponse([], safe=False)
 
 
 @csrf_exempt
@@ -718,7 +713,21 @@ def load_latest_plants_recommendation(request):
 
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
-    return JsonResponse([], safe=False)
+    #Get latest recommendation for the soil profile
+    recommendations = Recommendation.objects.filter(soil_id=soil_profile_on_use)
+    if len(recommendations) <= 0:
+        return JsonResponse([], safe=False)
+    recommendation = recommendations[len(recommendations)-1]
+
+    recommended_plants = RecommendedPlant.objects.filter(recco_id=recommendation)
+
+    plants_list = []
+
+    for recommended_plant in recommended_plants :
+        soil_type = SoilType.objects.get(pk=recommended_plant.recco_soil_type_id)
+        plants_list.append({'id':recommended_plant.plant_id.id, 'name':recommended_plant.plant_id.moist_data.plant_name, 'soil_type':soil_type.name})
+
+    return JsonResponse(plants_list, safe=False)
 
 @csrf_exempt
 def load_latest_npk_recommendation(request):
@@ -726,7 +735,18 @@ def load_latest_npk_recommendation(request):
 
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
-    return JsonResponse([], safe=False)
+    #Get latest recommendation for the soil profile
+    recommendations = Recommendation.objects.filter(soil_id=soil_profile_on_use)
+    if len(recommendations) <= 0:
+        return JsonResponse({'n_lvl':'none', 'p_lvl':'none', 'k_lvl':'none'}, safe=False)
+    recommendation = recommendations[len(recommendations)-1]
+
+    n_lvl = recommendation.recco_n_lvl
+    p_lvl = recommendation.recco_p_lvl
+    k_lvl = recommendation.recco_k_lvl
+        
+
+    return JsonResponse({'n_lvl':n_lvl, 'p_lvl':p_lvl, 'k_lvl':k_lvl}, safe=False)
 
 
 @csrf_exempt

@@ -160,7 +160,7 @@ export default {
       }
 
       if (this.timer_running) {
-        this.$refs.plant_rec.getData(this.selected)
+        this.$refs.plant_rec.getData(this.selected) //Where the fun begins
         this.$refs.all_ch.getData(this.selected)
         this.stopSensor()
         this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start Sensors" for the best accuracy of plant recommendation.'
@@ -216,7 +216,7 @@ export default {
       //this.$refs.fertility_ch.getData(selected)
       this.$store.state.selected_soil_profile = selected
       
-      this.$refs.plant_rec.getData(selected)
+      this.$refs.plant_rec.getDataWithoutUpdating(selected)
       
     },
     connection_timer_idle_enable() {

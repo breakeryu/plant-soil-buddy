@@ -53,6 +53,8 @@ urlpatterns = [
 
     path('get_good_moist_ph_values', get_good_moist_ph_values),
     path('get_recommendations', get_recommendations),
+    path('load_latest_plants_recommendation', load_latest_plants_recommendation),
+    path('load_latest_npk_recommendation', load_latest_npk_recommendation),
 
     path('get_connection_status', get_connection_status),
 
