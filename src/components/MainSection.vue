@@ -160,9 +160,9 @@ export default {
       }
 
       if (this.timer_running) {
+        this.stopSensor()
         this.$refs.plant_rec.getData(this.selected) //Where the fun begins
         this.$refs.all_ch.getData(this.selected)
-        this.stopSensor()
         this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start Sensors" for the best accuracy of plant recommendation.'
         this.connection_timer_idle_enable()
       } else {

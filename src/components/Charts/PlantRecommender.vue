@@ -72,6 +72,7 @@ export default {
                       } else {
                         this.empty = false
                       }
+                      this.showing_results = true
                     })
       
       axios.post("/load_latest_npk_recommendation", {
@@ -84,12 +85,15 @@ export default {
 
             })
             
-      this.showing_results = true
+      
     },
     reset() {
       this.showing_results = false
       this.plants_list = []
       this.empty = true
+      this.n_lvl = 'none'
+      this.p_lvl = 'none'
+      this.k_lvl = 'none'
     }
   },
   mounted(){
