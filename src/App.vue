@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <img src='@/assets/logo-plant-soil-buddy.png'>
+    <img id="logo" src='@/assets/logo-plant-soil-buddy.png'>
     <!--
     <div id="nav">
      <router-link :to="{ name: 'home' }">Vue</router-link> |
@@ -59,6 +59,9 @@ export default {
 <style>
 #title {
   font-size: 100px;
+}
+#logo {
+  max-width: 100%
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
