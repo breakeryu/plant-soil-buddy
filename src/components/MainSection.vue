@@ -1,43 +1,57 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }} {{ username }}!</h1>  
-
-    <h2> Device Status: <a v-bind:style="{ color: status_color }">{{ status_msg }}</a></h2>
-    <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager" :disabled="timer_running"></h3>
-    <button class="normal-btn submit-btn" v-on:click="recheckConnection" :disabled="timer_running">Re-check Connection</button><br>
-    <p>
+    <h1 id="greeting">{{ msg }} {{ username }}!</h1>  
       <hr>
 
+      <h1><u>Soil Data Record Management</u></h1> 
+      <br>
       <h3> Soil Profile : <select v-model="selected" v-on:change="reloadGraph(selected)" :disabled="timer_running">
         <option v-for="soil_profile in soil_profiles" v-bind:value="soil_profile.id"> {{ soil_profile.name }}, at {{ soil_profile.location }}</option>
       </select> </h3>
-      <h5>This is the storage of the recorded soil quality data specific to each soil chunk you record.</h5>
-      <h5>Do not record more than 2 different soil chunks for one profile, otherwise the plant recommendation will be inaccurate.</h5>
+      
       <p>
       <button class="normal-btn normal-btn soil-btn" v-on:click="soilProfileAdd" :disabled="timer_running">Add</button>
       <button class="normal-btn normal-btn soil-btn" v-on:click="soilProfileEdit" :disabled="timer_running || selected == 0">Edit</button>
       <button class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileClear" :disabled="timer_running || selected == 0">Clear</button>
       <button class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileDelete" :disabled="timer_running || selected == 0">Delete</button> 
     </p>
+<h4 class="tooltip"><u>What is this?</u>
+      <span class="tooltiptext"><a>This is the storage of the recorded soil quality data specific to each soil chunk you record. However, do not record more than 2 different soil chunks for one profile, otherwise the plant recommendation will be inaccurate.</a></span>
+      </h4>
+    
+      <hr>
+      <h1><u>Sensor Recording Monitor</u></h1> 
+      <br>
+      <h2> <u>Device Status:</u> <a v-bind:style="{ color: status_color }">{{ status_msg }}</a></h2>
+    <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager" :disabled="timer_running"></h3>
+    <button class="normal-btn submit-btn" v-on:click="recheckConnection" :disabled="timer_running">Re-check Connection</button><br>
 
-      <hr><br><br>
+    <h2><u>Main Control</u></h2>
+    <p>
     <button id="trig-btn" class="normal-btn" v-on:click="triggerSensor" v-bind:class="{ stop: timer_running }" :disabled='status_msg != "Connected" || selected == 0'>{{ btn_text }}</button>  
-  </p>
     <h4> {{ btn_note }} </h4>
+  </p>
+  
+  <br>
+  <h2><u>Current Sensor Records</u></h2>
+    <h3>Moist: {{ current_moist }}</h3>
+    <h3>Acidity: {{ current_acidity }}</h3>
+    <br>
     <h4> Record snap time : {{ time }} </h4>
 
     <br><hr>
-
+    <h1><u>Recommendation</u></h1>
+    <br>
     <plant-recommender ref="plant_rec"></plant-recommender>
+
+    <h2><u>Data Display</u></h2>
 
     <!--<all-chart ref="all_ch"></all-chart>-->
 
     <br><hr>
-	<moist-chart ref="moist_ch"></moist-chart><hr>
-  <acidity-chart ref="acidity_ch"></acidity-chart><hr>
   <!--<fertility-chart ref="fertility_ch"></fertility-chart><hr>-->
-  
-  <br><br>
+  <h1><u>User Management</u></h1>
+  <br>
     <button class="normal-btn exit-btn" v-on:click="doLogout">Logout</button><br>
   </div>
 </template>
@@ -46,17 +60,16 @@
 import axios from 'axios'
 import router from '@/router'
 //import AllChart from '@/components/Charts/AllChart'
-import MoistChart from '@/components/Charts/MoistChart'
-import AcidityChart from '@/components/Charts/AcidityChart'
-//import FertilityChart from '@/components/Charts/FertilityChart'
+//import MoistChart from '@/components/Charts/MoistChart'
+//import AcidityChart from '@/components/Charts/AcidityChart'
 import PlantRecommender from '@/components/Charts/PlantRecommender'
 
 export default {
   name: 'Welcome',
   components: {
     //AllChart,
-    MoistChart,
-    AcidityChart,
+    //MoistChart,
+    //AcidityChart,
     //FertilityChart,
     PlantRecommender
   },
@@ -75,7 +88,9 @@ export default {
       soil_profiles : [],
       selected: 0,
       timer_connection: null,
-      time_connection: 4
+      time_connection: 4,
+      current_moist: '-',
+      current_acidity: '-'
     }
   },
   methods: {
@@ -105,9 +120,21 @@ export default {
             .then((response) => {
 
               if (response.data > 0) {
-                  this.$refs.moist_ch.getData(this.selected)
-                  this.$refs.acidity_ch.getData(this.selected)
-                  //this.$refs.fertility_ch.getData(this.selected)
+                  //this.$refs.moist_ch.getData(this.selected)
+                  axios.get("/get_moist_as_value")
+                    .then((response) => {
+                      if (response.data >= 0)  {
+                        this.current_moist = response.data.toString()
+                      }
+                    })
+                  //this.$refs.acidity_ch.getData(this.selected)
+                  axios.get("/get_acidity_as_value")
+                    .then((response) => {
+                      if (response.data >= 0)  {
+                        this.current_acidity = response.data.toString()
+                      }
+                    })
+
                   this.$store.state.selected_soil_profile = this.selected
                 } else {
                   this.status_msg = "Disconnected"
@@ -117,9 +144,8 @@ export default {
             })
     },
     startSensor() {
-      this.$refs.moist_ch.triggerStartStop()
-      this.$refs.acidity_ch.triggerStartStop()
-      //this.$refs.fertility_ch.triggerStartStop()
+      //this.$refs.moist_ch.triggerStartStop()
+      //this.$refs.acidity_ch.triggerStartStop()
 
       this.snapReset()
       this.btn_text = "Stop Sensors"
@@ -137,9 +163,8 @@ export default {
        }
     },
     stopSensor() {
-      this.$refs.moist_ch.triggerStartStop()
-      this.$refs.acidity_ch.triggerStartStop()
-      //this.$refs.fertility_ch.triggerStartStop()
+      //this.$refs.moist_ch.triggerStartStop()
+      //this.$refs.acidity_ch.triggerStartStop()
 
       this.btn_text = "Start Sensors"
       this.timer_running = false
@@ -162,7 +187,7 @@ export default {
       if (this.timer_running) {
         this.stopSensor()
         this.$refs.plant_rec.getData(this.selected) //Where the fun begins
-        this.$refs.all_ch.getData(this.selected)
+        //this.$refs.all_ch.getData(this.selected)
         this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start Sensors" for the best accuracy of plant recommendation.'
         this.connection_timer_idle_enable()
       } else {
@@ -179,7 +204,7 @@ export default {
                   this.btn_note = 'Click "Stop Sensors" to see the result of the plant recommendation.'
 
                   this.$refs.plant_rec.reset()
-                  this.$refs.all_ch.reset()
+                  //this.$refs.all_ch.reset()
 
                 } else {
                   this.status_color = 'red'
@@ -211,9 +236,9 @@ export default {
     },
     reloadGraph(selected) {
       //this.$refs.all_ch.getData(selected)
-      this.$refs.moist_ch.getData(selected)
-      this.$refs.acidity_ch.getData(selected)
-      //this.$refs.fertility_ch.getData(selected)
+      //this.$refs.moist_ch.getData(selected)
+      //this.$refs.acidity_ch.getData(selected)
+
       this.$store.state.selected_soil_profile = selected
       
       this.$refs.plant_rec.getDataWithoutUpdating(selected)
@@ -259,8 +284,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#greeting {
+  color: #42b983; 
+}
 h1 {
-  color: #42b983;
+  color: #0900ff;
 }
 input {
   height: 25px;
@@ -310,5 +338,24 @@ select {
 }
 button:disabled, #trig-btn:disabled {
   background-color: grey;
+}
+.tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 1px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px;
+}
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }
 </style>

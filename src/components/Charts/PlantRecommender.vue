@@ -1,14 +1,16 @@
 <template>
   <div>
-    <h1>Recommended Plants</h1>
+    <h2><u>Recommended Plants and Soil Types</u></h2>
       <h3 v-for="plant in plants_list" :key="plant.id">= <a class="plant">{{ plant.name }}</a>, {{ plant.soil_type }} Soil =</h3>
       <h3 v-if="!showing_results">-Results are not shown while recording-</h3>
       <h3 id="none" v-if="empty && showing_results">-None-</h3>
+      <br>
+      <h2><u>Recommended NPK to analyze fertilizer</u></h2>
 
       <h3>N (Nitrogen) to fill : {{ n_lvl }}</h3>
       <h3>P (Phosphorus) to fill : {{ p_lvl }}</h3>
       <h3>K (Potassium) to fill : {{ k_lvl }}</h3>
-
+      <br>
   </div>
 </template>
 
