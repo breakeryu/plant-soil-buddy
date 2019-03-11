@@ -26,6 +26,12 @@
     <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager" :disabled="timer_running"></h3>
     <button class="normal-btn submit-btn" v-on:click="recheckConnection" :disabled="timer_running">Re-check Connection</button><br>
 
+    <h2><u>Current Sensor Records</u></h2>
+    <h3>Moist: {{ current_moist }}</h3>
+    <h3>Acidity: {{ current_acidity }}</h3>
+    <h4> Record snap time : {{ time }} </h4>
+    <br>
+
     <h2><u>Main Control</u></h2>
     <p>
     <button id="trig-btn" class="normal-btn" v-on:click="triggerSensor" v-bind:class="{ stop: timer_running }" :disabled='status_msg != "Connected" || selected == 0'>{{ btn_text }}</button>  
@@ -33,11 +39,8 @@
   </p>
   
   <br>
-  <h2><u>Current Sensor Records</u></h2>
-    <h3>Moist: {{ current_moist }}</h3>
-    <h3>Acidity: {{ current_acidity }}</h3>
-    <br>
-    <h4> Record snap time : {{ time }} </h4>
+  
+    
 
     <br><hr>
     <h1><u>Recommendation</u></h1>
