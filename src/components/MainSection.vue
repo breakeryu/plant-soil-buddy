@@ -15,14 +15,13 @@
       <button class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileClear" :disabled="timer_running || selected == 0">Clear</button>
       <button class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileDelete" :disabled="timer_running || selected == 0">Delete</button> 
     </p>
-<h4 class="tooltip"><u>What is this?</u>
-      <span class="tooltiptext"><a>This is the storage of the recorded soil quality data specific to each soil chunk you record. However, do not record more than 2 different soil chunks for one profile, otherwise the plant recommendation will be inaccurate.</a></span>
-      </h4>
+<a href="#" class="tooltip" v-on:click="soilProfileHint">What is this?
+      </a>
     
       <hr>
       <h1><u>Sensor Recording Monitor</u></h1> 
       <br>
-      <h2>Device Management</h2>
+      <h2><u>Device Management</u></h2>
       <h3>Device Status : <a v-bind:style="{ color: status_color }">{{ status_msg }}</a></h3>
     <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager" :disabled="timer_running"></h3>
     <button class="normal-btn submit-btn" v-on:click="recheckConnection" :disabled="timer_running">Re-check Connection</button><br>
@@ -111,6 +110,10 @@ export default {
     },
     soilProfileDelete() {
         router.push('deletesoil')
+    },
+    soilProfileHint() {
+        alert('This is the storage of the recorded soil quality data specific to each soil chunk you record.')
+        alert('However, do not record more than 2 different soil chunks for one profile, otherwise the plant recommendation will be inaccurate.')
     },
     snapReset() {
       axios.get("/snap_reset")
