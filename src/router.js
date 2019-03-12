@@ -9,6 +9,7 @@ import EditSoilProfile from '@/components/SoilProfile/EditSoilProfile'
 import ClearSoilProfile from '@/components/SoilProfile/ClearSoilProfile'
 import DeleteSoilProfile from '@/components/SoilProfile/DeleteSoilProfile'
 import PlantInfo from '@/components/PlantInfo'
+import AdminDatabase from '@/components/AdminDatabase'
 
 Vue.use(VueRouter)
 
@@ -50,6 +51,10 @@ export default new VueRouter({
     {
       path: '/plantinfo',
       component: PlantInfo
+    },
+    {
+      path: '/admindata',
+      component: AdminDatabase
     }
   ]
 })

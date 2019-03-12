@@ -12,13 +12,9 @@
     <button class="normal-btn" v-on:click="toRegis">Register</button>
 
     <br>
-    <button class="normal-btn" v-on:click="pushPHtoNPKdata">Data pH to NPK Push</button>
+    <button class="normal-btn" v-on:click="toAdmin">Administrator</button>
 
-    <br>
-    <button class="normal-btn" v-on:click="pushPlantsData">Data Plants Push</button>
-
-    <br>
-    <button class="normal-btn" v-on:click="pushSoilTypesData">Data Soil Types Push</button>
+    
   </div>
 </template>
 
@@ -41,26 +37,13 @@ export default {
     toRegis () {
       router.push("/regis")
     },
-    pushPHtoNPKdata() {
-      axios.get("/push_ph_to_npk_into_database")
-            .then((response) => {
-
-            })
-    },
-    pushPlantsData() {
-      axios.get("/push_plants_into_database")
-            .then((response) => {
-
-            })
-    },
-    pushSoilTypesData() {
-      axios.get("/push_soil_types_into_database")
-            .then((response) => {
-
-            })
+    toAdmin() {
+      router.push("/admindata")
     }
+
   }
 }
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
