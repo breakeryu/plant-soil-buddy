@@ -3,7 +3,7 @@
     <h2><u>Recommended Plants and Soil Types</u></h2>
 
     <div class="plant-list">
-      <h3 v-for="plant in plants_list" :key="plant.id"><a class="plant" v-on:click="showPlantInfo(plant.id)">{{ plant.name }}</a>, <a class="soil">{{ plant.soil_type }} Soil</a></h3>
+      <h3 v-for="plant in plants_list" :key="plant.id"><a href="#" class="plant" v-on:click="showPlantInfo(plant.id)">{{ plant.name }}</a>, <a class="soil">{{ plant.soil_type }} Soil</a></h3>
       <h3 v-if="!showing_results">-Results are not shown while recording-</h3>
       <h3 id="none" v-if="empty && showing_results">-None-</h3>
     </div>
