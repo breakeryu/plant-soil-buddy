@@ -1,9 +1,13 @@
 <template>
   <div>
     <h2><u>Recommended Plants and Soil Types</u></h2>
+
+    <div class="vertical-list">
       <h3 v-for="plant in plants_list" :key="plant.id">= <a class="plant">{{ plant.name }}</a>, {{ plant.soil_type }} Soil =</h3>
       <h3 v-if="!showing_results">-Results are not shown while recording-</h3>
       <h3 id="none" v-if="empty && showing_results">-None-</h3>
+    </div>
+
       <br>
       <h2><u>Recommended NPK to analyze fertilizer</u></h2>
 
@@ -115,5 +119,12 @@ export default {
   display: inline-block;
   width: 600px;
   height: 600px;
+}
+.vertical-list {
+  display: inline-block;
+  width: 300px;
+  height: 300px;
+  overflow-y: auto;
+  border-style: inset;
 }
 </style>

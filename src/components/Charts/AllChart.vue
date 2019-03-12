@@ -128,7 +128,7 @@ export default {
 
 <style scoped>
 #graph {
-  display: inline-block;
+  display: inline-block; /*set center */
   width: 1000px;
   height: 600px;
   border-style: inset;
