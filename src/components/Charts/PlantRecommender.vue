@@ -122,10 +122,10 @@ export default {
   color: red;
 }
 .plant {
-  color: green;
+  color: #01890c; /* Lush Green */
 }
 .soil {
-  color: brown;
+  color: #703104; /* Dirt Brown */
 }
 #graph {
   display: inline-block;
