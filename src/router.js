@@ -8,6 +8,7 @@ import AddSoilProfile from '@/components/SoilProfile/AddSoilProfile'
 import EditSoilProfile from '@/components/SoilProfile/EditSoilProfile'
 import ClearSoilProfile from '@/components/SoilProfile/ClearSoilProfile'
 import DeleteSoilProfile from '@/components/SoilProfile/DeleteSoilProfile'
+import PlantInfo from '@/components/PlantInfo'
 
 Vue.use(VueRouter)
 
@@ -45,6 +46,10 @@ export default new VueRouter({
     {
       path: '/deletesoil',
       component: DeleteSoilProfile
+    },
+    {
+      path: '/plantinfo',
+      component: PlantInfo
     }
   ]
 })

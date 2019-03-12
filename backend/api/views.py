@@ -750,6 +750,21 @@ def load_latest_npk_recommendation(request):
 
 
 @csrf_exempt
+def get_plant_info(request):
+    data = json.loads(request.body)
+
+    plant = Plant.objects.get(pk=data['plant_id'])
+
+    name = plant.moist_data.plant_name
+    min_moist = plant.moist_data.min_moist_lvl
+    max_moist = plant.moist_data.max_moist_lvl
+    min_ph = plant.ph_data.min_ph
+    max_ph = plant.ph_data.max_ph
+
+    return JsonResponse({'name':name, 'min_moist':min_moist, 'max_moist':max_moist, 'min_ph':str(min_ph), 'max_ph':str(max_ph)}, safe=False)
+
+
+@csrf_exempt
 def snap_reset(request):
     global moist, acidity#, fertility
     global moist_chart_data, acidity_chart_data#, fertility_chart_data

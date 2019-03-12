@@ -33,7 +33,8 @@ const store = new Vuex.Store({
       refreshJWT: 'http://127.0.0.1:8000/auth/refresh_token/',
       baseUrl: 'http://127.0.0.1:8000/'
     },
-    selected_soil_profile: 0 //soil_id
+    selected_soil_profile: 0, //soil_id
+    selected_plant: 0 //plant_id
   },
   mutations: {
     setAuthUser(state, {

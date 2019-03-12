@@ -2,24 +2,27 @@
   <div>
     <h2><u>Recommended Plants and Soil Types</u></h2>
 
-    <div class="vertical-list">
-      <h3 v-for="plant in plants_list" :key="plant.id">= <a class="plant">{{ plant.name }}</a>, {{ plant.soil_type }} Soil =</h3>
+    <div class="plant-list">
+      <h3 v-for="plant in plants_list" :key="plant.id"><a class="plant" v-on:click="showPlantInfo(plant.id)">{{ plant.name }}</a>, <a class="soil">{{ plant.soil_type }} Soil</a></h3>
       <h3 v-if="!showing_results">-Results are not shown while recording-</h3>
       <h3 id="none" v-if="empty && showing_results">-None-</h3>
     </div>
 
       <br>
       <h2><u>Recommended NPK to analyze fertilizer</u></h2>
-
-      <h3>N (Nitrogen) to fill : {{ n_lvl }}</h3>
-      <h3>P (Phosphorus) to fill : {{ p_lvl }}</h3>
-      <h3>K (Potassium) to fill : {{ k_lvl }}</h3>
+      <div id="npk">
+      <h3>N (Nitrogen) to fill : &nbsp;&nbsp;&nbsp;&nbsp;<a class="nutrient">{{ n_lvl }}</a></h3>
+      <h3>P (Phosphorus) to fill : &nbsp;&nbsp;&nbsp;&nbsp;<a class="nutrient">{{ p_lvl }}</a></h3>
+      <h3>K (Potassium) to fill : &nbsp;&nbsp;&nbsp;&nbsp;<a class="nutrient">{{ k_lvl }}</a></h3>
+      </div>
       <br>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+
+import router from '@/router'
 
 export default {
   name: 'PlantRecommender',
@@ -31,9 +34,10 @@ export default {
       empty: true,
       good_avg_moist: 0.0,
       good_avg_acidity: 7.0,
-      n_lvl: 'none',
-      p_lvl: 'none',
-      k_lvl: 'none'
+      n_lvl: 'Unknown',
+      p_lvl: 'Unknown',
+      k_lvl: 'Unknown',
+      lvl_config: {'none':'Unknown', 'low':'Low', 'mid':'Medium', 'high':'High'}
     }
   },
   methods: {
@@ -85,9 +89,9 @@ export default {
         'soil_profile_id': selected
       })
             .then((response) => {
-              this.n_lvl = response.data['n_lvl']
-              this.p_lvl = response.data['p_lvl']
-              this.k_lvl = response.data['k_lvl']
+              this.n_lvl = this.lvl_config[response.data['n_lvl']]
+              this.p_lvl = this.lvl_config[response.data['p_lvl']]
+              this.k_lvl = this.lvl_config[response.data['k_lvl']]
 
             })
             
@@ -97,9 +101,14 @@ export default {
       this.showing_results = false
       this.plants_list = []
       this.empty = true
-      this.n_lvl = 'none'
-      this.p_lvl = 'none'
-      this.k_lvl = 'none'
+      this.n_lvl = 'Unknown'
+      this.p_lvl = 'Unknown'
+      this.k_lvl = 'Unknown'
+    },
+    showPlantInfo(plant_id){
+      //console.log(name)
+      this.$store.state.selected_plant = plant_id
+      router.push('plantinfo')
     }
   },
   mounted(){
@@ -113,18 +122,30 @@ export default {
   color: red;
 }
 .plant {
-  color: blue;
+  color: green;
+}
+.soil {
+  color: brown;
 }
 #graph {
   display: inline-block;
   width: 600px;
   height: 600px;
 }
-.vertical-list {
+.plant-list {
   display: inline-block;
   width: 300px;
   height: 300px;
   overflow-y: auto;
   border-style: inset;
+  text-align: left;
+}
+#npk {
+  display: inline-block;
+  width: 300px;
+  text-align: left;
+}
+.nutrient {
+  text-align: right;
 }
 </style>

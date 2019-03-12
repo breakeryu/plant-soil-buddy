@@ -22,14 +22,17 @@
       <hr>
       <h1><u>Sensor Recording Monitor</u></h1> 
       <br>
-      <h2> <u>Device Status:</u> <a v-bind:style="{ color: status_color }">{{ status_msg }}</a></h2>
+      <h2>Device Management</h2>
+      <h3>Device Status : <a v-bind:style="{ color: status_color }">{{ status_msg }}</a></h3>
     <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager" :disabled="timer_running"></h3>
     <button class="normal-btn submit-btn" v-on:click="recheckConnection" :disabled="timer_running">Re-check Connection</button><br>
 
     <h2><u>Current Sensor Records</u></h2>
-    <h3>Moist: {{ current_moist }}</h3>
-    <h3>Acidity: {{ current_acidity }}</h3>
-    <h4> Record snap time : {{ time }} </h4>
+    <div id="monitorvalues">
+    <h3>Moist: &nbsp;&nbsp;&nbsp;&nbsp;{{ current_moist }}</h3>
+    <h3>Acidity: &nbsp;&nbsp;&nbsp;&nbsp;{{ current_acidity }}</h3>
+    <h4> Record snap time : &nbsp;&nbsp;&nbsp;&nbsp;{{ time }} seconds</h4>
+    </div>
     <br>
 
     <h2><u>Main Control</u></h2>
@@ -127,14 +130,14 @@ export default {
                   axios.get("/get_moist_as_value")
                     .then((response) => {
                       if (response.data >= 0)  {
-                        this.current_moist = response.data.toString()
+                        this.current_moist = response.data.toString() + ' %'
                       }
                     })
                   //this.$refs.acidity_ch.getData(this.selected)
                   axios.get("/get_acidity_as_value")
                     .then((response) => {
                       if (response.data >= 0)  {
-                        this.current_acidity = response.data.toString()
+                        this.current_acidity = response.data.toString() + ' pH'
                       }
                     })
 
@@ -175,8 +178,8 @@ export default {
       clearInterval(this.timer)
       this.timer = null
 
-      this.$refs.moist_ch.current_data = 0
-      this.$refs.acidity_ch.current_data = 7
+      //this.$refs.moist_ch.current_data = 0
+      //this.$refs.acidity_ch.current_data = 7
       //this.$refs.fertility_ch.current_data = 0
 
       //this.recheckConnection()
@@ -360,5 +363,10 @@ button:disabled, #trig-btn:disabled {
 }
 .tooltip:hover .tooltiptext {
   visibility: visible;
+}
+#monitorvalues {
+  display: inline-block;
+  width: 200px;
+  text-align: left;
 }
 </style>
