@@ -39,7 +39,11 @@ export default {
       })
             .then((response) => {
               
-              alert(response.data)
+              this.$notify({
+                  group: 'notify',
+                  title: 'Add Soil Profile',
+                  text: response.data
+                })
               router.push('main')
               
             })

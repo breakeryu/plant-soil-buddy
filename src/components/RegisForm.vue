@@ -58,7 +58,11 @@ export default {
             //self.type = req.data.type;
             
         if (req.data == 'Success'){
-          alert('Success')
+          this.$notify({
+                group: 'notify',
+                title: 'Registration',
+                text: 'Success'
+          })
           router.push("login")
         } else {
           this.failed = true

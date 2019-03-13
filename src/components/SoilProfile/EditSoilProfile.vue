@@ -44,7 +44,11 @@ export default {
         'location': this.location
       })
             .then((response) => {
-              alert(response.data)
+              this.$notify({
+                  group: 'notify',
+                  title: 'Edit Soil Profile',
+                  text: response.data
+                })
               router.push('main')
             })
             .catch((error) => {

@@ -37,7 +37,11 @@ export default {
         'soil_profile_id' : this.soil_profile_id
       })
             .then((response) => {
-              alert(response.data)
+              this.$notify({
+                  group: 'notify',
+                  title: 'Delete Soil Profile',
+                  text: response.data
+                })
               router.push('main')
             })
             .catch((error) => {

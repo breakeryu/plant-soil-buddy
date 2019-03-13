@@ -8,6 +8,7 @@
     </div>
   -->
     <router-view></router-view>
+    <notifications group="notify" position="bottom center" />
   </div>
 </template>
 

@@ -33,19 +33,31 @@ export default {
     pushPHtoNPKdata() {
       axios.get("/push_ph_to_npk_into_database")
             .then((response) => {
-
+                this.$notify({
+                  group: 'notify',
+                  title: 'Knowledge Base Update',
+                  text: 'Done.'
+                })
             })
     },
     pushPlantsData() {
       axios.get("/push_plants_into_database")
             .then((response) => {
-
+                this.$notify({
+                  group: 'notify',
+                  title: 'Knowledge Base Update',
+                  text: 'Done.'
+                })
             })
     },
     pushSoilTypesData() {
       axios.get("/push_soil_types_into_database")
             .then((response) => {
-
+                this.$notify({
+                  group: 'notify',
+                  title: 'Knowledge Base Update',
+                  text: 'Done.'
+                })
             })
     },
     goBack() {
