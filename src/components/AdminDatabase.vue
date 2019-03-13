@@ -2,16 +2,16 @@
   <div>
     <h1>Admin Database Management</h1>
 
-    <button class="normal-btn" v-on:click="pushPHtoNPKdata">Data pH to NPK Push</button>
+    <button class="normal-btn" v-on:click="pushPHtoNPKdata" :disabled="pushing">Data pH to NPK Push</button>
 
     <br>
-    <button class="normal-btn" v-on:click="pushPlantsData">Data Plants Push</button>
+    <button class="normal-btn" v-on:click="pushPlantsData" :disabled="pushing">Data Plants Push</button>
 
     <br>
-    <button class="normal-btn" v-on:click="pushSoilTypesData">Data Soil Types Push</button>
+    <button class="normal-btn" v-on:click="pushSoilTypesData" :disabled="pushing">Data Soil Types Push</button>
 
     <br><br>
-    <button class="normal-btn exit-btn" v-on:click="goBack">Back</button><br>
+    <button class="normal-btn exit-btn" v-on:click="goBack" :disabled="pushing">Back</button><br>
     
   </div>
 </template>
@@ -26,13 +26,15 @@ export default {
   },
   data () {
     return {
-      
+      pushing: false
     }
   },
   methods: {
     pushPHtoNPKdata() {
+      this.pushing = true
       axios.get("/push_ph_to_npk_into_database")
             .then((response) => {
+                this.pushing = false
                 this.$notify({
                   group: 'notify',
                   title: 'Knowledge Base Update',
@@ -41,8 +43,10 @@ export default {
             })
     },
     pushPlantsData() {
+      this.pushing = true
       axios.get("/push_plants_into_database")
             .then((response) => {
+                this.pushing = false
                 this.$notify({
                   group: 'notify',
                   title: 'Knowledge Base Update',
@@ -51,8 +55,10 @@ export default {
             })
     },
     pushSoilTypesData() {
+      this.pushing = true
       axios.get("/push_soil_types_into_database")
             .then((response) => {
+                this.pushing = false
                 this.$notify({
                   group: 'notify',
                   title: 'Knowledge Base Update',
