@@ -155,6 +155,51 @@ def register(request):
             return HttpResponse('Success')
     else:
         return None
+    
+@csrf_exempt
+def change_password(request) :
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        user = User.objects.get(username=data['username'])
+
+        if not user.password == data['old_password'] :
+            return HttpResponseBadRequest('Incorrect old password')
+    
+        if data['username'] == data['password'] :
+            return HttpResponseBadRequest('Password is too similar to your personal information')
+
+        if len(data['password']) < 8 :
+            return HttpResponseBadRequest('Password must be at least 8 characters')
+
+        password_list_path=Path(__file__).resolve().parent / 'common-passwords.txt.gz'
+        try:
+            with gzip.open(str(password_list_path)) as f:
+                common_passwords_lines = f.read().decode().splitlines()
+        except OSError:
+            with open(str(password_list_path)) as f:
+                common_passwords_lines = f.readlines()
+        passwords = {p.strip() for p in common_passwords_lines}
+        if data['password'].lower().strip() in passwords:
+            return HttpResponseBadRequest('This Password is too common')
+
+        try:
+            pass_num = int(data['password'])
+            is_numeric = True
+        except ValueError:
+            is_numeric = False
+        if is_numeric :
+            return HttpResponseBadRequest('Password is entirely numeric')
+
+        if not (data['password'] == data['confirm_password']) :
+            return HttpResponseBadRequest('Password Confirm Failed')
+
+        try:
+            User.objects.filter(pk=user.id).update(password=data['password'])
+        except User.DoesNotExist:
+            return HttpResponseBadRequest('User does not exist')
+
+        return HttpResponse('Success')
 
 @csrf_exempt
 def user(request):
@@ -165,6 +210,18 @@ def user(request):
         except User.DoesNotExist:
             return None
         return HttpResponse(data['username'])
+    else:
+        return None
+
+@csrf_exempt
+def user_info(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            user = User.objects.get(username=data['username'])
+        except User.DoesNotExist:
+            return None
+        return JsonResponse({'usernmae':data['username'], 'email':user.email, 'is_staff':str(user.is_staff)}, safe=False)
     else:
         return None
 

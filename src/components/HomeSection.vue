@@ -11,8 +11,6 @@
     <br>
     <button class="normal-btn" v-on:click="toRegis">Register</button>
 
-    <br>
-    <button class="normal-btn" v-on:click="toAdmin">Administrator</button>
 
     
   </div>
@@ -36,9 +34,6 @@ export default {
     },
     toRegis () {
       router.push("/regis")
-    },
-    toAdmin() {
-      router.push("/admindata")
     }
 
   }

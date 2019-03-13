@@ -9,6 +9,9 @@
 
     <br>
     <button class="normal-btn" v-on:click="pushSoilTypesData">Data Soil Types Push</button>
+
+    <br><br>
+    <button class="normal-btn exit-btn" v-on:click="goBack">Back</button><br>
     
   </div>
 </template>
@@ -18,18 +21,12 @@ import axios from 'axios'
 import router from '@/router'
 
 export default {
-  name: 'AddSoilProfile',
+  name: 'AdminDatabase',
   components: { 
   },
   data () {
     return {
-      plant_id: 0,
-      plant_name: '',
-      min_moist: 'Unknown',
-      max_moist: 'Unknown',
-      min_ph: 'Unknown',
-      max_ph: 'Unknown',
-      moist_config: {'none':'Unknown', 'very_low':'0-20% (Very Low)','low':'21-40% (Low)', 'mid':'41-60% (Medium)', 'high':'61-80% (High)', 'very_high':'81-100% (Very High)'}
+      
     }
   },
   methods: {
@@ -50,6 +47,9 @@ export default {
             .then((response) => {
 
             })
+    },
+    goBack() {
+      router.push("main")
     }
 
 
@@ -95,5 +95,8 @@ input, .normal-btn {
 }
 .warning {
   color: red;
+}
+.exit-btn {
+  background-color: red;
 }
 </style>

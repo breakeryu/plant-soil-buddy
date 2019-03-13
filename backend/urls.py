@@ -28,6 +28,9 @@ urlpatterns = [
     path('register', register),
 
     path('user', user),
+    path('user_info', user_info),
+
+    path('change_password', change_password),
 
     path('get_soil_profiles', get_soil_profiles),
     path('get_soil_profile', get_soil_profile),

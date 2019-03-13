@@ -11,9 +11,9 @@
       <br>
       <h2><u>Recommended NPK to analyze fertilizer</u></h2>
       <div id="npk">
-      <h3>N (Nitrogen) to fill : &nbsp;&nbsp;&nbsp;&nbsp;<a class="nutrient">{{ n_lvl }}</a></h3>
-      <h3>P (Phosphorus) to fill : &nbsp;&nbsp;&nbsp;&nbsp;<a class="nutrient">{{ p_lvl }}</a></h3>
-      <h3>K (Potassium) to fill : &nbsp;&nbsp;&nbsp;&nbsp;<a class="nutrient">{{ k_lvl }}</a></h3>
+      <h3>N (Nitrogen) to fill : <a class="nutrient">{{ n_lvl }}</a></h3>
+      <h3>P (Phosphorus) to fill : <a class="nutrient">{{ p_lvl }}</a></h3>
+      <h3>K (Potassium) to fill : <a class="nutrient">{{ k_lvl }}</a></h3>
       </div>
       <br>
   </div>
@@ -138,7 +138,6 @@ export default {
   height: 300px;
   overflow-y: auto;
   border-style: inset;
-  text-align: left;
 }
 #npk {
   display: inline-block;

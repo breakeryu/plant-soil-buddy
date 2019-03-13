@@ -28,9 +28,9 @@
 
     <h2><u>Current Sensor Records</u></h2>
     <div id="monitorvalues">
-    <h3>Moist: &nbsp;&nbsp;&nbsp;&nbsp;{{ current_moist }}</h3>
-    <h3>Acidity: &nbsp;&nbsp;&nbsp;&nbsp;{{ current_acidity }}</h3>
-    <h4> Record snap time : &nbsp;&nbsp;&nbsp;&nbsp;{{ time }} seconds</h4>
+    <h3>Moist: {{ current_moist }}</h3>
+    <h3>Acidity: {{ current_acidity }}</h3>
+    <h4> Record snap time : {{ time }} seconds</h4>
     </div>
     <br>
 
@@ -57,7 +57,17 @@
   <!--<fertility-chart ref="fertility_ch"></fertility-chart><hr>-->
   <h1><u>User Management</u></h1>
   <br>
+  <div id="userinfo">
+    <h3>Username: {{ username }}</h3>
+    <h3>Email: {{ email }}</h3>
+    </div>
+    <br v-if="is_staff">
+    <button id="staff-btn" class="normal-btn" v-if="is_staff" v-on:click="toAdmin">Update Knowledge Base (Admin Only)</button>
+    <br>
+    <button class="normal-btn" v-on:click="pwdChange">Change Password</button><br>
+    <br>
     <button class="normal-btn exit-btn" v-on:click="doLogout">Logout</button><br>
+
   </div>
 </template>
 
@@ -81,6 +91,8 @@ export default {
   data () {
     return {
       username: '',
+      email: '',
+      is_staff: false,
       status_msg: 'Unknown',
       status_color: 'red',
       msg: 'Welcome,',
@@ -99,6 +111,12 @@ export default {
     }
   },
   methods: {
+    toAdmin() {
+      router.push("admindata")
+    },
+    pwdChange() {
+      router.push("changepwd")
+    },
     soilProfileAdd() {
         router.push('addsoil')
     },
@@ -283,6 +301,19 @@ export default {
               this.soil_profiles = response.data
             })
 
+    axios.post("/user_info", {
+            'username': this.username
+          })
+            .then((response) => {
+              this.email = response.data['email']
+              var staff = response.data['is_staff']
+              if (staff == 'True') {
+                this.is_staff = true
+              } else {
+                this.is_staff = false
+              }
+            })
+
     this.reloadGraph(this.selected)
 
     this.connection_timer_idle_enable()
@@ -371,5 +402,13 @@ button:disabled, #trig-btn:disabled {
   display: inline-block;
   width: 200px;
   text-align: left;
+}
+#userinfo {
+  display: inline-block;
+  width: 300px;
+  text-align: left;
+}
+#staff-btn {
+  height: 60px;
 }
 </style>

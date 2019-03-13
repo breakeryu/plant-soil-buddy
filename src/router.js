@@ -10,6 +10,7 @@ import ClearSoilProfile from '@/components/SoilProfile/ClearSoilProfile'
 import DeleteSoilProfile from '@/components/SoilProfile/DeleteSoilProfile'
 import PlantInfo from '@/components/PlantInfo'
 import AdminDatabase from '@/components/AdminDatabase'
+import PasswordChangeForm from '@/components/PasswordChangeForm'
 
 Vue.use(VueRouter)
 
@@ -55,6 +56,10 @@ export default new VueRouter({
     {
       path: '/admindata',
       component: AdminDatabase
+    },
+    {
+      path: '/changepwd',
+      component: PasswordChangeForm
     }
   ]
 })
