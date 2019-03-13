@@ -104,7 +104,7 @@ export default {
                 }
                 //var dist = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
                 //var range = sqrt(2) + dist;
-                data.add({x:x, y:y, style:style});
+                data.add({x:x, y:y});
                 this.clusters_count[cluster_group]++;
               }
 

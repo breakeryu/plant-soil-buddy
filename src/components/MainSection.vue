@@ -48,12 +48,12 @@
     <h1><u>Recommendation</u></h1>
     <br>
     <plant-recommender ref="plant_rec"></plant-recommender>
-
+<!--
     <h2><u>Data Display</u></h2>
     <button class="normal-btn" v-on:click="scatterPlot">View Scatter Plot</button><br>
-    <!--<all-chart ref="all_ch"></all-chart>-->
+    
 
-    <br><hr>
+    <br> --><hr>
   <!--<fertility-chart ref="fertility_ch"></fertility-chart><hr>-->
   <h1><u>User Management</u></h1>
   <br>
