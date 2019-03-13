@@ -535,14 +535,13 @@ def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
     
     soil_profile_on_use = SoilProfile.objects.get(pk=soil_profile_id)
     
-    records = SensorRecord.objects.all()
+    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
 
     raw_chart_data = np.array([[float('NaN'),float('NaN')]])
 
     for record in records :
-        if record.soil_id == soil_profile_on_use :
-            values = np.array([[float(record.moist), float(record.ph)]])
-            raw_chart_data = np.append(raw_chart_data, values, axis=0)
+        values = np.array([[float(record.moist), float(record.ph)]])
+        raw_chart_data = np.append(raw_chart_data, values, axis=0)
 
     fresh_numpy_data = raw_chart_data[~np.isnan(raw_chart_data).any(axis=1)]
     
