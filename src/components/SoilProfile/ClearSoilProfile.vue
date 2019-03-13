@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>{{ username }} : Clear Soil Profile</h1>
+    <h1>{{ username }} : Reset Soil Profile</h1>
 
     <h3>Soil Name : {{ old_name }}</h3>
     <h3>Soil Location : {{ old_location }}</h3>
