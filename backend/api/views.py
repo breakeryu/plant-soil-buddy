@@ -424,7 +424,7 @@ def get_moist_as_stats(request):
 
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
-    records = SensorRecord.objects.all()
+    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
 
     moist_chart_data = {
     'columns': ['time', '%'],
@@ -433,8 +433,8 @@ def get_moist_as_stats(request):
 
     for record in records :
         time_record = f"{record.record_date:%Y-%b-%d}"
-        if record.soil_id == soil_profile_on_use :
-            moist_chart_data["rows"].append({'time':str(record.id)+' '+time_record, '%':record.moist})
+        
+        moist_chart_data["rows"].append({'time':str(record.id)+' '+time_record, '%':record.moist})
     
     chart_data = moist_chart_data
     return JsonResponse(chart_data)
@@ -458,7 +458,7 @@ def get_acidity_as_stats(request):
 
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
-    records = SensorRecord.objects.all()
+    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
 
     acidity_chart_data = {
     'columns': ['time', 'pH'],
@@ -467,8 +467,8 @@ def get_acidity_as_stats(request):
 
     for record in records :
         time_record = f"{record.record_date:%Y-%b-%d}"
-        if record.soil_id == soil_profile_on_use :
-            acidity_chart_data["rows"].append({'time':str(record.id)+' '+time_record, 'pH':record.ph})
+        
+        acidity_chart_data["rows"].append({'time':str(record.id)+' '+time_record, 'pH':record.ph})
     
     chart_data = acidity_chart_data
     return JsonResponse(chart_data)
@@ -487,15 +487,14 @@ def get_average_moist(request):
 
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
-    records = SensorRecord.objects.all()
+    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
     target_records = []
     
     total_moist_data = 0
 
     for record in records :
-        if record.soil_id == soil_profile_on_use :
-            total_moist_data += record.moist
-            target_records.append(record)
+        total_moist_data += record.moist
+        target_records.append(record)
             
     if len(target_records) > 0 :
         avg_moist = total_moist_data / len(target_records)
@@ -512,15 +511,14 @@ def get_average_acidity(request):
 
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
-    records = SensorRecord.objects.all()
+    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
     target_records = []
     
     total_acidity_data = 0
 
     for record in records :
-        if record.soil_id == soil_profile_on_use :
-            total_acidity_data += record.ph
-            target_records.append(record)
+        total_acidity_data += record.ph
+        target_records.append(record)
             
     if len(target_records) > 0 :
         avg_acidity = total_acidity_data / len(target_records)
@@ -680,6 +678,7 @@ def get_recommendations(request):
 
     valid_moist = []
 
+    #As along as plant data is managable only by admin, but however it can grow
     for plant in plants :
         minimum = min_moist_config[plant.moist_data.min_moist_lvl]
         maximum = max_moist_config[plant.moist_data.max_moist_lvl]
@@ -738,10 +737,11 @@ def get_recommendations(request):
     #   recommend_nutrient(A, NX, PX, KX),
     #   recommend_soil_type(PL, S).
 
-    soils_set = SoilType.objects.all()
+    soils_set = SoilType.objects.all() #Good to do this as long as SoilType has small size, which is normally small
     
     recommendation_obj = Recommendation.objects.create(soil_id=soil_profile_on_use, npk_match_ph=npk_data, recco_time=get_current_time(), recco_n_lvl=recommend_n_lvl, recco_p_lvl=recommend_p_lvl, recco_k_lvl=recommend_k_lvl)
 
+    #O(n), as along as soils_set has constant number of members, managed by admins staffs only
     for plant in recommended_plants :
         #plants_list.append({'id':plant.id, 'name':plant.moist_data.plant_name})
 
