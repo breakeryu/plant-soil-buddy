@@ -50,7 +50,7 @@
     <plant-recommender ref="plant_rec"></plant-recommender>
 
     <h2><u>Data Display</u></h2>
-
+    <button class="normal-btn" v-on:click="scatterPlot">View Scatter Plot</button><br>
     <!--<all-chart ref="all_ch"></all-chart>-->
 
     <br><hr>
@@ -132,6 +132,9 @@ export default {
     soilProfileHint() {
         alert('This is the storage of the recorded soil quality data specific to each soil chunk you record.')
         alert('However, do not record more than 2 different soil chunks for one profile, otherwise the plant recommendation will be inaccurate.')
+    },
+    scatterPlot() {
+      router.push('scatterchart')
     },
     snapReset() {
       axios.get("/snap_reset")
@@ -269,6 +272,7 @@ export default {
       this.$store.state.selected_soil_profile = selected
       
       this.$refs.plant_rec.getDataWithoutUpdating(selected)
+      //this.$refs.scatter_ch.getData(selected)
       
     },
     connection_timer_idle_enable() {
@@ -400,7 +404,7 @@ button:disabled, #trig-btn:disabled {
 }
 #monitorvalues {
   display: inline-block;
-  width: 200px;
+  width: 300px;
   text-align: left;
 }
 #userinfo {

@@ -11,6 +11,7 @@ import DeleteSoilProfile from '@/components/SoilProfile/DeleteSoilProfile'
 import PlantInfo from '@/components/PlantInfo'
 import AdminDatabase from '@/components/AdminDatabase'
 import PasswordChangeForm from '@/components/PasswordChangeForm'
+import ScatterProof from '@/components/Charts/ScatterProof'
 
 Vue.use(VueRouter)
 
@@ -60,6 +61,10 @@ export default new VueRouter({
     {
       path: '/changepwd',
       component: PasswordChangeForm
+    },
+    {
+      path: '/scatterchart',
+      component: ScatterProof
     }
   ]
 })
