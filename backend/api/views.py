@@ -836,9 +836,11 @@ def get_plant_info(request):
 
     plant = Plant.objects.get(pk=data['plant_id'])
 
+    lvl_config = ['very_low','low','mid','high','very_high']
+
     name = plant.moist_data.plant_name
-    min_moist = plant.moist_data.min_moist_lvl
-    max_moist = plant.moist_data.max_moist_lvl
+    min_moist = lvl_config[plant.moist_data.min_moist_lvl]
+    max_moist = lvl_config[plant.moist_data.max_moist_lvl]
     min_ph = plant.ph_data.min_ph
     max_ph = plant.ph_data.max_ph
 
