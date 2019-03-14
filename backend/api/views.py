@@ -620,6 +620,9 @@ def get_good_moist_ph_values(request):
     avg_moist = (min(good_data_moist)+max(good_data_moist))/2
     avg_acidity = float((min(good_data_acidity)+max(good_data_acidity))/2)
 
+    print(avg_moist)
+    print(avg_acidity)
+
     return JsonResponse({'avg_good_moist':avg_moist, 'avg_good_acidity':avg_acidity}, safe=False)
 
 #recommend(PL, NX, PX, KX, S, M, A) :- plant(PL),
