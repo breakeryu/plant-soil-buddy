@@ -18,11 +18,11 @@ class User(auth.models.User):
     user_ptr = None
 
 class PlantMoistLvl(models.Model):
-    VERY_LOW = 'very_low'
-    LOW = 'low'
-    MID = 'mid'
-    HIGH = 'high'
-    VERY_HIGH = 'very_high'
+    VERY_LOW = 0
+    LOW = 1
+    MID = 2
+    HIGH = 3
+    VERY_HIGH = 4
     LEVEL_CHOICES = (
         (VERY_LOW, 'Very Low'),
         (LOW, 'Low'),
@@ -31,13 +31,11 @@ class PlantMoistLvl(models.Model):
         (VERY_HIGH, 'Very High'),
     )
     plant_name = models.CharField(max_length=100, default='')
-    min_moist_lvl = models.CharField(
-        max_length=10,
+    min_moist_lvl = models.IntegerField(
         choices= LEVEL_CHOICES,
         default= VERY_LOW
     )
-    max_moist_lvl = models.CharField(
-        max_length=10,
+    max_moist_lvl = models.IntegerField(
         choices= LEVEL_CHOICES,
         default= VERY_HIGH
     )
@@ -61,9 +59,9 @@ class Plant(models.Model):
 
 
 class NpkPerPh(models.Model):
-    LOW = 'low'
-    MID = 'mid'
-    HIGH = 'high'
+    LOW = 1
+    MID = 2
+    HIGH = 3
     LEVEL_CHOICES = (
         (LOW, 'Low'),
         (MID, 'Medium'),
@@ -71,27 +69,24 @@ class NpkPerPh(models.Model):
     )
     min_ph = models.DecimalField(max_digits=10, decimal_places=2,validators=[MaxValueValidator(14), MinValueValidator(0)], default=0)
     max_ph = models.DecimalField(max_digits=10, decimal_places=2,validators=[MaxValueValidator(14), MinValueValidator(0)], default=0)
-    n_lvl = models.CharField(
-        max_length=10,
+    n_lvl = models.IntegerField(
         choices= LEVEL_CHOICES
     )
-    p_lvl = models.CharField(
-        max_length=10,
+    p_lvl = models.IntegerField(
         choices= LEVEL_CHOICES
     )
-    k_lvl = models.CharField(
-        max_length=10,
+    k_lvl = models.IntegerField(
         choices= LEVEL_CHOICES
     )
     def __str__(self):
         return str(self.min_ph) +' - '+str(self.max_ph)
 
 class SoilType(models.Model):
-    VERY_LOW = 'very_low'
-    LOW = 'low'
-    MID = 'mid'
-    HIGH = 'high'
-    VERY_HIGH = 'very_high'
+    VERY_LOW = 0
+    LOW = 1
+    MID = 2
+    HIGH = 3
+    VERY_HIGH = 4
     LEVEL_CHOICES = (
         (VERY_LOW, 'Very Low'),
         (LOW, 'Low'),
@@ -100,12 +95,10 @@ class SoilType(models.Model):
         (VERY_HIGH, 'Very High'),
     )
     name = models.CharField(max_length=100)
-    good_for_min_moist_lvl = models.CharField(
-        max_length=10,
+    good_for_min_moist_lvl = models.IntegerField(
         choices= LEVEL_CHOICES
     )
-    good_for_max_moist_lvl = models.CharField(
-        max_length=10,
+    good_for_max_moist_lvl = models.IntegerField(
         choices= LEVEL_CHOICES
     )
     def __str__(self):
@@ -129,9 +122,9 @@ class SensorRecord(models.Model):
         return soil.name + " - " + str(self.record_date)
 
 class Recommendation(models.Model):
-    LOW = 'low'
-    MID = 'mid'
-    HIGH = 'high'
+    LOW = 1
+    MID = 2
+    HIGH = 3
     LEVEL_CHOICES = (
         (LOW, 'Low'),
         (MID, 'Medium'),
@@ -140,16 +133,13 @@ class Recommendation(models.Model):
     soil_id = models.ForeignKey(SoilProfile, on_delete=models.CASCADE)
     npk_match_ph = models.ForeignKey(NpkPerPh, on_delete=models.CASCADE)
     recco_time = models.DateTimeField(default=datetime.now, blank=True)
-    recco_n_lvl = models.CharField(
-        max_length=10,
+    recco_n_lvl = models.IntegerField(
         choices= LEVEL_CHOICES
     )
-    recco_p_lvl = models.CharField(
-        max_length=10,
+    recco_p_lvl = models.IntegerField(
         choices= LEVEL_CHOICES
     )
-    recco_k_lvl = models.CharField(
-        max_length=10,
+    recco_k_lvl = models.IntegerField(
         choices= LEVEL_CHOICES
     )
     def __str__(self):

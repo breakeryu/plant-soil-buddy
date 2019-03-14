@@ -636,7 +636,7 @@ def get_recommendations(request):
 
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
-    plants = Plant.objects.all()
+    #plants = Plant.objects.all()
 
     #Configs Facts
 
@@ -679,6 +679,7 @@ def get_recommendations(request):
     valid_moist = []
 
     #As along as plant data is managable only by admin, but however it can grow
+    #plants_valid_moist = Plant.objects.filter(moist_data__av
     for plant in plants :
         minimum = min_moist_config[plant.moist_data.min_moist_lvl]
         maximum = max_moist_config[plant.moist_data.max_moist_lvl]
@@ -875,6 +876,8 @@ def get_connection_status(request):
 
 @csrf_exempt
 def push_ph_to_npk_into_database(request):
+
+    lvl_config = {'very_low':0,'low':1,'mid':2,'high':3,'very_high':4}
     
     excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\pH-to-NPK.xlsx').sheet_by_index(0) 
 
@@ -891,16 +894,22 @@ def push_ph_to_npk_into_database(request):
         if i > 0 :
             print(ph_to_npk_dataset[i][0])
 
+            new_n = lvl_config[ph_to_npk_dataset[i][2]]
+            new_p = lvl_config[ph_to_npk_dataset[i][3]]
+            new_k = lvl_config[ph_to_npk_dataset[i][4]]
+
             try:
                 exist = NpkPerPh.objects.get(min_ph=ph_to_npk_dataset[i][0], max_ph=ph_to_npk_dataset[i][1])
-                NpkPerPh.objects.filter(min_ph=ph_to_npk_dataset[i][0], max_ph=ph_to_npk_dataset[i][1]).update(n_lvl=ph_to_npk_dataset[i][2], p_lvl=ph_to_npk_dataset[i][3], k_lvl=ph_to_npk_dataset[i][4])
+                NpkPerPh.objects.filter(min_ph=ph_to_npk_dataset[i][0], max_ph=ph_to_npk_dataset[i][1]).update(n_lvl=new_n, p_lvl=new_p, k_lvl=new_k)
             except NpkPerPh.DoesNotExist:
-                NpkPerPh.objects.create(min_ph=ph_to_npk_dataset[i][0], max_ph=ph_to_npk_dataset[i][1], n_lvl=ph_to_npk_dataset[i][2], p_lvl=ph_to_npk_dataset[i][3], k_lvl=ph_to_npk_dataset[i][4])
+                NpkPerPh.objects.create(min_ph=ph_to_npk_dataset[i][0], max_ph=ph_to_npk_dataset[i][1], n_lvl=new_n, p_lvl=new_p, k_lvl=new_k)
 
     return HttpResponse('')
 
 @csrf_exempt
 def push_plants_into_database(request):
+
+    lvl_config = {'very_low':0,'low':1,'mid':2,'high':3,'very_high':4}
 
     moist_excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\Moist-to-plant.xlsx').sheet_by_index(0) 
     ph_excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\pH-to-plant.xlsx').sheet_by_index(0) 
@@ -928,11 +937,14 @@ def push_plants_into_database(request):
         if i > 0 :
             print(moist_to_plant_dataset[i][0])
 
+            new_min = lvl_config[moist_to_plant_dataset[i][1]]
+            new_max = lvl_config[moist_to_plant_dataset[i][2]]
+
             try:
-                exist = PlantMoistLvl.objects.get(plant_name=moist_to_plant_dataset[i][0])
-                data = PlantMoistLvl.objects.filter(plant_name=moist_to_plant_dataset[i][0]).update(min_moist_lvl=moist_to_plant_dataset[i][1], max_moist_lvl=moist_to_plant_dataset[i][2])
+                data = PlantMoistLvl.objects.get(plant_name=moist_to_plant_dataset[i][0])
+                PlantMoistLvl.objects.filter(plant_name=moist_to_plant_dataset[i][0]).update(min_moist_lvl=new_min, max_moist_lvl=new_max)
             except PlantMoistLvl.DoesNotExist:
-                data = PlantMoistLvl.objects.create(plant_name=moist_to_plant_dataset[i][0], min_moist_lvl=moist_to_plant_dataset[i][1], max_moist_lvl=moist_to_plant_dataset[i][2])
+                data = PlantMoistLvl.objects.create(plant_name=moist_to_plant_dataset[i][0], min_moist_lvl=new_min, max_moist_lvl=new_max)
 
             inserted_moist_plant.append(data.plant_name)
 
@@ -949,8 +961,8 @@ def push_plants_into_database(request):
             print(ph_to_plant_dataset[i][0])
              
             try:
-                exist = PlantPh.objects.get(plant_name=ph_to_plant_dataset[i][0])
-                data = PlantPh.objects.filter(plant_name=ph_to_plant_dataset[i][0]).update(min_ph=ph_to_plant_dataset[i][1], max_ph=ph_to_plant_dataset[i][2])
+                data = PlantPh.objects.get(plant_name=ph_to_plant_dataset[i][0])
+                PlantPh.objects.filter(plant_name=ph_to_plant_dataset[i][0]).update(min_ph=ph_to_plant_dataset[i][1], max_ph=ph_to_plant_dataset[i][2])
             except PlantPh.DoesNotExist:
                 data = PlantPh.objects.create(plant_name=ph_to_plant_dataset[i][0], min_ph=ph_to_plant_dataset[i][1], max_ph=ph_to_plant_dataset[i][2])
 
@@ -970,6 +982,8 @@ def push_plants_into_database(request):
 
 @csrf_exempt
 def push_soil_types_into_database(request):
+
+    lvl_config = {'very_low':0,'low':1,'mid':2,'high':3,'very_high':4}
     
     excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\Soil_type_to_moist.xlsx').sheet_by_index(0) 
 
@@ -986,11 +1000,14 @@ def push_soil_types_into_database(request):
         if i > 0 :
             print(soil_to_moist_dataset[i][0])
 
+            new_good_min = lvl_config[soil_to_moist_dataset[i][1]]
+            new_good_max = lvl_config[soil_to_moist_dataset[i][2]]
+
             try:
                 exist = SoilType.objects.get(name=soil_to_moist_dataset[i][0])
-                SoilType.objects.filter(name=soil_to_moist_dataset[i][0]).update(good_for_min_moist_lvl=soil_to_moist_dataset[i][1], good_for_max_moist_lvl=soil_to_moist_dataset[i][2])
+                SoilType.objects.filter(name=soil_to_moist_dataset[i][0]).update(good_for_min_moist_lvl=new_good_min, good_for_max_moist_lvl=new_good_max)
             except SoilType.DoesNotExist:
-                SoilType.objects.create(name=soil_to_moist_dataset[i][0], good_for_min_moist_lvl=soil_to_moist_dataset[i][1], good_for_max_moist_lvl=soil_to_moist_dataset[i][2])
+                SoilType.objects.create(name=soil_to_moist_dataset[i][0], good_for_min_moist_lvl=new_good_min, good_for_max_moist_lvl=new_good_max)
 
     return HttpResponse('')
 
