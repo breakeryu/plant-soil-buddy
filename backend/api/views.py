@@ -640,62 +640,78 @@ def get_recommendations(request):
 
     #Configs Facts
 
-    #moist_min_range(0,very_low).
-    #moist_min_range(21,low).
-    #moist_min_range(41,mid).
-    #moist_min_range(61,high).
-    #moist_min_range(81,very_high).
+    #lvl(0, very_low).
+    #lvl(1, low).
+    #lvl(2, mid).
+    #lvl(3, high).
+    #lvl(4, very_high).
 
-    min_moist_config = {'very_low':0,'low':20,'mid':40,'high':60,'very_high':80}
+    lvl_config = ['very_low','low','mid','high','very_high']
+    lvl_config_to_index = {'very_low':'0','low':'1','mid':'2','high':'3','very_high':'4', 'none': '-1'}
 
-    #moist_max_range(20,very_low).
-    #moist_max_range(40,low).
-    #moist_max_range(60,mid).
-    #moist_max_range(80,high).
-    #moist_max_range(100,very_high).
+    #moist_range_lvl(0,20,0).
+    #moist_range_lvl(21,40,1).
+    #moist_range_lvl(41,60,2).
+    #moist_range_lvl(61,80,3).
+    #moist_range_lvl(81,100,4).
 
-    max_moist_config = {'very_low':21,'low':41,'mid':61,'high':81,'very_high':100}
+    print(avg_moist)
+    print(avg_acidity)
 
+    avg_moist_lvl = -1
+
+    if 0 <= avg_moist and avg_moist <= 20 :
+        avg_moist_lvl = 0
+    elif 21 <= avg_moist and avg_moist <= 40 :
+        avg_moist_lvl = 1
+    elif 41 <= avg_moist and avg_moist <= 60 :
+        avg_moist_lvl = 2
+    elif 61 <= avg_moist and avg_moist <= 80 :
+        avg_moist_lvl = 3
+    elif 81 <= avg_moist and avg_moist <= 100 :
+        avg_moist_lvl = 4
+        
     #opposite(low, high).
     #opposite(mid, mid).
     #opposite(high, low).
 
-    opposite_config = {'low':'high', 'mid':'mid', 'high':'low'}
-
-    #moist_lvl(0, very_low).
-    #moist_lvl(1, low).
-    #moist_lvl(2, mid).
-    #moist_lvl(3, high).
-    #moist_lvl(4, very_high).
-
-    moist_lvl_id_config = {'very_low':0,'low':1,'mid':2,'high':3,'very_high':4}
+    opposite_config = {'very_low':'very_high','low':'high', 'mid':'mid', 'high':'low', 'very_high':'very_low', 'none':'none'}
 
     #Need Rules
 
-    #valid_moist(PL, M) :- plant(PL), plant_moist_lvl(PL, MINL, MAXL), 
-    #           moist_min_range(MIN, MINL), M >= MIN, 
-    #           moist_max_range(MAX, MAXL), M =< MAX.
+    #valid_moist(PL, M) :- plant(PL), plant_moist_lvl(PL, MINL, MAXL),
+    #                       lvl(MINI, MINL),  lvl(MAXI, MAXL),
+    #                       moist_range_lvl(MIN, MAX, I), M >= MIN, M =< MAX,
+    #                       I >= MINI, I =< MAXI.
 
-    valid_moist = []
+    valid_moist = [] 
 
-    #As along as plant data is managable only by admin, but however it can grow
-    #plants_valid_moist = Plant.objects.filter(moist_data__av
-    for plant in plants :
-        minimum = min_moist_config[plant.moist_data.min_moist_lvl]
-        maximum = max_moist_config[plant.moist_data.max_moist_lvl]
-        if avg_moist >= minimum and avg_moist <= maximum :
-            valid_moist.append(plant)
+    plants_valid_moist = Plant.objects.filter(moist_data__min_moist_lvl__lte=avg_moist_lvl, moist_data__max_moist_lvl__gte=avg_moist_lvl)
+
+    #print(avg_moist_lvl)
+
+    print(plants_valid_moist)
+                                              
+    for plant in plants_valid_moist :
+    #    minimum = min_moist_config[plant.moist_data.min_moist_lvl]
+    #    maximum = max_moist_config[plant.moist_data.max_moist_lvl]
+    #    if avg_moist >= minimum and avg_moist <= maximum :
+        valid_moist.append(plant)
     
 
     #valid_acid(PL, A) :- plant(PL), plant_ph(PL, MIN, MAX), A >= MIN, A =< MAX.
 
     valid_ph = []
+
+    plants_valid_ph = Plant.objects.filter(ph_data__min_ph__lte=avg_acidity, ph_data__max_ph__gte=avg_acidity)
+
+    print(plants_valid_ph)
     
-    for plant in plants :
-        minimum = float(plant.ph_data.min_ph)
-        maximum = float(plant.ph_data.max_ph)
-        if avg_acidity >= minimum and avg_acidity <= maximum :
-            valid_ph.append(plant)
+    for plant in plants_valid_ph :
+    #    minimum = float(plant.ph_data.min_ph)
+    #    maximum = float(plant.ph_data.max_ph)
+    #    if avg_acidity >= minimum and avg_acidity <= maximum :
+        valid_ph.append(plant)
 
     
     #recommend_plant(PL, M, A) :- plant(PL), valid_moist(PL, M), valid_acid(PL, A).
@@ -707,31 +723,28 @@ def get_recommendations(request):
 
     #nutrient_level(A, N, P, K) :- ph_NPK(MIN, MAX, N, P, K), A >= MIN, A =< MAX.
 
-    dataset = NpkPerPh.objects.all()
-    npk_data = None
-    n_lvl = 'none'
-    p_lvl = 'none'
-    k_lvl = 'none'
+    #dataset = NpkPerPh.objects.all()
+    npk_data = NpkPerPh.objects.filter(min_ph__lte=avg_acidity, max_ph__gt=avg_acidity)[0]
+    n_lvl = npk_data.n_lvl
+    p_lvl = npk_data.p_lvl
+    k_lvl = npk_data.k_lvl
 
-    for data in dataset :
-        minimum = float(data.min_ph)
-        maximum = float(data.max_ph)
-        if avg_acidity >= minimum and avg_acidity <= maximum :
-            n_lvl = data.n_lvl
-            p_lvl = data.p_lvl
-            k_lvl = data.k_lvl
-            npk_data = data
-            break
+    #for data in dataset :
+    #    minimum = float(data.min_ph)
+    #    maximum = float(data.max_ph)
+     #   if minimum <= avg_acidity and avg_acidity <= maximum :
+    #        n_lvl = lvl_config[data.n_lvl]
+     ##       p_lvl = lvl_config[data.p_lvl]
+     #       k_lvl = lvl_config[data.k_lvl]
+     #       npk_data = data
+      #      break
 
     #recommend_nutrient(A, NX, PX, KX) :- nutrient_level(A, N, P, K),
     #    opposite(N, NX), opposite(P, PX), opposite(K, KX).
 
-    recommend_n_lvl = opposite_config[n_lvl]
-    recommend_p_lvl = opposite_config[p_lvl]
-    recommend_k_lvl = opposite_config[k_lvl]
-
-    
-
+    recommend_n_lvl = int(lvl_config_to_index[opposite_config[lvl_config[n_lvl]]])
+    recommend_p_lvl = int(lvl_config_to_index[opposite_config[lvl_config[p_lvl]]])
+    recommend_k_lvl = int(lvl_config_to_index[opposite_config[lvl_config[k_lvl]]])
 
     #recommend(PL, NX, PX, KX, S, M, A) :- plant(PL),
     #   recommend_plant(PL, M, A),
@@ -739,8 +752,14 @@ def get_recommendations(request):
     #   recommend_soil_type(PL, S).
 
     soils_set = SoilType.objects.all() #Good to do this as long as SoilType has small size, which is normally small
+
+    print(recommend_n_lvl)
+    print(recommend_p_lvl)
+    print(recommend_k_lvl)
     
     recommendation_obj = Recommendation.objects.create(soil_id=soil_profile_on_use, npk_match_ph=npk_data, recco_time=get_current_time(), recco_n_lvl=recommend_n_lvl, recco_p_lvl=recommend_p_lvl, recco_k_lvl=recommend_k_lvl)
+
+    
 
     #O(n), as along as soils_set has constant number of members, managed by admins staffs only
     for plant in recommended_plants :
@@ -751,10 +770,10 @@ def get_recommendations(request):
         #    soil_good_for_moist(S, MINS, MAXS), MINS =< MIN, MAXS >= MAX.
 
         for soil in soils_set :
-            soil_min_id = moist_lvl_id_config[soil.good_for_min_moist_lvl]
-            soil_max_id = moist_lvl_id_config[soil.good_for_max_moist_lvl]
-            plant_min_id = moist_lvl_id_config[plant.moist_data.min_moist_lvl]
-            plant_max_id = moist_lvl_id_config[plant.moist_data.max_moist_lvl]
+            soil_min_id = soil.good_for_min_moist_lvl
+            soil_max_id = soil.good_for_max_moist_lvl
+            plant_min_id = plant.moist_data.min_moist_lvl
+            plant_max_id = plant.moist_data.max_moist_lvl
             if plant_min_id >= soil_min_id  and plant_max_id <= soil_max_id :
                 soil_data = soil
 
@@ -792,15 +811,17 @@ def load_latest_npk_recommendation(request):
 
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
+    lvl_config = ['very_low','low','mid','high','very_high']
+
     #Get latest recommendation for the soil profile
     recommendations = Recommendation.objects.filter(soil_id=soil_profile_on_use)
     if len(recommendations) <= 0:
         return JsonResponse({'n_lvl':'none', 'p_lvl':'none', 'k_lvl':'none'}, safe=False)
     recommendation = recommendations[len(recommendations)-1]
 
-    n_lvl = recommendation.recco_n_lvl
-    p_lvl = recommendation.recco_p_lvl
-    k_lvl = recommendation.recco_k_lvl
+    n_lvl = lvl_config[recommendation.recco_n_lvl]
+    p_lvl = lvl_config[recommendation.recco_p_lvl]
+    k_lvl = lvl_config[recommendation.recco_k_lvl]
         
 
     return JsonResponse({'n_lvl':n_lvl, 'p_lvl':p_lvl, 'k_lvl':k_lvl}, safe=False)

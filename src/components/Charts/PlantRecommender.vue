@@ -5,6 +5,7 @@
     <div class="plant-list">
       <h3 v-for="plant in plants_list" :key="plant.id"><a href="#" class="plant" v-on:click="showPlantInfo(plant.id)">{{ plant.name }}</a>, <a class="soil">{{ plant.soil_type }} Soil</a></h3>
       <h3 v-if="!showing_results">-Results are not shown while recording-</h3>
+      <h3 id="loading" v-if="loading && showing_results">Loading...</h3>
       <h3 id="none" v-if="empty && showing_results">-None-</h3>
     </div>
 
@@ -32,6 +33,7 @@ export default {
       plants_list: [],
       showing_results: true,
       empty: true,
+      loading: false,
       good_avg_moist: 0.0,
       good_avg_acidity: 7.0,
       n_lvl: 'Unknown',
@@ -45,6 +47,9 @@ export default {
       if (selected <= 0) {
         return
       }
+
+      this.empty = false
+      this.loading = true
       
       axios.post("/get_good_moist_ph_values", {
         'soil_profile_id': selected
@@ -72,6 +77,8 @@ export default {
         return
       }
 
+
+
       axios.post("/load_latest_plants_recommendation", {
                 'soil_profile_id': selected
               })
@@ -83,6 +90,8 @@ export default {
                         this.empty = false
                       }
                       this.showing_results = true
+
+                      this.loading = false
                     })
       
       axios.post("/load_latest_npk_recommendation", {
@@ -100,7 +109,7 @@ export default {
     reset() {
       this.showing_results = false
       this.plants_list = []
-      this.empty = true
+      this.empty = false
       this.n_lvl = 'Unknown'
       this.p_lvl = 'Unknown'
       this.k_lvl = 'Unknown'
