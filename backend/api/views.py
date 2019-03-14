@@ -696,9 +696,6 @@ def get_recommendations(request):
     print(plants_valid_moist)
                                               
     for plant in plants_valid_moist :
-    #    minimum = min_moist_config[plant.moist_data.min_moist_lvl]
-    #    maximum = max_moist_config[plant.moist_data.max_moist_lvl]
-    #    if avg_moist >= minimum and avg_moist <= maximum :
         valid_moist.append(plant)
     
 
@@ -711,9 +708,6 @@ def get_recommendations(request):
     print(plants_valid_ph)
     
     for plant in plants_valid_ph :
-    #    minimum = float(plant.ph_data.min_ph)
-    #    maximum = float(plant.ph_data.max_ph)
-    #    if avg_acidity >= minimum and avg_acidity <= maximum :
         valid_ph.append(plant)
 
     
@@ -723,7 +717,6 @@ def get_recommendations(request):
 
     print(recommended_plants)
 
-
     #nutrient_level(A, N, P, K) :- ph_NPK(MIN, MAX, N, P, K), A >= MIN, A =< MAX.
 
     #dataset = NpkPerPh.objects.all()
@@ -731,16 +724,6 @@ def get_recommendations(request):
     n_lvl = npk_data.n_lvl
     p_lvl = npk_data.p_lvl
     k_lvl = npk_data.k_lvl
-
-    #for data in dataset :
-    #    minimum = float(data.min_ph)
-    #    maximum = float(data.max_ph)
-     #   if minimum <= avg_acidity and avg_acidity <= maximum :
-    #        n_lvl = lvl_config[data.n_lvl]
-     ##       p_lvl = lvl_config[data.p_lvl]
-     #       k_lvl = lvl_config[data.k_lvl]
-     #       npk_data = data
-      #      break
 
     #recommend_nutrient(A, NX, PX, KX) :- nutrient_level(A, N, P, K),
     #    opposite(N, NX), opposite(P, PX), opposite(K, KX).
@@ -762,12 +745,8 @@ def get_recommendations(request):
     
     recommendation_obj = Recommendation.objects.create(soil_id=soil_profile_on_use, npk_match_ph=npk_data, recco_time=get_current_time(), recco_n_lvl=recommend_n_lvl, recco_p_lvl=recommend_p_lvl, recco_k_lvl=recommend_k_lvl)
 
-    
-
     #O(n), as along as soils_set has constant number of members, managed by admins staffs only
     for plant in recommended_plants :
-        #plants_list.append({'id':plant.id, 'name':plant.moist_data.plant_name})
-
         #recommend_soil_type(PL, S) :- plant(PL), soil_type(S),
         #    plant_moist_lvl(PL, MINL, MAXL), moist_lvl(MIN, MINL), moist_lvl(MAX, MAXL),
         #    soil_good_for_moist(S, MINS, MAXS), MINS =< MIN, MAXS >= MAX.
