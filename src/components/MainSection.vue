@@ -193,6 +193,7 @@ export default {
       this.readFromSensors()
       if (!this.timer) {
           this.timer = setInterval( () => {
+            console.log(this.time)
             if (this.time > 0) {
                this.time--
             } else {
@@ -221,46 +222,23 @@ export default {
       //this.recheckConnection()
 
     },
-    triggerSensor() {
-      if (this.selected <= 0) {
-        return
-      }
-
-      if (this.timer_running) {
-        this.stopSensor()
-        this.$refs.plant_rec.getData(this.selected) //Where the fun begins
-        //this.$refs.all_ch.getData(this.selected)
-        this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start Sensors" for the best accuracy of plant recommendation.'
-        this.connection_timer_idle_enable()
-      } else {
-        axios.post("/get_connection_status", {
-            'port': this.port
-          })
-            .then((response) => {
-              this.status_msg = response.data
-
-              if (this.status_msg == 'Connected') {
-                  this.status_color = 'green'
-                  this.connection_timer_idle_disable()
-                  this.startSensor()
-                  this.btn_note = 'Click "Stop Sensors" to see the result of the plant recommendation.'
-
-                  this.$refs.plant_rec.reset()
-                  //this.$refs.all_ch.reset()
-
-                } else {
-                  this.status_color = 'red'
-                }
-            })
-
-        
-      }
+    connection_timer_idle_enable() {
+      if (!this.timer_connection) {
+          this.timer_connection = setInterval( () => {
+            console.log(this.time_connection)
+            if (this.time_connection > 0) {
+               this.time_connection--
+            } else {
+               this.time_connection = 4
+               this.recheckConnection()
+            }
+          }, 1000 )
+       }
     },
-    doLogout() {
-    	this.$store.commit('updateToken', '')
-    	this.$store.commit("setAuthUser", {authUser: '', isAuthenticated: false})
-      this.$store.state.selected_soil_profile = 0
-    	router.push('/')
+    connection_timer_idle_disable() {
+      this.time_connection = 4
+      clearInterval(this.timer_connection)
+      this.timer_connection = null
     },
     recheckConnection() {
       axios.post("/get_connection_status", {
@@ -276,6 +254,57 @@ export default {
               }
             })
     },
+    triggerSensor() {
+      if (this.selected <= 0) {
+        return
+      }
+
+      if (this.timer_running) {
+        this.status_msg = 'Resetting...'
+        this.stopSensor()
+        this.$refs.plant_rec.getData(this.selected) //Where the fun begins
+        //this.$refs.all_ch.getData(this.selected)
+        this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start Sensors" for the best accuracy of plant recommendation.'
+        const sleep = (milliseconds) => {
+          return new Promise(resolve => setTimeout(resolve, milliseconds))
+        }
+        sleep(4500).then(() => {
+          //do stuff
+          this.recheckConnection()
+          this.connection_timer_idle_enable()
+        })
+      } else {
+        this.connection_timer_idle_disable()
+        axios.post("/get_connection_status", {
+            'port': this.port
+          })
+            .then((response) => {
+              this.status_msg = response.data
+
+              if (this.status_msg == 'Connected') {
+                  this.status_color = 'green'
+                  
+                  this.startSensor()
+                  this.btn_note = 'Click "Stop Sensors" to see the result of the plant recommendation.'
+
+                  this.$refs.plant_rec.reset()
+                  //this.$refs.all_ch.reset()
+
+                } else {
+                  this.status_color = 'red'
+                  this.connection_timer_idle_enable()
+                }
+            })
+
+        
+      }
+    },
+    doLogout() {
+    	this.$store.commit('updateToken', '')
+    	this.$store.commit("setAuthUser", {authUser: '', isAuthenticated: false})
+      this.$store.state.selected_soil_profile = 0
+    	router.push('/')
+    },
     reloadGraph(selected) {
       //this.$refs.all_ch.getData(selected)
       //this.$refs.moist_ch.getData(selected)
@@ -286,23 +315,6 @@ export default {
       this.$refs.plant_rec.getDataWithoutUpdating(selected)
       //this.$refs.scatter_ch.getData(selected)
       
-    },
-    connection_timer_idle_enable() {
-      if (!this.timer_connection) {
-          this.timer_connection = setInterval( () => {
-            if (this.time_connection > 0) {
-               this.time_connection--
-            } else {
-               this.time_connection = 4
-               this.recheckConnection()
-            }
-          }, 1000 )
-       }
-    },
-    connection_timer_idle_disable() {
-      this.time_connection = 4
-      clearInterval(this.timer_connection)
-      this.timer_connection = null
     }
   },
   mounted(){
