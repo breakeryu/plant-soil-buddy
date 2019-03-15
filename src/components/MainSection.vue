@@ -207,7 +207,7 @@ export default {
       //this.$refs.moist_ch.triggerStartStop()
       //this.$refs.acidity_ch.triggerStartStop()
 
-      this.btn_text = "Start Sensors"
+      this.btn_text = "Resetting Sensors..."
       this.timer_running = false
       this.time = 6
       clearInterval(this.timer)
@@ -272,6 +272,7 @@ export default {
           //do stuff
           this.recheckConnection()
           this.connection_timer_idle_enable()
+          this.btn_text = "Start Sensors"
         })
       } else {
         this.connection_timer_idle_disable()
