@@ -600,8 +600,8 @@ def get_good_moist_ph_values(request):
     fresh_numpy_data = get_fresh_numpy_data_of_soil_profile(data['soil_profile_id'])
     
     total_rows = fresh_numpy_data.shape[0]
-    if total_rows <= 0 :
-        return JsonResponse([], safe=False)
+    if total_rows < 3 :
+        return HttpResponseBadRequest("Number of Sensors Records of this soil profile is less than 3, cannot analyze.")
 
     cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
 
@@ -694,7 +694,8 @@ def get_recommendations(request):
     #print(avg_moist_lvl)
 
     print(plants_valid_moist)
-                                              
+
+    #QuerySet to List (python readable)                                   
     for plant in plants_valid_moist :
         valid_moist.append(plant)
     
@@ -706,7 +707,8 @@ def get_recommendations(request):
     plants_valid_ph = Plant.objects.filter(ph_data__min_ph__lte=avg_acidity, ph_data__max_ph__gte=avg_acidity)
 
     print(plants_valid_ph)
-    
+
+    #QuerySet to List (python readable)   
     for plant in plants_valid_ph :
         valid_ph.append(plant)
 
@@ -773,8 +775,9 @@ def load_latest_plants_recommendation(request):
 
     #Get latest recommendation for the soil profile
     recommendations = Recommendation.objects.filter(soil_id=soil_profile_on_use)
-    if len(recommendations) <= 0:
-        return JsonResponse([], safe=False)
+    print(recommendations.count())
+    if recommendations.count() <= 0:
+        return HttpResponse('None')
     recommendation = recommendations[len(recommendations)-1]
 
     recommended_plants = RecommendedPlant.objects.filter(recco_id=recommendation)
@@ -797,7 +800,7 @@ def load_latest_npk_recommendation(request):
 
     #Get latest recommendation for the soil profile
     recommendations = Recommendation.objects.filter(soil_id=soil_profile_on_use)
-    if len(recommendations) <= 0:
+    if recommendations.count() <= 0:
         return JsonResponse({'n_lvl':'none', 'p_lvl':'none', 'k_lvl':'none'}, safe=False)
     recommendation = recommendations[len(recommendations)-1]
 
