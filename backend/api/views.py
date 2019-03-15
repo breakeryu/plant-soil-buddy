@@ -775,7 +775,6 @@ def load_latest_plants_recommendation(request):
 
     #Get latest recommendation for the soil profile
     recommendations = Recommendation.objects.filter(soil_id=soil_profile_on_use)
-    print(recommendations.count())
     if recommendations.count() <= 0:
         return HttpResponse('None')
     recommendation = recommendations[len(recommendations)-1]

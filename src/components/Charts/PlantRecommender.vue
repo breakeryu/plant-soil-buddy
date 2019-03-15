@@ -95,7 +95,7 @@ export default {
       if (selected <= 0) {
         return
       }
-
+      this.failed = false
       axios.post("/load_latest_plants_recommendation", {
                 'soil_profile_id': selected
               })

@@ -211,6 +211,8 @@ export default {
       this.time = 6
       clearInterval(this.timer)
       this.timer = null
+      this.current_moist = '-'
+      this.current_acidity = '-'
 
       //this.$refs.moist_ch.current_data = 0
       //this.$refs.acidity_ch.current_data = 7
