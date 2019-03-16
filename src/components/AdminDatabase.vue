@@ -13,16 +13,23 @@
     <br><br>
     <button class="normal-btn exit-btn push" v-on:click="goBack" :disabled="pushing">Back</button><br>
     
+    <loading :active.sync="pushing" 
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
+
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 import router from '@/router'
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
 
 export default {
   name: 'AdminDatabase',
   components: { 
+    Loading
   },
   data () {
     return {
@@ -73,7 +80,7 @@ export default {
 
   },
   mounted(){
-      
+
   }
 }
 </script>

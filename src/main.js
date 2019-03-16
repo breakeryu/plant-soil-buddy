@@ -10,6 +10,7 @@ import jwt_decode from 'jwt-decode'
 import Vuex from 'vuex'
 import VueTemperatureFilter from 'vue-temperature-filter'
 import Notifications from 'vue-notification'
+import VueSpinners from 'vue-spinners'
 
 Vue.use(Vuex);
 Vue.use(VueAxios, axios);
@@ -17,6 +18,7 @@ Vue.use(VueTemperatureFilter, {
   showText: true
 })
 Vue.use(Notifications)
+Vue.use(VueSpinners)
 
 Vue.config.productionTip = false
 
