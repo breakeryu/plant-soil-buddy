@@ -2,16 +2,16 @@
   <div>
     <h1>Admin Database Management</h1>
 
-    <button class="normal-btn" v-on:click="pushPHtoNPKdata" :disabled="pushing">Data pH to NPK Push</button>
+    <button class="normal-btn push" v-on:click="pushPHtoNPKdata" :disabled="pushing">Data pH to NPK Push</button>
 
     <br>
-    <button class="normal-btn" v-on:click="pushPlantsData" :disabled="pushing">Data Plants Push</button>
+    <button class="normal-btn push" v-on:click="pushPlantsData" :disabled="pushing">Data Plants Push</button>
 
     <br>
-    <button class="normal-btn" v-on:click="pushSoilTypesData" :disabled="pushing">Data Soil Types Push</button>
+    <button class="normal-btn push" v-on:click="pushSoilTypesData" :disabled="pushing">Data Soil Types Push</button>
 
     <br><br>
-    <button class="normal-btn exit-btn" v-on:click="goBack" :disabled="pushing">Back</button><br>
+    <button class="normal-btn exit-btn push" v-on:click="goBack" :disabled="pushing">Back</button><br>
     
   </div>
 </template>
@@ -116,5 +116,8 @@ input, .normal-btn {
 }
 .exit-btn {
   background-color: red;
+}
+button:disabled, .push:disabled {
+  background-color: grey;
 }
 </style>
