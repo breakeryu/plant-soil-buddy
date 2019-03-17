@@ -355,6 +355,16 @@ def delete_soil_profile(request):
         return None
 
 @csrf_exempt
+def get_total_records_per_soil(request):
+    data = json.loads(request.body)
+    
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+
+    total_records = SensorRecord.objects.filter(soil_id=soil_profile_on_use).count()
+
+    return HttpResponse(total_records)
+
+@csrf_exempt
 def get_all_values(request):
     global moist_chart_data
     global moist

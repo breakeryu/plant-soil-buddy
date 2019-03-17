@@ -31,6 +31,7 @@
     <h3>Moist: {{ current_moist }}</h3>
     <h3>Acidity: {{ current_acidity }}</h3>
     <h4> Record snap time : {{ time }} seconds</h4>
+    <h4> Total Records of Soil Profile : {{ n_records }}</h4>
     </div>
     <br>
 
@@ -100,6 +101,7 @@ export default {
       timer_running: false,
       timer: null,
       time: 6,
+      n_records: 0,
       btn_text: "Start Sensors",
       port: 'COM8',
       soil_profiles : [],
@@ -152,6 +154,16 @@ export default {
               this.current_data = response.data
             })
     },
+    getTotalNumberOfRecords() {
+      axios.post("/get_total_records_per_soil", {
+            'soil_profile_id': this.selected
+          })
+            .then((response) => {
+
+              this.n_records = parseInt(response.data)
+                
+            })
+    },
     readFromSensors() {
       axios.post("/get_all_values", {
             'port': this.port,
@@ -174,6 +186,8 @@ export default {
                         this.current_acidity = response.data.toString() + ' pH'
                       }
                     })
+
+                  this.getTotalNumberOfRecords()
 
                   this.$store.state.selected_soil_profile = this.selected
                 } else {
@@ -314,6 +328,7 @@ export default {
       this.$store.state.selected_soil_profile = selected
       
       this.$refs.plant_rec.getDataWithoutUpdating(selected)
+      this.getTotalNumberOfRecords()
       //this.$refs.scatter_ch.getData(selected)
       
     }

@@ -40,6 +40,8 @@ urlpatterns = [
     path('clear_soil_profile', clear_soil_profile),
     path('delete_soil_profile', delete_soil_profile),
 
+    path('get_total_records_per_soil', get_total_records_per_soil),
+
     path('get_all_values', get_all_values),
 
     path('get_all_values_as_scatter', get_all_values_as_scatter),
