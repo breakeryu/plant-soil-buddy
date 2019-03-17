@@ -60,7 +60,11 @@ export default {
             //self.type = req.data.type;
             
         if (req.data == 'Success'){
-          alert('Success')
+          this.$notify({
+                group: 'notify',
+                title: 'Password Change',
+                text: 'Success'
+          })
           router.push("main")
         } else {
           this.failed = true
