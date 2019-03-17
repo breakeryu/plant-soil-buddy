@@ -368,7 +368,12 @@ export default {
             'username': this.username
           })
             .then((response) => {
-              this.email = response.data['email']
+              if (response.data['email'] != '') {
+                this.email = response.data['email']
+              } else {
+                this.email = '-'
+              }
+              
               var staff = response.data['is_staff']
               if (staff == 'True') {
                 this.is_staff = true

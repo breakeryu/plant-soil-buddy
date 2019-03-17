@@ -8,7 +8,7 @@
       <input v-model="username" type="text" name="username"><br>
       <hr>
       <h3>Email</h3>
-      <h5 class="info">Optional.</h5>
+      <h5 class="info">Optional. But must contains '@'' and '.'' in order.</h5>
       <input v-model="email" type="text" name="email"><br>
       <hr>
       <h3>Password</h3>
