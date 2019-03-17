@@ -2,7 +2,7 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h3>User: {{ username }}</h3>
-    <br>
+    <hr>
     <h3 class="warning" v-if="failed">{{ failed_msg }}</h3>
     <form class="form-regis" v-on:submit.prevent="changePassword">
       <h3>Old Password</h3>
