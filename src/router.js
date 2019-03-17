@@ -12,6 +12,7 @@ import PlantInfo from '@/components/PlantInfo'
 import AdminDatabase from '@/components/AdminDatabase'
 import PasswordChangeForm from '@/components/PasswordChangeForm'
 import ScatterProof from '@/components/Charts/ScatterProof'
+import EmailChangeForm from '@/components/EmailChangeForm'
 
 Vue.use(VueRouter)
 
@@ -65,6 +66,10 @@ export default new VueRouter({
     {
       path: '/scatterchart',
       component: ScatterProof
+    },
+    {
+      path: '/changeemail',
+      component: EmailChangeForm
     }
   ]
 })

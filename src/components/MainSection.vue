@@ -31,7 +31,7 @@
     <h3>Moist: {{ current_moist }}</h3>
     <h3>Acidity: {{ current_acidity }}</h3>
     <h4> Record snap time : {{ time }} seconds</h4>
-    <h4> <a href="#" v-on:click="goToScatterPlot()">Total Records</a> of Soil Profile : {{ n_records }}</h4>
+    <h4> <a href="#" v-on:click="goToScatterPlot">Total Records</a> of Soil Profile : {{ n_records }}</h4>
     </div>
     <br>
 
@@ -64,6 +64,8 @@
     </div>
     <br v-if="is_staff">
     <button id="staff-btn" class="normal-btn" v-if="is_staff" v-on:click="toAdmin">Update Knowledge Base (Admin Only)</button>
+    <br>
+    <button class="normal-btn" v-on:click="emailChange">Change E-mail</button><br>
     <br>
     <button class="normal-btn" v-on:click="pwdChange">Change Password</button><br>
     <br>
@@ -118,6 +120,9 @@ export default {
     },
     pwdChange() {
       router.push("changepwd")
+    },
+    emailChange() {
+      router.push("changeemail")
     },
     soilProfileAdd() {
         router.push('addsoil')

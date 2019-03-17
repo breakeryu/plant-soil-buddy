@@ -30,6 +30,7 @@ urlpatterns = [
     path('user', user),
     path('user_info', user_info),
 
+    path('change_email', change_email),
     path('change_password', change_password),
 
     path('get_soil_profiles', get_soil_profiles),

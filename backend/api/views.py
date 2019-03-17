@@ -209,6 +209,26 @@ def change_password(request) :
         return HttpResponse('Success')
 
 @csrf_exempt
+def change_email(request) :
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        user = User.objects.get(username=data['username'])
+
+        if not data['email'] == '':
+            try:
+                validate_email(data['email'])
+            except ValidationError:
+                return HttpResponseBadRequest('Invalid Email Format')
+
+        try:
+            User.objects.filter(pk=user.id).update(email=data['email'])
+        except User.DoesNotExist:
+            return HttpResponseBadRequest('User does not exist')
+
+        return HttpResponse('Success')
+
+@csrf_exempt
 def user(request):
     if request.method == 'POST':
         data = json.loads(request.body)
