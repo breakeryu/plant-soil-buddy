@@ -320,11 +320,15 @@ def clear_soil_profile(request):
         except SoilProfile.DoesNotExist:
             return HttpResponseBadRequest('Soil Profile does not exist')
 
-        records = SensorRecord.objects.all()
+        records = SensorRecord.objects.filter(soil_id=soil_profile)
+
+        recommendations = Recommendation.objects.filter(soil_id=soil_profile)
 
         for record in records :
-            if record.soil_profile == soil_profile :
-                record.delete()
+            record.delete()
+
+        for recommendation in recommendations :
+            recommendation.delete()
 
         return HttpResponse('Success')
 

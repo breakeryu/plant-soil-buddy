@@ -9,6 +9,10 @@
 
     <button id="trig-btn" class="normal-btn normal-btn soil-btn submit-btn" v-on:click="add">Add</button>
     <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="cancel">Cancel</button>
+
+    <loading :active.sync="action" 
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
     
   </div>
 </template>
@@ -17,9 +21,13 @@
 import axios from 'axios'
 import router from '@/router'
 
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/vue-loading.css'
+
 export default {
   name: 'AddSoilProfile',
   components: { 
+    Loading
   },
   data () {
     return {
@@ -27,11 +35,13 @@ export default {
       name: '',
       location: '',
       failed: false,
-      failed_msg: ''
+      failed_msg: '',
+      action: false
     }
   },
   methods: {
     add() {
+      this.action = true
       axios.post("/add_soil_profile", {
         'username' : this.username,
         'name': this.name,
@@ -48,6 +58,7 @@ export default {
               
             })
             .catch((error) => {
+              this.action = false
           if (error.response.status >= 400 && error.response.status < 500) {
             this.failed = true
             this.failed_msg = error.response.data

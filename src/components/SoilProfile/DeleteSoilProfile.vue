@@ -10,6 +10,10 @@
 
     <button id="trig-btn" class="normal-btn normal-btn soil-btn exit-btn" v-on:click="deleteSoil">Delete</button>
     <button id="trig-btn" class="normal-btn normal-btn soil-btn" v-on:click="cancel">Cancel</button>
+
+    <loading :active.sync="action" 
+        :can-cancel="false" 
+        :is-full-page="true"></loading>
     
   </div>
 </template>
@@ -18,9 +22,13 @@
 import axios from 'axios'
 import router from '@/router'
 
+import Loading from 'vue-loading-overlay'
+import 'vue-loading-overlay/dist/vue-loading.css'
+
 export default {
   name: 'DeleteSoilProfile',
   components: { 
+    Loading
   },
   data () {
     return {
@@ -28,11 +36,13 @@ export default {
       old_name: '',
       old_location: '',
       soil_profile_id: 0,
-      soil_profile: []
+      soil_profile: [],
+      action: false
     }
   },
   methods: {
     deleteSoil() {
+      this.action = true
       axios.post("/delete_soil_profile", {
         'soil_profile_id' : this.soil_profile_id
       })
@@ -45,10 +55,19 @@ export default {
               router.push('main')
             })
             .catch((error) => {
+            this.action = false
           if (error.response.status >= 400 && error.response.status < 500) {
-            alert(error.response.data)
+            this.$notify({
+              group: 'notify',
+              title: 'Error',
+              text: error.response.data
+            })
           } else {
-            alert('Internal Server Error')
+            this.$notify({
+              group: 'notify',
+              title: 'Error',
+              text: 'Internal Server Error'
+            })
           }
         })
     },
