@@ -154,6 +154,15 @@ export default {
         })
         return
       }
+
+      if (this.timer_running) {
+        this.$notify({
+          group: 'notify',
+          title: 'Conflict error',
+          text: 'You are currently recording.'
+        })
+        return
+      }
       router.push('scatterchart')
     },
     snapReset() {
@@ -295,6 +304,8 @@ export default {
           this.recheckConnection()
           this.connection_timer_idle_enable()
           this.btn_text = "Start Sensors"
+          this.current_moist = '-'
+          this.current_acidity = '-'
         })
       } else {
         this.connection_timer_idle_disable()

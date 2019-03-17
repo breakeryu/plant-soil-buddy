@@ -19,6 +19,7 @@
       <h3>K (Potassium) to fill : <a class="nutrient">{{ k_lvl }}</a></h3>
       </div>
       <br>
+
   </div>
 </template>
 
@@ -66,6 +67,7 @@ export default {
             .then((response) => {
               this.good_avg_moist = parseFloat(response.data['avg_good_moist'])
               this.good_avg_acidity = parseFloat(response.data['avg_good_acidity'])
+
 
               axios.post("/get_recommendations", {
                 'soil_profile_id': selected,
