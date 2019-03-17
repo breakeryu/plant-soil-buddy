@@ -65,11 +65,11 @@
     <br v-if="is_staff">
     <button id="staff-btn" class="normal-btn" v-if="is_staff" v-on:click="toAdmin">Update Knowledge Base (Admin Only)</button>
     <br>
-    <button class="normal-btn" v-on:click="emailChange">Change E-mail</button><br>
+    <button class="user-btn normal-btn" v-on:click="emailChange">Change E-mail</button><br>
     <br>
-    <button class="normal-btn" v-on:click="pwdChange">Change Password</button><br>
+    <button class="user-btn normal-btn" v-on:click="pwdChange">Change Password</button><br>
     <br>
-    <button class="normal-btn exit-btn" v-on:click="doLogout">Logout</button><br>
+    <button class="logout-btn normal-btn exit-btn" v-on:click="doLogout">Logout</button><br>
 
   </div>
 </template>
@@ -420,6 +420,12 @@ input:focus {
   font-size: 16px;
   height: 35px;
   margin-bottom: 30px;
+}
+.user-btn {
+  margin-bottom: 10px;
+}
+.logout-btn {
+  margin-top: 20px;
 }
 #trig-btn {
   width: 350px;
