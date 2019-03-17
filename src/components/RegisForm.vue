@@ -7,6 +7,10 @@
       <h5 class="info">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</h5>
       <input v-model="username" type="text" name="username"><br>
       <hr>
+      <h3>Email</h3>
+      <h5 class="info">Optional.</h5>
+      <input v-model="email" type="text" name="email"><br>
+      <hr>
       <h3>Password</h3>
       <h5 class="info">Your password can't be too similar to your other personal information.</h5>
       <h5 class="info">Your password must contain at least 8 characters.</h5>
@@ -31,6 +35,7 @@ export default {
   data () {
     return {
       username: '',
+      email: '',
       password: '',
       confirm_password: '',
       msg: 'Registeration',
@@ -46,6 +51,7 @@ export default {
 
       const input = {
         'username': this.username,
+        'email': this.email,
         'password' : this.password,
         'confirm_password': this.confirm_password
       }

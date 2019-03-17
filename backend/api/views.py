@@ -45,7 +45,8 @@ from sklearn.cluster import AgglomerativeClustering
 from scipy.cluster.hierarchy import fcluster
 from scipy.cluster.hierarchy import dendrogram, linkage
 
-
+from django.contrib.auth.hashers import make_password, check_password
+from django.core.validators import validate_email
 
 class MessageViewSet(viewsets.ModelViewSet):
     """
@@ -114,6 +115,12 @@ def register(request):
         if data['username'] == data['password'] :
             return HttpResponseBadRequest('Password is too similar to your personal information')
 
+        if not data['email'] == '':
+            try:
+                validate_email(data['email'])
+            except ValidationError:
+                return HttpResponseBadRequest('Invalid Email Format')
+
         if len(data['password']) < 8 :
             return HttpResponseBadRequest('Password must be at least 8 characters')
 
@@ -149,7 +156,7 @@ def register(request):
         else :
             #encrypt_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
             
-            new_user = User(username=data['username'],password=data['password'])
+            new_user = User(username=data['username'], email=data['email'], password=make_password(data['password']))
             new_user.save()
 
             return HttpResponse('Success')
@@ -195,7 +202,7 @@ def change_password(request) :
             return HttpResponseBadRequest('Password Confirm Failed')
 
         try:
-            User.objects.filter(pk=user.id).update(password=data['password'])
+            User.objects.filter(pk=user.id).update(password=make_password(data['password']))
         except User.DoesNotExist:
             return HttpResponseBadRequest('User does not exist')
 
