@@ -52,6 +52,7 @@ export default {
                   title: 'Delete Soil Profile',
                   text: response.data
                 })
+              this.$store.state.selected_soil_profile = 0
               router.push('main')
             })
             .catch((error) => {
