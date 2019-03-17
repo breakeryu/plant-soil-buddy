@@ -82,6 +82,7 @@ h1 {
   font-size: 16px;
   height: 35px;
   margin-bottom: 30px;
+  width: 250px;
 }
 .submit-btn {
   background-color: blue;
