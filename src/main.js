@@ -12,6 +12,7 @@ import VueTemperatureFilter from 'vue-temperature-filter'
 import Notifications from 'vue-notification'
 import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
+import vueHeadful from 'vue-headful'
 
 Vue.use(Vuex);
 Vue.use(VueAxios, axios);
@@ -20,6 +21,7 @@ Vue.use(VueTemperatureFilter, {
 })
 Vue.use(Notifications)
 Vue.use(VueChartkick, {adapter: Chart})
+Vue.component('vue-headful', vueHeadful)
 
 Vue.config.productionTip = false
 

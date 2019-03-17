@@ -1,6 +1,8 @@
 <template>
   <div id="app">
     <img id="logo" src='@/assets/logo-plant-soil-buddy.png'>
+
+    <vue-headful title="Plant Soil Buddy - Plant and Soil Recommender via Arduino Sensors"/>
     <!--
     <div id="nav">
      <router-link :to="{ name: 'home' }">Vue</router-link> |
