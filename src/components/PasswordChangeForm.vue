@@ -127,4 +127,7 @@ input:focus {
 input, .normal-btn {
   width: 200px;
 }
+.exit-btn, .stop {
+  background-color: red;
+}
 </style>

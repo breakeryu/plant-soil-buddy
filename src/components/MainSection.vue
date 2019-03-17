@@ -31,7 +31,7 @@
     <h3>Moist: {{ current_moist }}</h3>
     <h3>Acidity: {{ current_acidity }}</h3>
     <h4> Record snap time : {{ time }} seconds</h4>
-    <h4> Total Records of Soil Profile : {{ n_records }}</h4>
+    <h4> <a href="#" v-on:click="goToScatterPlot()">Total Records</a> of Soil Profile : {{ n_records }}</h4>
     </div>
     <br>
 
@@ -145,7 +145,15 @@ export default {
         //alert('This is the storage of the recorded soil quality data specific to each soil chunk you record.')
         //alert('However, do not record more than 2 different soil chunks for one profile, otherwise the plant recommendation will be inaccurate.')
     },
-    scatterPlot() {
+    goToScatterPlot() {
+      if (this.selected <= 0) {
+        this.$notify({
+          group: 'notify',
+          title: 'Soil Profile not selected',
+          text: 'Please select your soil profile first.'
+        })
+        return
+      }
       router.push('scatterchart')
     },
     snapReset() {

@@ -357,12 +357,16 @@ def delete_soil_profile(request):
 @csrf_exempt
 def get_total_records_per_soil(request):
     data = json.loads(request.body)
-    
-    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
-    total_records = SensorRecord.objects.filter(soil_id=soil_profile_on_use).count()
+    try:
+        soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
-    return HttpResponse(total_records)
+        total_records = SensorRecord.objects.filter(soil_id=soil_profile_on_use).count()
+
+        return HttpResponse(total_records)
+
+    except SoilProfile.DoesNotExist :
+        return HttpResponse(0)
 
 @csrf_exempt
 def get_all_values(request):
@@ -517,7 +521,7 @@ def get_average_moist(request):
 def get_average_acidity(request):
     global avg_acidity
 
-    data = json.loads(request.body)
+    data = json.loads(reque.DoesNotExistst.body)
 
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
@@ -582,25 +586,34 @@ def get_all_values_as_scatter(request):
 
     data = json.loads(request.body)
 
-    fresh_numpy_data = get_fresh_numpy_data_of_soil_profile(data['soil_profile_id'])
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+    
+    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
 
-    total_rows = fresh_numpy_data.shape[0]
+    dataset = []
+
+    for record in records :
+        dataset.append([float(record.moist), float(record.ph)])
+
+    total_rows = len(dataset)
     if total_rows <= 0 :
         return JsonResponse([], safe=False)
 
-    cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
-
-    i = 0
-    chart_data = []
-    for data_row in fresh_numpy_data :
-        if cluster_labels[i] == most_frequent_cluster_index :
-            good = '1'
-        else :
-            good = '0'
-        chart_data.append({'moist':str(data_row[0]), 'acidity': str(data_row[1]), 'cluster_group': str(cluster_labels[i]), 'good':good})
-        i += 1
     
-    return JsonResponse(chart_data, safe=False)
+
+    #cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
+
+    #i = 0
+    #chart_data = []
+    #for data_row in fresh_numpy_data :
+    #    if cluster_labels[i] == most_frequent_cluster_index :
+    #        good = '1'
+    #    else :
+    #        good = '0'
+    #    chart_data.append({'moist':str(data_row[0]), 'acidity': str(data_row[1]), 'cluster_group': str(cluster_labels[i]), 'good':good})
+    #    i += 1
+    
+    return JsonResponse(dataset, safe=False)
 
 
 @csrf_exempt
