@@ -19,6 +19,12 @@
       </a>
     
       <hr>
+      <h1><u>Sensor Recording Statistics</u></h1>
+      <br>
+      <h4> Total Records of Soil Profile : {{ n_records }}</h4>
+
+      <button class="normal-btn update-btn" v-on:click="goToScatterPlot" :disabled="selected == 0"">View Recorded Data Scatter Plot</button>
+      <!--
       <h1><u>Sensor Recording Monitor</u></h1> 
       <br>
       <h2><u>Device Management</u></h2>
@@ -43,10 +49,14 @@
   
   <br>
   
-    
+     -->
 
     <br><hr>
+ 
     <h1><u>Recommendation</u></h1>
+    <br>
+    <h2><u>Analysis</u></h2>
+    <button class="normal-btn update-btn" v-on:click="analysisRecordsForRecommendation" :disabled="selected == 0"">Update Recommendation</button>
     <br>
     <plant-recommender ref="plant_rec"></plant-recommender>
 <!--
@@ -186,157 +196,9 @@ export default {
                 
             })
     },
-    readFromSensors() {
-      axios.post("/get_all_values", {
-            'port': this.port,
-            'soil_profile_id': this.selected
-          })
-            .then((response) => {
-
-              if (response.data > 0) {
-                  //this.$refs.moist_ch.getData(this.selected)
-                  axios.get("/get_moist_as_value")
-                    .then((response) => {
-                      if (response.data >= 0)  {
-                        this.current_moist = response.data.toString() + ' %'
-                      }
-                    })
-                  //this.$refs.acidity_ch.getData(this.selected)
-                  axios.get("/get_acidity_as_value")
-                    .then((response) => {
-                      if (response.data >= 0)  {
-                        this.current_acidity = response.data.toString() + ' pH'
-                      }
-                    })
-
-                  this.getTotalNumberOfRecords()
-
-                  this.$store.state.selected_soil_profile = this.selected
-                } else {
-                  this.status_msg = "Disconnected"
-                  this.status_color = 'red'
-                  this.triggerSensor()
-                }
-            })
-    },
-    startSensor() {
-      //this.$refs.moist_ch.triggerStartStop()
-      //this.$refs.acidity_ch.triggerStartStop()
-
-      this.snapReset()
-      this.btn_text = "Stop Sensors"
-      this.timer_running = true
-      this.readFromSensors()
-      if (!this.timer) {
-          this.timer = setInterval( () => {
-            console.log(this.time)
-            if (this.time > 0) {
-               this.time--
-            } else {
-               this.time = 6
-               this.readFromSensors()
-            }
-          }, 1000 )
-       }
-    },
-    stopSensor() {
-      //this.$refs.moist_ch.triggerStartStop()
-      //this.$refs.acidity_ch.triggerStartStop()
-
-      this.btn_text = "Resetting Sensors..."
-      this.timer_running = false
-      this.time = 6
-      clearInterval(this.timer)
-      this.timer = null
-      this.current_moist = '-'
-      this.current_acidity = '-'
-
-      //this.$refs.moist_ch.current_data = 0
-      //this.$refs.acidity_ch.current_data = 7
-      //this.$refs.fertility_ch.current_data = 0
-
-      //this.recheckConnection()
-
-    },
-    connection_timer_idle_enable() {
-      if (!this.timer_connection) {
-          this.timer_connection = setInterval( () => {
-            console.log(this.time_connection)
-            if (this.time_connection > 0) {
-               this.time_connection--
-            } else {
-               this.time_connection = 4
-               this.recheckConnection()
-            }
-          }, 1000 )
-       }
-    },
-    connection_timer_idle_disable() {
-      this.time_connection = 4
-      clearInterval(this.timer_connection)
-      this.timer_connection = null
-    },
-    recheckConnection() {
-      axios.post("/get_connection_status", {
-            'port': this.port
-          })
-            .then((response) => {
-              this.status_msg = response.data
-
-              if (this.status_msg == 'Connected') {
-                this.status_color = 'green'
-              } else {
-                this.status_color = 'red'
-              }
-            })
-    },
-    triggerSensor() {
-      if (this.selected <= 0) {
-        return
-      }
-
-      if (this.timer_running) {
-        this.status_msg = 'Resetting...'
-        this.stopSensor()
-        this.$refs.plant_rec.getData(this.selected) //Where the fun begins
-        //this.$refs.all_ch.getData(this.selected)
-        this.btn_note = 'Make sure the sensors are all attached to the soil before clicking "Start Sensors" for the best accuracy of plant recommendation.'
-        const sleep = (milliseconds) => {
-          return new Promise(resolve => setTimeout(resolve, milliseconds))
-        }
-        sleep(4500).then(() => {
-          //do stuff
-          this.recheckConnection()
-          this.connection_timer_idle_enable()
-          this.btn_text = "Start Sensors"
-          this.current_moist = '-'
-          this.current_acidity = '-'
-        })
-      } else {
-        this.connection_timer_idle_disable()
-        axios.post("/get_connection_status", {
-            'port': this.port
-          })
-            .then((response) => {
-              this.status_msg = response.data
-
-              if (this.status_msg == 'Connected') {
-                  this.status_color = 'green'
-                  
-                  this.startSensor()
-                  this.btn_note = 'Click "Stop Sensors" to see the result of the plant recommendation.'
-
-                  this.$refs.plant_rec.reset()
-                  //this.$refs.all_ch.reset()
-
-                } else {
-                  this.status_color = 'red'
-                  this.connection_timer_idle_enable()
-                }
-            })
-
-        
-      }
+    analysisRecordsForRecommendation() {
+      this.$refs.plant_rec.reset()
+      this.$refs.plant_rec.getData(this.selected) //Where the fun begins
     },
     doLogout() {
     	this.$store.commit('updateToken', '')
@@ -360,7 +222,7 @@ export default {
   mounted(){
     this.username = this.$store.state.authUser
     this.selected = this.$store.state.selected_soil_profile
-    this.recheckConnection()
+    //this.recheckConnection()
 
     axios.post("/get_soil_profiles", {
             'username': this.username
@@ -389,7 +251,7 @@ export default {
 
     this.reloadGraph(this.selected)
 
-    this.connection_timer_idle_enable()
+    //this.connection_timer_idle_enable()
     
   }
 }
@@ -487,7 +349,7 @@ button:disabled, #trig-btn:disabled {
   width: 300px;
   text-align: left;
 }
-#staff-btn {
+#staff-btn, .update-btn {
   height: 60px;
 }
 </style>
