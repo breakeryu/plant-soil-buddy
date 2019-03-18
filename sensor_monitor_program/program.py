@@ -52,8 +52,8 @@ while not soil_profile :
 
 every_minutes = 0
 
-while every_minutes <= 0 :
-    print('Enter how often the sensors will record in every minutes (decimal allowed): ', end='')
+while every_minutes < 0.1 :
+    print('Enter how often the sensors will record in every minutes (decimal allowed, 1 hr=60 mins, 1 day=1440 mins): ', end='')
     try:
         every_minutes = float(input())
     except ValueError :
@@ -62,6 +62,8 @@ while every_minutes <= 0 :
 
     if every_minutes <= 0 :
         print('Invalid')
+    elif every_minutes < 0.1 :
+        print('Too frequent!')
 
 print('Record every '+str(60 * every_minutes)+' seconds')
 
@@ -94,10 +96,6 @@ while not status == 'Connected':
 t_end = time.time() + (60 * every_minutes)
 while True:
     try :
-        #moist = int(arduino.readline())
-        #acidity = float(decimal.Decimal(random.randrange(500, 700))/100)
-        #fertility = float(decimal.Decimal(random.randrange(7000, 9000))/100)
-
         values = str(arduino.readline()).split(" ")
 
         moist = int(values[0].split("b'")[1])
@@ -115,12 +113,6 @@ while True:
 
         if acidity > 14:
             acidity = 14
-
-        #if fertility < 0:
-        #    fertility = 0
-
-        #if fertility > 100:
-        #    fertility = 100
             
         print('Moist: '+str(moist)+' % , Acidity: '+str(acidity)+' pH')
             
@@ -133,9 +125,9 @@ while True:
 
     if time.time() >= t_end :
         print('Recording...')
-        t = (soil_profile[0], moist, acidity)
+        t = (soil_profile[0], moist, acidity, get_current_time())
 
-        c.execute('INSERT INTO api_sensorrecord (soil_id_id, moist, ph) VALUES ((SELECT id from api_soilprofile WHERE name=?), ?, ?)',t)
+        c.execute('INSERT INTO api_sensorrecord (soil_id_id, moist, ph, record_date) VALUES ((SELECT id from api_soilprofile WHERE name=?), ?, ?, ?)',t)
         conn.commit()
         t_end = time.time() + (60 * every_minutes)
 
