@@ -53,7 +53,7 @@ while not soil_profile :
 every_minutes = 0
 
 while every_minutes < 0.1 :
-    print('Enter how often the sensors will record in every minutes (decimal allowed, 1 hr=60 mins, 1 day=1440 mins): ', end='')
+    print('Enter how often the sensors will record in every minutes (decimal allowed at minimum of 0.1, 1 hr=60 mins, 1 day=1440 mins): ', end='')
     try:
         every_minutes = float(input())
     except ValueError :
