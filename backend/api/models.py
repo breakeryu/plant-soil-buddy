@@ -116,7 +116,7 @@ class SensorRecord(models.Model):
     soil_id = models.ForeignKey(SoilProfile, on_delete=models.CASCADE)
     moist = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     ph = models.DecimalField(max_digits=10, decimal_places=2, default=7)
-    record_date = models.DateTimeField(default=datetime.now, blank=True)
+    record_date = models.DateTimeField(default=datetime.now, null=True)
     def __str__(self):
         soil = SoilProfile.objects.get(pk=self.soil_id.pk)
         return soil.name + " - " + str(self.record_date)

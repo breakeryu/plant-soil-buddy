@@ -95,6 +95,9 @@ def get_current_time() :
 def home(request):
     return render(request, 'index.html')
 
+@csrf_exempt
+def program_test(request):
+    return None
 
 @csrf_exempt
 def register(request):
