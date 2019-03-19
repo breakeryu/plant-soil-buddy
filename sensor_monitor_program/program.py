@@ -52,7 +52,7 @@ while not soil_profile :
 
 every_minutes = 0
 
-while every_minutes < 0.1 :
+while every_minutes < 0.1 or every_minutes > 10080:
     print('Enter how often the sensors will record in every minutes (decimal allowed at minimum of 0.1, 1 hr=60 mins, 1 day=1440 mins): ', end='')
     try:
         every_minutes = float(input())
@@ -64,6 +64,8 @@ while every_minutes < 0.1 :
         print('Invalid')
     elif every_minutes < 0.1 :
         print('Too frequent!')
+    elif every_minutes > 10080 :
+        print('Too long!')
 
 print('Record every '+str(60 * every_minutes)+' seconds')
 

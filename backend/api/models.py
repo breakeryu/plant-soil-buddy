@@ -49,12 +49,32 @@ class PlantPh(models.Model):
     def __str__(self):
         return self.plant_name
 
+class PlantLifeCycle(models.Model):
+    ANNUAL = 0
+    BIENNIAL = 1
+    PERENNIAL = 2
+    CYCLE_CHOICES = (
+        (ANNUAL, 'Annual - life shorter than a year'),
+        (BIENNIAL, 'Biennial - life around a year to two years'),
+        (PERENNIAL, 'Perennial - life about more than many years')
+    )
+    plant_name = models.CharField(max_length=100, default='')
+    life_cycle = models.IntegerField(
+        choices= CYCLE_CHOICES,
+        default= ANNUAL
+    )
+    def __str__(self):
+        return self.plant_name
+
 class Plant(models.Model):
     moist_data = models.ForeignKey(PlantMoistLvl, on_delete=models.CASCADE, default=0)
     ph_data = models.ForeignKey(PlantPh, on_delete=models.CASCADE, default=0)
+    lifecycle_data = models.ForeignKey(PlantLifeCycle, on_delete=models.CASCADE, default=0)
+    plant_name = models.CharField(max_length=100, default='')
     def __str__(self):
-        data = PlantMoistLvl.objects.get(pk=self.moist_data.pk)
-        return data.plant_name
+        #data = PlantMoistLvl.objects.get(pk=self.moist_data.pk)
+        #return data.plant_name
+        return self.plant_name
 
 
 
@@ -117,6 +137,7 @@ class SensorRecord(models.Model):
     moist = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     ph = models.DecimalField(max_digits=10, decimal_places=2, default=7)
     record_date = models.DateTimeField(default=datetime.now, null=True)
+    record_frequency_min = models.DecimalField(max_digits=10, decimal_places=2, validators=[MaxValueValidator(10080), MinValueValidator(0.1)], default=0.1)
     def __str__(self):
         soil = SoilProfile.objects.get(pk=self.soil_id.pk)
         return soil.name + " - " + str(self.record_date)
@@ -131,7 +152,6 @@ class Recommendation(models.Model):
         (HIGH, 'High'),
     )
     soil_id = models.ForeignKey(SoilProfile, on_delete=models.CASCADE)
-    npk_match_ph = models.ForeignKey(NpkPerPh, on_delete=models.CASCADE)
     recco_time = models.DateTimeField(default=datetime.now, blank=True)
     recco_n_lvl = models.IntegerField(
         choices= LEVEL_CHOICES
@@ -148,10 +168,11 @@ class Recommendation(models.Model):
 
 class RecommendedPlant(models.Model):
     recco_id = models.ForeignKey(Recommendation, on_delete=models.CASCADE)
-    plant_id = models.ForeignKey(Plant, on_delete=models.CASCADE)
-    recco_soil_type = models.ForeignKey(SoilType, on_delete=models.CASCADE, blank=True)
+    plant_name = models.CharField(max_length=100, default='')
+    soil_type_name = models.CharField(max_length=100, default='')
     def __str__(self):
-        plant = Plant.objects.get(pk=self.plant_id.pk)
-        recco = Recommendation.objects.get(pk=self.recco_id.pk)
-        soil = SoilProfile.objects.get(pk=recco.soil_id.pk)
-        return plant.moist_data.plant_name + ", " + soil.name
+        #plant = Plant.objects.get(pk=self.plant_id.pk)
+        #recco = Recommendation.objects.get(pk=self.recco_id.pk)
+        #soil = SoilProfile.objects.get(pk=recco.soil_id.pk)
+        #return plant.moist_data.plant_name + ", " + soil.name
+        return self.plant_name + ", " + self.soil_type_name
