@@ -714,6 +714,7 @@ def get_recommendations(request):
 
     avg_moist = float(data['good_avg_moist'])
     avg_acidity = float(data['good_avg_acidity'])
+    most_frequency = float(data['most_frequency'])
 
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
@@ -751,6 +752,12 @@ def get_recommendations(request):
         avg_moist_lvl = 3
     elif 81 <= avg_moist and avg_moist <= 100 :
         avg_moist_lvl = 4
+
+    #lifecycle_for_minute_frequency(annual, 0.1, 179.99).
+    #lifecycle_for_minute_frequency(biennial, 180, 1439.99).
+    #lifecycle_for_minute_frequency(perennial, 1440, 10080).
+
+
         
     #opposite(low, high).
     #opposite(mid, mid).
@@ -776,7 +783,6 @@ def get_recommendations(request):
     #QuerySet to List (python readable)                                   
     for plant in plants_valid_moist :
         valid_moist.append(plant)
-    
 
     #valid_acid(PL, A) :- plant(PL), plant_ph(PL, MIN, MAX), A >= MIN, A =< MAX.
 
@@ -790,10 +796,21 @@ def get_recommendations(request):
     for plant in plants_valid_ph :
         valid_ph.append(plant)
 
-    
-    #recommend_plant(PL, M, A) :- plant(PL), valid_moist(PL, M), valid_acid(PL, A).
 
-    recommended_plants = list(set(valid_moist) & set(valid_ph))
+    #valid_lifecycle_for_frequency(PL, FR) :- plant(PL),
+    #   plant_lifecycle(PL, LC),
+    #   lifecycle_for_minute_frequency(LC, MINFR, MAXFR),
+    #   FR >= MINFR, FR =< MAXFR.
+
+
+    valid_lifecycle_for_frequency = []
+    
+
+    
+    #recommend_plant(PL, M, A, FR) :- plant(PL), valid_moist(PL, M), valid_acid(PL, A),
+    #   valid_lifecycle_for_frequency(PL, FR).
+
+    recommended_plants = list(set(valid_moist) & set(valid_ph) & set(valid_lifecycle_for_frequency))
 
     print(recommended_plants)
 
@@ -823,7 +840,7 @@ def get_recommendations(request):
     print(recommend_p_lvl)
     print(recommend_k_lvl)
     
-    recommendation_obj = Recommendation.objects.create(soil_id=soil_profile_on_use, npk_match_ph=npk_data, recco_time=get_current_time(), recco_n_lvl=recommend_n_lvl, recco_p_lvl=recommend_p_lvl, recco_k_lvl=recommend_k_lvl)
+    recommendation_obj = Recommendation.objects.create(soil_id=soil_profile_on_use, recco_time=get_current_time(), recco_n_lvl=recommend_n_lvl, recco_p_lvl=recommend_p_lvl, recco_k_lvl=recommend_k_lvl)
 
     #O(n), as along as soils_set has constant number of members, managed by admins staffs only
     for plant in recommended_plants :
@@ -839,7 +856,7 @@ def get_recommendations(request):
             if plant_min_id >= soil_min_id  and plant_max_id <= soil_max_id :
                 soil_data = soil
 
-        RecommendedPlant.objects.create(recco_id=recommendation_obj, plant_id=plant, recco_soil_type_id=soil_data.id)
+        RecommendedPlant.objects.create(recco_id=recommendation_obj, plant_name=plant.plant_name, soil_type_name=soil_data.name)
 
     
     return JsonResponse([], safe=False)
@@ -862,8 +879,9 @@ def load_latest_plants_recommendation(request):
     plants_list = []
 
     for recommended_plant in recommended_plants :
-        soil_type = SoilType.objects.get(pk=recommended_plant.recco_soil_type_id)
-        plants_list.append({'id':recommended_plant.plant_id.id, 'name':recommended_plant.plant_id.moist_data.plant_name, 'soil_type':soil_type.name})
+        plant = Plant.objects.get(pk=recommended_plant.plant_name)
+        soil_type = SoilType.objects.get(pk=recommended_plant.soil_type_name)
+        plants_list.append({'id':plant.id, 'name':plant.plant_name, 'soil_type':soil_type.name})
 
     return JsonResponse(plants_list, safe=False)
 
