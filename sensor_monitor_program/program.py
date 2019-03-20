@@ -102,7 +102,8 @@ while True:
 
         moist = int(values[0].split("b'")[1])
         acidity = float(values[1])
-        #fertility = int(values[2].split("\\r\\n")[0])
+        
+        #the last unused value, fertility = int(values[2].split("\\r\\n")[0])
 
         if moist < 0:
             moist = 0
@@ -120,9 +121,11 @@ while True:
             
     except serial.serialutil.SerialException :
         print('Disconnected')
+        arduino.close()
         break
     except ValueError :
         print('Disconnected')
+        arduino.close()
         break
 
     if time.time() >= t_end :
@@ -134,17 +137,3 @@ while True:
         t_end = time.time() + (60 * every_minutes)
 
 
-
-#password = getpass.getpass(prompt='Enter your password: ')
-
-#hasher = PBKDF2PasswordHasher()
-
-#salt=None
-
-#if not salt:
-#    salt = hasher.salt()
-
-
-#print(c.fetchone()[0])
-#print(hasher.encode(password=password, salt=salt))
-#print(hash_password(password))

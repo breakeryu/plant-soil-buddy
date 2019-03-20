@@ -402,58 +402,6 @@ def get_total_records_per_soil(request):
     except SoilProfile.DoesNotExist :
         return HttpResponse(0)
 
-@csrf_exempt
-def get_all_values(request):
-    global moist_chart_data
-    global moist
-    global acidity_chart_data
-    global acidity
-    #global fertility_chart_data
-    #global fertility
-    
-    data = json.loads(request.body)
-    try :
-        arduino = serial.Serial(data['port'], 9600)
-        
-        #moist = int(arduino.readline())
-        #acidity = float(decimal.Decimal(random.randrange(500, 700))/100)
-        #fertility = float(decimal.Decimal(random.randrange(7000, 9000))/100)
-
-        values = str(arduino.readline()).split(" ")
-
-        moist = int(values[0].split("b'")[1])
-        acidity = float(values[1])
-        #fertility = int(values[2].split("\\r\\n")[0])
-
-        if moist < 0:
-            moist = 0
-
-        if moist > 100:
-            moist = 100
-
-        if acidity < 0:
-            acidity = 0
-
-        if acidity > 14:
-            acidity = 14
-
-        #if fertility < 0:
-        #    fertility = 0
-
-        #if fertility > 100:
-        #    fertility = 100
-            
-        soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
-
-        record = SensorRecord.objects.create(soil_id=soil_profile_on_use ,record_date=get_current_time(), moist=moist, ph=acidity)
-
-        arduino.close()
-
-        return HttpResponse(1)
-            
-    except serial.serialutil.SerialException :
-        return HttpResponse(-999)
-
 
 @csrf_exempt
 def debug_frequency(request):
@@ -479,125 +427,6 @@ def debug_frequency(request):
         
     else:
         return None
-
-@csrf_exempt
-def get_moist_as_value(request):
-    global moist
-
-    value = moist
-    return HttpResponse(value)
-
-@csrf_exempt
-def get_moist_as_stats(request):
-    global moist_chart_data
-
-    data = json.loads(request.body)
-
-    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
-
-    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
-
-    moist_chart_data = {
-    'columns': ['time', '%'],
-    'rows': []
-    }
-
-    for record in records :
-        time_record = f"{record.record_date:%Y-%b-%d}"
-        
-        moist_chart_data["rows"].append({'time':str(record.id)+' '+time_record, '%':record.moist})
-    
-    chart_data = moist_chart_data
-    return JsonResponse(chart_data)
-
-
-
-
-
-@csrf_exempt
-def get_acidity_as_value(request):
-    global acidity
-
-    value = acidity
-    return HttpResponse(value)
-
-@csrf_exempt
-def get_acidity_as_stats(request):
-    global acidity_chart_data
-
-    data = json.loads(request.body)
-
-    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
-
-    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
-
-    acidity_chart_data = {
-    'columns': ['time', 'pH'],
-    'rows': []
-    }
-
-    for record in records :
-        time_record = f"{record.record_date:%Y-%b-%d}"
-        
-        acidity_chart_data["rows"].append({'time':str(record.id)+' '+time_record, 'pH':record.ph})
-    
-    chart_data = acidity_chart_data
-    return JsonResponse(chart_data)
-
-
-
-
-
-
-
-@csrf_exempt
-def get_average_moist(request):
-    global avg_moist
-
-    data = json.loads(request.body)
-
-    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
-
-    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
-    target_records = []
-    
-    total_moist_data = 0
-
-    for record in records :
-        total_moist_data += record.moist
-        target_records.append(record)
-            
-    if len(target_records) > 0 :
-        avg_moist = total_moist_data / len(target_records)
-    else :
-        avg_moist = 0
-    
-    return HttpResponse(round_two_decimal_digits(avg_moist))
-
-@csrf_exempt
-def get_average_acidity(request):
-    global avg_acidity
-
-    data = json.loads(reque.DoesNotExistst.body)
-
-    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
-
-    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
-    target_records = []
-    
-    total_acidity_data = 0
-
-    for record in records :
-        total_acidity_data += record.ph
-        target_records.append(record)
-            
-    if len(target_records) > 0 :
-        avg_acidity = total_acidity_data / len(target_records)
-    else :
-        avg_acidity = 0
-
-    return HttpResponse(round_two_decimal_digits(avg_acidity))
-
 
 
 def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
@@ -653,7 +482,6 @@ def get_good_moist_ph_values(request):
     good_data_moist = []
     good_data_acidity = []
     most_frequents = []
-    #good_data_fertility = []
 
     i = 0
     for data_row in fresh_numpy_data :
@@ -661,7 +489,6 @@ def get_good_moist_ph_values(request):
             good_data_moist.append(data_row[0])
             good_data_acidity.append(data_row[1])
             most_frequents.append(data_row[2])
-            #good_data_fertility.append(data_row[2])
         i += 1
     
     avg_moist = (min(good_data_moist)+max(good_data_moist))/2
@@ -670,16 +497,11 @@ def get_good_moist_ph_values(request):
 
     print(avg_moist)
     print(avg_acidity)
-
     print(most_frequency)
     
-
     return JsonResponse({'avg_good_moist':avg_moist, 'avg_good_acidity':avg_acidity, 'most_frequency':most_frequency}, safe=False)
 
-#recommend(PL, NX, PX, KX, S, M, A) :- plant(PL),
-    #   recommend_plant(PL, M, A),
-    #   recommend_nutrient(A, NX, PX, KX),
-    #   recommend_soil_type(PL, S).
+#recommend(PL, NX, PX, KX, S, M, A) :- Prolog rules provided and translated into python codes.
 
 @csrf_exempt
 def get_recommendations(request):
@@ -870,20 +692,6 @@ def get_all_values_as_scatter(request):
     total_rows = len(dataset)
     if total_rows <= 0 :
         return JsonResponse([], safe=False)
-
-    
-
-    #cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
-
-    #i = 0
-    #chart_data = []
-    #for data_row in fresh_numpy_data :
-    #    if cluster_labels[i] == most_frequent_cluster_index :
-    #        good = '1'
-    #    else :
-    #        good = '0'
-    #    chart_data.append({'moist':str(data_row[0]), 'acidity': str(data_row[1]), 'cluster_group': str(cluster_labels[i]), 'good':good})
-    #    i += 1
     
     return JsonResponse(dataset, safe=False)
 
@@ -951,59 +759,6 @@ def get_plant_info(request):
 
     return JsonResponse({'name':name, 'min_moist':min_moist, 'max_moist':max_moist, 'min_ph':str(min_ph), 'max_ph':str(max_ph), 'life_cycle': life_cycle}, safe=False)
 
-
-@csrf_exempt
-def snap_reset(request):
-    global moist, acidity#, fertility
-    global moist_chart_data, acidity_chart_data#, fertility_chart_data
-    global avg_moist, avg_acidity#, avg_fertility
-    
-    moist = 0
-    acidity = 7
-    #fertility = 0
-
-    moist_chart_data = {
-        'columns': ['time', '%'],
-        'rows': []
-    }
-
-    acidity_chart_data = {
-        'columns': ['time', 'pH'],
-        'rows': []
-    }
-
-    #fertility_chart_data = {
-    #    'columns': ['time', '%'],
-    #    'rows': []
-    #}
-
-    avg_moist = 0
-    avg_acidity = 7
-    #avg_fertility = 0
-
-    return HttpResponse('Reset')
-
-@csrf_exempt
-def get_connection_status(request):
-    status = 'Unknown'
-    
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        
-        try :
-            arduino = serial.Serial(data['port'], 9600)
-
-            status = 'Connected'
-
-            arduino.close()
-           
-        except serial.serialutil.SerialException :
-            status = 'Disconnected'
-
-    else :
-        status = 'Disconnected'
-
-    return HttpResponse(status)
 
 @csrf_exempt
 def push_ph_to_npk_into_database(request):
