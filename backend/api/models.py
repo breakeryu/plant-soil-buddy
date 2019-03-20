@@ -40,14 +40,15 @@ class PlantMoistLvl(models.Model):
         default= VERY_HIGH
     )
     def __str__(self):
-        return self.plant_name
+        lvl_choice_arr = ['Very Low', 'Low', 'Medium', 'High', 'Very High']
+        return self.plant_name +', Min: '+ lvl_choice_arr[self.min_moist_lvl]+', Max: '+ lvl_choice_arr[self.max_moist_lvl]
 
 class PlantPh(models.Model):
     plant_name = models.CharField(max_length=100, default='')
     min_ph = models.DecimalField(max_digits=10, decimal_places=2, default=0,validators=[MaxValueValidator(14), MinValueValidator(0)])
     max_ph = models.DecimalField(max_digits=10, decimal_places=2, default=14,validators=[MaxValueValidator(14), MinValueValidator(0)])
     def __str__(self):
-        return self.plant_name
+        return self.plant_name +', Min: '+ str(self.min_ph)+', Max: '+ str(self.max_ph)
 
 class PlantLifeCycle(models.Model):
     ANNUAL = 0
@@ -64,7 +65,8 @@ class PlantLifeCycle(models.Model):
         default= ANNUAL
     )
     def __str__(self):
-        return self.plant_name
+        choice_arr = ['Annual', 'Biennial', 'Perennial']
+        return self.plant_name +', '+ choice_arr[self.life_cycle]+' Plant'
 
 class Plant(models.Model):
     moist_data = models.ForeignKey(PlantMoistLvl, on_delete=models.CASCADE, default=0)
