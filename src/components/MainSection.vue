@@ -10,10 +10,16 @@
       </select> </h3>
       
       <p>
-      <button class="normal-btn normal-btn soil-btn" v-on:click="soilProfileAdd" :disabled="timer_running">Add</button>
-      <button class="normal-btn normal-btn soil-btn" v-on:click="soilProfileEdit" :disabled="timer_running || selected == 0">Edit</button>
-      <button class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileClear" :disabled="timer_running || selected == 0">Reset</button>
-      <button class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileDelete" :disabled="timer_running || selected == 0">Delete</button> 
+      <button class="normal-btn normal-btn soil-btn" v-on:click="soilProfileAdd" >Add</button>
+      <button class="normal-btn normal-btn soil-btn" v-on:click="soilProfileEdit" :disabled="selected == 0">Edit</button>
+      <button class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileClear" :disabled="selected == 0">Reset</button>
+      <button class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileDelete" :disabled="selected == 0">Delete</button> 
+    </p>
+
+    <p>
+      <button class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileDebugLifeCycle(0)" v-if="debug" :disabled="selected == 0">Annual Debug</button> 
+      <button class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileDebugLifeCycle(1)" v-if="debug" :disabled="selected == 0">Biennial Debug</button> 
+      <button class="normal-btn normal-btn soil-btn exit-btn" v-on:click="soilProfileDebugLifeCycle(2)" v-if="debug" :disabled="selected == 0">Perennial Debug</button> 
     </p>
 <a href="#" class="tooltip" v-on:click="soilProfileHint">What is this?
       </a>
@@ -73,7 +79,9 @@
     <h3>Email: {{ email }}</h3>
     </div>
     <br v-if="is_staff">
-    <button id="staff-btn" class="normal-btn" v-if="is_staff" v-on:click="toAdmin">Update Knowledge Base (Admin Only)</button>
+    <button class="staff-btn normal-btn" v-if="is_staff" v-on:click="toAdmin">Update Knowledge Base (Admin Only)</button>
+    <br>
+    <button class="staff-btn normal-btn" v-if="is_staff" :disabled="debug" v-on:click="enableDebugging">Enable Debug Soil Profile (Admin Only)</button>
     <br>
     <button class="user-btn normal-btn" v-on:click="emailChange">Change E-mail</button><br>
     <br>
@@ -121,7 +129,8 @@ export default {
       timer_connection: null,
       time_connection: 4,
       current_moist: '-',
-      current_acidity: '-'
+      current_acidity: '-',
+      debug: false
     }
   },
   methods: {
@@ -145,6 +154,26 @@ export default {
     },
     soilProfileDelete() {
         router.push('deletesoil')
+    },
+    enableDebugging() {
+      this.debug = true
+
+      this.$notify({
+          group: 'notify',
+          title: 'Enable Debug',
+          text: 'Enabled'
+        })
+    },
+    soilProfileDebugLifeCycle(cycle_id) {
+        axios.post("/debug_frequency", {
+            'soil_profile_id': this.selected,
+            'life_cycle_id': cycle_id
+          })
+            .then((response) => {
+
+              //this.n_records = parseInt(response.data)
+                
+            })
     },
     soilProfileHint() {
       this.$notify({
@@ -349,7 +378,7 @@ button:disabled, #trig-btn:disabled {
   width: 300px;
   text-align: left;
 }
-#staff-btn, .update-btn {
+.staff-btn, .update-btn {
   height: 60px;
 }
 </style>

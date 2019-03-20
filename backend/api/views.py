@@ -455,7 +455,30 @@ def get_all_values(request):
         return HttpResponse(-999)
 
 
+@csrf_exempt
+def debug_frequency(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            soil_profile = SoilProfile.objects.get(pk=data['soil_profile_id'])
+        except SoilProfile.DoesNotExist:
+            print('Ouch')
+            return None
 
+        life_cycle_id = int(data['life_cycle_id'])
+        life_cycle_config = [0.1, 30, 60]
+        
+        try:
+            sensor_records = SensorRecord.objects.filter(soil_id=soil_profile).update(record_frequency_min=life_cycle_config[life_cycle_id])
+        except SensorRecord.DoesNotExist:
+            print('Ouch')
+            return None
+        
+        print('OK')
+        return JsonResponse([], safe=False)
+        
+    else:
+        return None
 
 @csrf_exempt
 def get_moist_as_value(request):
