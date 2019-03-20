@@ -30,32 +30,6 @@
       <h4> Total Records of Soil Profile : {{ n_records }}</h4>
 
       <button class="normal-btn update-btn" v-on:click="goToScatterPlot" :disabled="selected == 0"">View Recorded Data Scatter Plot</button>
-      <!--
-      <h1><u>Sensor Recording Monitor</u></h1> 
-      <br>
-      <h2><u>Device Management</u></h2>
-      <h3>Device Status : <a v-bind:style="{ color: status_color }">{{ status_msg }}</a></h3>
-    <h3>Arduino Sensors USB Port Name : <input v-model="port" placeholder="Check in Device Manager" :disabled="timer_running"></h3>
-    <button class="normal-btn submit-btn" v-on:click="recheckConnection" :disabled="timer_running">Re-check Connection</button><br>
-
-    <h2><u>Current Sensor Records</u></h2>
-    <div id="monitorvalues">
-    <h3>Moist: {{ current_moist }}</h3>
-    <h3>Acidity: {{ current_acidity }}</h3>
-    <h4> Record snap time : {{ time }} seconds</h4>
-    <h4> <a href="#" v-on:click="goToScatterPlot">Total Records</a> of Soil Profile : {{ n_records }}</h4>
-    </div>
-    <br>
-
-    <h2><u>Main Control</u></h2>
-    <p>
-    <button id="trig-btn" class="normal-btn" v-on:click="triggerSensor" v-bind:class="{ stop: timer_running }" :disabled='status_msg != "Connected" || selected == 0'>{{ btn_text }}</button>  
-    <h4> {{ btn_note }} </h4>
-  </p>
-  
-  <br>
-  
-     -->
 
     <br><hr>
  
@@ -65,13 +39,9 @@
     <button class="normal-btn update-btn" v-on:click="analysisRecordsForRecommendation" :disabled="selected == 0"">Update Recommendation</button>
     <br>
     <plant-recommender ref="plant_rec"></plant-recommender>
-<!--
-    <h2><u>Data Display</u></h2>
-    <button class="normal-btn" v-on:click="scatterPlot">View Scatter Plot</button><br>
-    
 
-    <br> --><hr>
-  <!--<fertility-chart ref="fertility_ch"></fertility-chart><hr>-->
+  <hr>
+
   <h1><u>User Management</u></h1>
   <br>
   <div id="userinfo">
@@ -95,18 +65,11 @@
 <script>
 import axios from 'axios'
 import router from '@/router'
-//import AllChart from '@/components/Charts/AllChart'
-//import MoistChart from '@/components/Charts/MoistChart'
-//import AcidityChart from '@/components/Charts/AcidityChart'
 import PlantRecommender from '@/components/Charts/PlantRecommender'
 
 export default {
   name: 'Welcome',
   components: {
-    //AllChart,
-    //MoistChart,
-    //AcidityChart,
-    //FertilityChart,
     PlantRecommender
   },
   data () {
@@ -170,9 +133,11 @@ export default {
             'life_cycle_id': cycle_id
           })
             .then((response) => {
-
-              //this.n_records = parseInt(response.data)
-                
+                this.$notify({
+                  group: 'notify',
+                  title: 'Debug',
+                  text: 'Soil frequency of every records of this soil profile has changed for the life cycle.'
+                })
             })
     },
     soilProfileHint() {
@@ -186,8 +151,7 @@ export default {
           title: 'What is Soil Profile?',
           text: 'However, do not record more than 2 different soil chunks for one profile, otherwise the plant recommendation will be inaccurate.'
         })
-        //alert('This is the storage of the recorded soil quality data specific to each soil chunk you record.')
-        //alert('However, do not record more than 2 different soil chunks for one profile, otherwise the plant recommendation will be inaccurate.')
+
     },
     goToScatterPlot() {
       if (this.selected <= 0) {
@@ -236,22 +200,16 @@ export default {
     	router.push('/')
     },
     reloadGraph(selected) {
-      //this.$refs.all_ch.getData(selected)
-      //this.$refs.moist_ch.getData(selected)
-      //this.$refs.acidity_ch.getData(selected)
-
       this.$store.state.selected_soil_profile = selected
       
       this.$refs.plant_rec.getDataWithoutUpdating(selected)
       this.getTotalNumberOfRecords()
-      //this.$refs.scatter_ch.getData(selected)
       
     }
   },
   mounted(){
     this.username = this.$store.state.authUser
     this.selected = this.$store.state.selected_soil_profile
-    //this.recheckConnection()
 
     axios.post("/get_soil_profiles", {
             'username': this.username
@@ -279,9 +237,6 @@ export default {
             })
 
     this.reloadGraph(this.selected)
-
-    //this.connection_timer_idle_enable()
-    
   }
 }
 </script>
