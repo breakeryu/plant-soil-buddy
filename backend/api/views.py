@@ -1,3 +1,24 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 from django.views.generic import TemplateView
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
@@ -974,9 +995,11 @@ def push_ph_to_npk_into_database(request):
 def push_plants_into_database(request):
 
     lvl_config = {'very_low':0,'low':1,'mid':2,'high':3,'very_high':4}
+    lifecycle_config = {'annual':0,'biennial':1,'perennial':2}
 
     moist_excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\Moist-to-plant.xlsx').sheet_by_index(0) 
     ph_excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\pH-to-plant.xlsx').sheet_by_index(0) 
+    lifecycle_excel_dataset = xlrd.open_workbook(os.path.dirname(os.path.abspath(__file__))+'\kb\lifecycle-to-plant.xlsx').sheet_by_index(0)
 
     #Push Plant name first
     #No duplicate names
@@ -986,10 +1009,9 @@ def push_plants_into_database(request):
 
     inserted_moist_plant = []
     inserted_ph_plant = []
-    
+    inserted_lifecycle_plant = []
 
     moist_to_plant_dataset = []
-    
     for i in range(moist_excel_dataset.nrows) :
     
         moist_to_plant_dataset.append([])
@@ -1032,15 +1054,43 @@ def push_plants_into_database(request):
 
             inserted_ph_plant.append(data.plant_name)
 
-    for moist_data_name in inserted_moist_plant :
-        for ph_data_name in inserted_ph_plant :
-            if moist_data_name == ph_data_name :
-                try:
-                    moist_data = PlantMoistLvl.objects.get(plant_name=moist_data_name)
-                    ph_data = PlantPh.objects.get(plant_name=ph_data_name)
-                    plant = Plant.objects.get(moist_data=moist_data, ph_data=ph_data)
-                except Plant.DoesNotExist:
-                    plant = Plant.objects.create(moist_data=moist_data, ph_data=ph_data)
+    lifecycle_to_plant_dataset = []
+    for i in range(lifecycle_excel_dataset.nrows) :
+    
+        lifecycle_to_plant_dataset.append([])
+    
+        for j in range(lifecycle_excel_dataset.ncols) :
+        
+            lifecycle_to_plant_dataset[i].append(lifecycle_excel_dataset.cell_value(i,j))
+
+        if i > 0 :
+            print(lifecycle_to_plant_dataset[i][0])
+
+            new_lifecycle = lifecycle_config[lifecycle_to_plant_dataset[i][1]]
+
+            try:
+                data = PlantLifeCycle.objects.get(plant_name=lifecycle_to_plant_dataset[i][0])
+                PlantLifeCycle.objects.filter(plant_name=lifecycle_to_plant_dataset[i][0]).update(life_cycle=new_lifecycle)
+            except PlantLifeCycle.DoesNotExist:
+                data = PlantLifeCycle.objects.create(plant_name=lifecycle_to_plant_dataset[i][0], life_cycle=new_lifecycle)
+
+            inserted_lifecycle_plant.append(data.plant_name)
+
+    insertable_plants = list(set(inserted_moist_plant) & set(inserted_ph_plant) & set(inserted_lifecycle_plant))
+
+    print(insertable_plants)
+
+    for plant_name in insertable_plants :
+        moist_data = PlantMoistLvl.objects.get(plant_name=plant_name)
+        ph_data = PlantPh.objects.get(plant_name=plant_name)
+        lifecycle_data = PlantLifeCycle.objects.get(plant_name=plant_name)
+
+        print(plant_name)
+        
+        try:
+            plant = Plant.objects.get(moist_data=moist_data, ph_data=ph_data, lifecycle_data=lifecycle_data, plant_name=plant_name)
+        except Plant.DoesNotExist:
+            plant = Plant.objects.create(moist_data=moist_data, ph_data=ph_data, lifecycle_data=lifecycle_data, plant_name=plant_name)
 
     return HttpResponse('')
 

@@ -8,6 +8,7 @@ admin.site.register(Plant)
 
 admin.site.register(PlantMoistLvl)
 admin.site.register(PlantPh)
+admin.site.register(PlantLifeCycle)
 admin.site.register(NpkPerPh)
 admin.site.register(SoilType)
 
