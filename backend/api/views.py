@@ -709,19 +709,19 @@ def get_recommendations(request):
 
     lifecycle_config = ['annual','biennial','perennial']
 
-    #lifecycle_for_minute_frequency(0, 0.1, 14.99).
-    #lifecycle_for_minute_frequency(1, 15, 39.99).
-    #lifecycle_for_minute_frequency(2, 40, 1440).
+    #lifecycle_for_minute_frequency(0, 0.1, 29.99).
+    #lifecycle_for_minute_frequency(1, 30, 59.99).
+    #lifecycle_for_minute_frequency(2, 60, 1440).
 
     print(most_frequency)
 
     lifecycle_type_id = -1
 
-    if 0.1 <= most_frequency and most_frequency <= 14.99 :
+    if 0.1 <= most_frequency and most_frequency <= 29.99 :
         lifecycle_type_id = 0
-    elif 15 <= most_frequency and most_frequency <= 39.99 :
+    elif 30 <= most_frequency and most_frequency <= 59.99 :
         lifecycle_type_id = 1
-    elif 40 <= most_frequency and most_frequency <= 1440 :
+    elif 60 <= most_frequency and most_frequency <= 1440 :
         lifecycle_type_id = 2
         
     #opposite(low, high).
