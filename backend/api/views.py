@@ -604,10 +604,10 @@ def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
     
     records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
 
-    raw_chart_data = np.array([[float('NaN'),float('NaN')]])
+    raw_chart_data = np.array([[float('NaN'),float('NaN'),float('NaN')]])
 
     for record in records :
-        values = np.array([[float(record.moist), float(record.ph)]])
+        values = np.array([[float(record.moist), float(record.ph), float(record.record_frequency_min)]])
         raw_chart_data = np.append(raw_chart_data, values, axis=0)
 
     fresh_numpy_data = raw_chart_data[~np.isnan(raw_chart_data).any(axis=1)]
@@ -637,41 +637,6 @@ def get_cluster_group_labels_and_most_frequent(fresh_numpy_data) :
 
 
 @csrf_exempt
-def get_all_values_as_scatter(request):
-
-    data = json.loads(request.body)
-
-    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
-    
-    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
-
-    dataset = []
-
-    for record in records :
-        dataset.append([float(record.moist), float(record.ph)])
-
-    total_rows = len(dataset)
-    if total_rows <= 0 :
-        return JsonResponse([], safe=False)
-
-    
-
-    #cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
-
-    #i = 0
-    #chart_data = []
-    #for data_row in fresh_numpy_data :
-    #    if cluster_labels[i] == most_frequent_cluster_index :
-    #        good = '1'
-    #    else :
-    #        good = '0'
-    #    chart_data.append({'moist':str(data_row[0]), 'acidity': str(data_row[1]), 'cluster_group': str(cluster_labels[i]), 'good':good})
-    #    i += 1
-    
-    return JsonResponse(dataset, safe=False)
-
-
-@csrf_exempt
 def get_good_moist_ph_values(request):
     data = json.loads(request.body)
 
@@ -685,6 +650,7 @@ def get_good_moist_ph_values(request):
 
     good_data_moist = []
     good_data_acidity = []
+    most_frequents = []
     #good_data_fertility = []
 
     i = 0
@@ -692,16 +658,21 @@ def get_good_moist_ph_values(request):
         if cluster_labels[i] == most_frequent_cluster_index :
             good_data_moist.append(data_row[0])
             good_data_acidity.append(data_row[1])
+            most_frequents.append(data_row[2])
             #good_data_fertility.append(data_row[2])
         i += 1
     
     avg_moist = (min(good_data_moist)+max(good_data_moist))/2
     avg_acidity = float((min(good_data_acidity)+max(good_data_acidity))/2)
+    most_frequency = float((min(most_frequents)+max(most_frequents))/2)
 
     print(avg_moist)
     print(avg_acidity)
 
-    return JsonResponse({'avg_good_moist':avg_moist, 'avg_good_acidity':avg_acidity}, safe=False)
+    print(most_frequency)
+    
+
+    return JsonResponse({'avg_good_moist':avg_moist, 'avg_good_acidity':avg_acidity, 'most_frequency':most_frequency}, safe=False)
 
 #recommend(PL, NX, PX, KX, S, M, A) :- plant(PL),
     #   recommend_plant(PL, M, A),
@@ -753,11 +724,26 @@ def get_recommendations(request):
     elif 81 <= avg_moist and avg_moist <= 100 :
         avg_moist_lvl = 4
 
-    #lifecycle_for_minute_frequency(annual, 0.1, 179.99).
-    #lifecycle_for_minute_frequency(biennial, 180, 1439.99).
-    #lifecycle_for_minute_frequency(perennial, 1440, 10080).
+    #lifecycle(0, annual).
+    #lifecycle(1, biennial).
+    #lifecycle(2, perennial).
 
+    lifecycle_config = ['annual','biennial','perennial']
 
+    #lifecycle_for_minute_frequency(0, 0.1, 179.99).
+    #lifecycle_for_minute_frequency(1, 180, 1439.99).
+    #lifecycle_for_minute_frequency(2, 1440, 10080).
+
+    print(most_frequency)
+
+    lifecycle_type_id = -1
+
+    if 0.1 <= most_frequency and most_frequency <= 179.99 :
+        lifecycle_type_id = 0
+    elif 180 <= most_frequency and most_frequency <= 1439.99 :
+        lifecycle_type_id = 1
+    elif 1440 <= most_frequency and most_frequency <= 10080 :
+        lifecycle_type_id = 2
         
     #opposite(low, high).
     #opposite(mid, mid).
@@ -780,7 +766,7 @@ def get_recommendations(request):
 
     print(plants_valid_moist)
 
-    #QuerySet to List (python readable)                                   
+        #QuerySet to List (python readable)                                   
     for plant in plants_valid_moist :
         valid_moist.append(plant)
 
@@ -792,20 +778,24 @@ def get_recommendations(request):
 
     print(plants_valid_ph)
 
-    #QuerySet to List (python readable)   
+        #QuerySet to List (python readable)   
     for plant in plants_valid_ph :
         valid_ph.append(plant)
 
-
     #valid_lifecycle_for_frequency(PL, FR) :- plant(PL),
-    #   plant_lifecycle(PL, LC),
-    #   lifecycle_for_minute_frequency(LC, MINFR, MAXFR),
+    #   plant_lifecycle(PL, LC), lifecycle(LCI, LC),
+    #   lifecycle_for_minute_frequency(LCI, MINFR, MAXFR),
     #   FR >= MINFR, FR =< MAXFR.
 
-
     valid_lifecycle_for_frequency = []
-    
 
+    plants_valid_lifecyle = Plant.objects.filter(lifecycle_data__life_cycle=lifecycle_type_id)
+    
+    print(plants_valid_lifecyle)
+    
+        #QuerySet to List (python readable)   
+    for plant in plants_valid_lifecyle :
+        valid_lifecycle_for_frequency.append(plant)
     
     #recommend_plant(PL, M, A, FR) :- plant(PL), valid_moist(PL, M), valid_acid(PL, A),
     #   valid_lifecycle_for_frequency(PL, FR).
@@ -861,6 +851,40 @@ def get_recommendations(request):
     
     return JsonResponse([], safe=False)
 
+@csrf_exempt
+def get_all_values_as_scatter(request):
+
+    data = json.loads(request.body)
+
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+    
+    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
+
+    dataset = []
+
+    for record in records :
+        dataset.append([float(record.moist), float(record.ph)])
+
+    total_rows = len(dataset)
+    if total_rows <= 0 :
+        return JsonResponse([], safe=False)
+
+    
+
+    #cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
+
+    #i = 0
+    #chart_data = []
+    #for data_row in fresh_numpy_data :
+    #    if cluster_labels[i] == most_frequent_cluster_index :
+    #        good = '1'
+    #    else :
+    #        good = '0'
+    #    chart_data.append({'moist':str(data_row[0]), 'acidity': str(data_row[1]), 'cluster_group': str(cluster_labels[i]), 'good':good})
+    #    i += 1
+    
+    return JsonResponse(dataset, safe=False)
+
 
 @csrf_exempt
 def load_latest_plants_recommendation(request):
@@ -879,8 +903,8 @@ def load_latest_plants_recommendation(request):
     plants_list = []
 
     for recommended_plant in recommended_plants :
-        plant = Plant.objects.get(pk=recommended_plant.plant_name)
-        soil_type = SoilType.objects.get(pk=recommended_plant.soil_type_name)
+        plant = Plant.objects.get(plant_name=recommended_plant.plant_name)
+        soil_type = SoilType.objects.get(name=recommended_plant.soil_type_name)
         plants_list.append({'id':plant.id, 'name':plant.plant_name, 'soil_type':soil_type.name})
 
     return JsonResponse(plants_list, safe=False)
@@ -914,14 +938,16 @@ def get_plant_info(request):
     plant = Plant.objects.get(pk=data['plant_id'])
 
     lvl_config = ['very_low','low','mid','high','very_high']
+    lifecycle_config = ['annual','biennial','perennial']
 
-    name = plant.moist_data.plant_name
+    name = plant.plant_name
     min_moist = lvl_config[plant.moist_data.min_moist_lvl]
     max_moist = lvl_config[plant.moist_data.max_moist_lvl]
     min_ph = plant.ph_data.min_ph
     max_ph = plant.ph_data.max_ph
+    life_cycle = lifecycle_config[plant.lifecycle_data.life_cycle]
 
-    return JsonResponse({'name':name, 'min_moist':min_moist, 'max_moist':max_moist, 'min_ph':str(min_ph), 'max_ph':str(max_ph)}, safe=False)
+    return JsonResponse({'name':name, 'min_moist':min_moist, 'max_moist':max_moist, 'min_ph':str(min_ph), 'max_ph':str(max_ph), 'life_cycle': life_cycle}, safe=False)
 
 
 @csrf_exempt

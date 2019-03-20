@@ -43,6 +43,7 @@ export default {
       failed_msg: '',
       good_avg_moist: 0.0,
       good_avg_acidity: 7.0,
+      most_frequency: 0.1,
       n_lvl: 'Unknown',
       p_lvl: 'Unknown',
       k_lvl: 'Unknown',
@@ -67,12 +68,13 @@ export default {
             .then((response) => {
               this.good_avg_moist = parseFloat(response.data['avg_good_moist'])
               this.good_avg_acidity = parseFloat(response.data['avg_good_acidity'])
-
+              this.most_frequency = parseFloat(response.data['most_frequency'])
 
               axios.post("/get_recommendations", {
                 'soil_profile_id': selected,
                 'good_avg_moist': this.good_avg_moist,
-                'good_avg_acidity': this.good_avg_acidity
+                'good_avg_acidity': this.good_avg_acidity,
+                'most_frequency': this.most_frequency
               })
                     .then((response) => {
                       this.getDataWithoutUpdating(selected)
