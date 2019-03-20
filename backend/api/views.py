@@ -1,24 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 from django.views.generic import TemplateView
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
@@ -730,19 +709,19 @@ def get_recommendations(request):
 
     lifecycle_config = ['annual','biennial','perennial']
 
-    #lifecycle_for_minute_frequency(0, 0.1, 179.99).
-    #lifecycle_for_minute_frequency(1, 180, 1439.99).
-    #lifecycle_for_minute_frequency(2, 1440, 10080).
+    #lifecycle_for_minute_frequency(0, 0.1, 14.99).
+    #lifecycle_for_minute_frequency(1, 15, 39.99).
+    #lifecycle_for_minute_frequency(2, 40, 1440).
 
     print(most_frequency)
 
     lifecycle_type_id = -1
 
-    if 0.1 <= most_frequency and most_frequency <= 179.99 :
+    if 0.1 <= most_frequency and most_frequency <= 14.99 :
         lifecycle_type_id = 0
-    elif 180 <= most_frequency and most_frequency <= 1439.99 :
+    elif 15 <= most_frequency and most_frequency <= 39.99 :
         lifecycle_type_id = 1
-    elif 1440 <= most_frequency and most_frequency <= 10080 :
+    elif 40 <= most_frequency and most_frequency <= 1440 :
         lifecycle_type_id = 2
         
     #opposite(low, high).
