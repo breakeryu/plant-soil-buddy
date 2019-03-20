@@ -43,21 +43,9 @@ urlpatterns = [
 
     path('get_total_records_per_soil', get_total_records_per_soil),
 
-    path('get_all_values', get_all_values),
-
     path('get_all_values_as_scatter', get_all_values_as_scatter),
 
     path('debug_frequency', debug_frequency),
-
-    path('get_moist_as_value', get_moist_as_value),
-    path('get_moist_as_stats', get_moist_as_stats),
-
-    path('get_acidity_as_value', get_acidity_as_value),
-    path('get_acidity_as_stats', get_acidity_as_stats),
-
-
-    path('get_average_moist', get_average_moist),
-    path('get_average_acidity', get_average_acidity),
 
     path('get_good_moist_ph_values', get_good_moist_ph_values),
     path('get_recommendations', get_recommendations),
@@ -66,13 +54,9 @@ urlpatterns = [
 
     path('get_plant_info', get_plant_info),
 
-    path('get_connection_status', get_connection_status),
-
     path('push_ph_to_npk_into_database', push_ph_to_npk_into_database),
     path('push_plants_into_database', push_plants_into_database),
     path('push_soil_types_into_database', push_soil_types_into_database),
-
-    path('snap_reset', snap_reset),
 
     path(r'auth/obtain_token/', obtain_jwt_token),
     path(r'auth/refresh_token/', refresh_jwt_token),
