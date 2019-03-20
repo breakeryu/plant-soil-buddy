@@ -63,7 +63,6 @@ class PostsView(ListAPIView):
 
 moist = 0
 acidity = 7
-#fertility = 0
 
 moist_chart_data = {
     'columns': ['time', '%'],
@@ -75,14 +74,9 @@ acidity_chart_data = {
     'rows': []
 }
 
-#fertility_chart_data = {
-#    'columns': ['time', '%'],
-#    'rows': []
-#}
 
 avg_moist = 0
 avg_acidity = 7
-#avg_fertility = 0
 
 def round_two_decimal_digits(number) :
     return math.ceil(number*100)/100
