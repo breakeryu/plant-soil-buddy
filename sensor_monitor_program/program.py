@@ -127,9 +127,9 @@ while True:
 
     if time.time() >= t_end :
         print('Recording...')
-        t = (soil_profile[0], moist, acidity, get_current_time())
+        t = (soil_profile[0], moist, acidity, get_current_time(), every_minutes)
 
-        c.execute('INSERT INTO api_sensorrecord (soil_id_id, moist, ph, record_date) VALUES ((SELECT id from api_soilprofile WHERE name=?), ?, ?, ?)',t)
+        c.execute('INSERT INTO api_sensorrecord (soil_id_id, moist, ph, record_date) VALUES ((SELECT id from api_soilprofile WHERE name=?), ?, ?, ?, ?)',t)
         conn.commit()
         t_end = time.time() + (60 * every_minutes)
 
