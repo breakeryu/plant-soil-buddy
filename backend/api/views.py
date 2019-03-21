@@ -39,8 +39,8 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from sklearn.preprocessing import StandardScaler
 #from sklearn.cluster import KMeans
-#from sklearn.cluster import AgglomerativeClustering
-from sklearn.cluster import DBSCAN
+from sklearn.cluster import AgglomerativeClustering
+#from sklearn.cluster import DBSCAN
 from scipy.cluster.hierarchy import fcluster
 from scipy.cluster.hierarchy import dendrogram, linkage
 
