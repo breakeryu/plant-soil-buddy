@@ -2,9 +2,9 @@
   <div class="hello">
     <h1>{{ msg }}</h1> 
 <h3>Plant-Soil-Buddy is a web application that will gather the soil’s quality data.</h3>
-<h4>And we have this system tells us what kinds of plants are suitable for the specific soil we are using.</h4>
-<h4>As we could use this before we decide to invest in gardening.</h4>
-<h4>This website requires <a class="item">Arduino Sensor Devices</a> to run the soil quality data records.</h4>
+<h4>And this system tells us what kinds of plants are suitable for the specific soil we are using.</h4>
+<h4>We can use this before we decide to invest in gardening.</h4>
+<h4>This website requires <a class="item">Arduino Sensor Monitor Program</a> to run the soil quality data recording.</h4>
 <br>
       <button class="normal-btn login-btn" v-on:click="toLogin">Login</button>
 

@@ -53,6 +53,7 @@ urlpatterns = [
     path('load_latest_npk_recommendation', load_latest_npk_recommendation),
 
     path('get_plant_info', get_plant_info),
+    path('load_plant_search_results', load_plant_search_results),
 
     path('push_ph_to_npk_into_database', push_ph_to_npk_into_database),
     path('push_plants_into_database', push_plants_into_database),

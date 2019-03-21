@@ -42,6 +42,13 @@
 
   <hr>
 
+  <h1><u>Search For Desired Plants</u></h1>
+    <br>
+    
+    <plant-searcher ref="plant_search"></plant-searcher>
+
+  <hr>
+
   <h1><u>User Management</u></h1>
   <br>
   <div id="userinfo">
@@ -66,11 +73,13 @@
 import axios from 'axios'
 import router from '@/router'
 import PlantRecommender from '@/components/Charts/PlantRecommender'
+import PlantSearcher from '@/components/Charts/PlantSearcher'
 
 export default {
   name: 'Welcome',
   components: {
-    PlantRecommender
+    PlantRecommender,
+    PlantSearcher
   },
   data () {
     return {

@@ -755,6 +755,20 @@ def get_plant_info(request):
 
 
 @csrf_exempt
+def load_plant_search_results(request):
+    data = json.loads(request.body)
+
+    plants = Plant.objects.filter(plant_name__istartswith=data['query'])
+
+
+    plants_list = []
+
+    for plant in plants :
+        plants_list.append({'id':plant.id, 'name':plant.plant_name})
+
+    return JsonResponse(plants_list, safe=False)
+
+@csrf_exempt
 def push_ph_to_npk_into_database(request):
 
     lvl_config = {'very_low':0,'low':1,'mid':2,'high':3,'very_high':4}
