@@ -37,11 +37,10 @@ from django.core.exceptions import (
 
 import numpy as np
 from scipy.spatial.distance import cdist
+from sklearn.preprocessing import StandardScaler
 #from sklearn.cluster import KMeans
-from sklearn.cluster import AgglomerativeClustering
-#from sklearn.cluster import MeanShift
-#from sklearn.mixture import GaussianMixture
-#from sklearn.cluster import DBSCAN
+#from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import DBSCAN
 from scipy.cluster.hierarchy import fcluster
 from scipy.cluster.hierarchy import dendrogram, linkage
 
@@ -441,21 +440,25 @@ def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
 
 
 def get_cluster_group_labels_and_most_frequent(fresh_numpy_data) :
-    n = 3
+    #Normalization
+    sc = StandardScaler()
+    normalized_numpy_data = sc.fit_transform(fresh_numpy_data)
         
     #get clusters
-    #cluster = KMeans(n_clusters=3).fit(fresh_numpy_data)
-    cluster = AgglomerativeClustering(linkage='ward', affinity='euclidean', n_clusters=n).fit(fresh_numpy_data)
-    #cluster = MeanShift(bandwidth=2).fit(fresh_numpy_data)
-    #cluster = GaussianMixture(n_components=3).fit(fresh_numpy_data)
-    #cluster = DBSCAN(eps=3, min_samples=2).fit(fresh_numpy_data)
+    #cluster = KMeans(n_clusters=3, init = 'k-means++').fit(normalized_numpy_data)
+    #cluster = AgglomerativeClustering(linkage='ward', affinity='euclidean', n_clusters=3).fit(normalized_numpy_data)
+    cluster = DBSCAN(eps=3, min_samples=2).fit(normalized_numpy_data)
+
+    #::Reason to use DBSCAN instead of Agglo or K-Means::
+    #
+    #Use DBSCAN has best result, before then I haven't normalize the data so it once come out ugly, but after normalizatin, it became beautiful in graph.
+    #All algorithms requires normalization before applying it
+    #Futhermore, DBSCAN don't need to determine number of clusters, making it more flexible than those 2 algorithm mentioned
 
     cluster_labels = cluster.labels_
-    #cluster_labels = cluster.weights_
     
     cluster_labels_compare = cluster_labels[cluster_labels >= 0]
     
-    #print(cluster_labels)
     most_frequent_cluster_index = np.argmax(np.bincount(cluster_labels_compare))
 
     return cluster_labels, most_frequent_cluster_index
