@@ -38,11 +38,7 @@ from django.core.exceptions import (
 import numpy as np
 from scipy.spatial.distance import cdist
 from sklearn.preprocessing import StandardScaler
-#from sklearn.cluster import KMeans
-#from sklearn.cluster import AgglomerativeClustering
 from sklearn.cluster import DBSCAN
-from scipy.cluster.hierarchy import fcluster
-from scipy.cluster.hierarchy import dendrogram, linkage
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.validators import validate_email
@@ -445,8 +441,6 @@ def get_cluster_group_labels_and_most_frequent(fresh_numpy_data) :
     normalized_numpy_data = sc.fit_transform(fresh_numpy_data)
         
     #get clusters
-    #cluster = KMeans(n_clusters=3, init = 'k-means++').fit(normalized_numpy_data)
-    #cluster = AgglomerativeClustering(linkage='ward', affinity='euclidean', n_clusters=3).fit(normalized_numpy_data)
     cluster = DBSCAN(eps=3, min_samples=2).fit(normalized_numpy_data)
 
     #::Reason to use DBSCAN instead of Agglo or K-Means::
