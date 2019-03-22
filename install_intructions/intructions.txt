@@ -24,7 +24,9 @@ yarn build
 
 =Update database using=
 
+https://medium.com/agatha-codes/painless-postgresql-django-d4f03364989
 python manage.py makemigrations
+
 python manage.py migrate
 
 

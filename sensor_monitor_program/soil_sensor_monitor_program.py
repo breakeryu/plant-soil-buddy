@@ -1,5 +1,5 @@
 import os
-import sqlite3
+import psycopg2
 import serial
 import time
 from datetime import datetime
@@ -7,11 +7,7 @@ from datetime import datetime
 def get_current_time() :
     return f"{datetime.now():%Y-%m-%d %H:%M:%S}"
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-DB_FILE_PATH = os.path.join(BASE_DIR, 'db.sqlite3')
-
-conn = sqlite3.connect(DB_FILE_PATH)
+conn = psycopg2.connect("dbname=plant_soil_buddy user=postgres password=root")
 
 c = conn.cursor()
 
@@ -21,9 +17,7 @@ while not user_data :
     print('Enter your username: ', end='')
     username = input()
 
-    t = (username,)
-
-    c.execute('SELECT id, username FROM auth_user WHERE username=?',t)
+    c.execute("SELECT id, username FROM auth_user WHERE username='%s'"%(username))
 
     user_data = c.fetchone()
 
@@ -43,7 +37,7 @@ while not soil_profile :
 
     t = (user_data[1], name, location,)
 
-    c.execute('SELECT api_soilprofile.name FROM api_soilprofile JOIN auth_user ON api_soilprofile.owner_id=auth_user.id WHERE username=? AND name=? AND location=?',t)
+    c.execute("SELECT api_soilprofile.name FROM api_soilprofile JOIN auth_user ON api_soilprofile.owner_id=auth_user.id WHERE username='%s' AND name='%s' AND location='%s'"%t)
 
     soil_profile = c.fetchone()
 
@@ -132,7 +126,7 @@ while True:
         print('Recording...')
         t = (soil_profile[0], moist, acidity, get_current_time(), every_minutes)
 
-        c.execute('INSERT INTO api_sensorrecord (soil_id_id, moist, ph, record_date, record_frequency_min) VALUES ((SELECT id from api_soilprofile WHERE name=?), ?, ?, ?, ?)',t)
+        c.execute("INSERT INTO api_sensorrecord (soil_id_id, moist, ph, record_date, record_frequency_min) VALUES ((SELECT id from api_soilprofile WHERE name='%s'), %.2f, %.2f, '%s', %.2f)"%t)
         conn.commit()
         t_end = time.time() + (60 * every_minutes)
 
