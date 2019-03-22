@@ -11,6 +11,10 @@
       <h3 id="unused" v-if="unused && showing_results">This Soil Profile haven't yet been used or analyzed.</h3>
     </div>
 
+    <p><a href="#" class="tooltip" v-on:click="soilHint">What are each soil type means?
+      </a></p>
+      <p>You can click on the plant name for more informations.</p>
+
       <br>
       <h2><u>Recommended NPK to analyze fertilizer</u></h2>
       <div id="npk">
@@ -19,6 +23,9 @@
       <h3>K (Potassium) to fill : <a class="nutrient">{{ k_lvl }}</a></h3>
       </div>
       <br>
+      <p><a href="#" class="tooltip" v-on:click="npkHint">What do they mean?
+      </a></p>
+      
 
   </div>
 </template>
@@ -149,6 +156,36 @@ export default {
       //console.log(name)
       this.$store.state.selected_plant = plant_id
       router.push('plantinfo')
+    },
+    soilHint() {
+      this.$notify({
+          group: 'notify',
+          title: 'What does Sandy Soil mean?',
+          text: 'It is a soil that can only carry water for a short time. (Click to Dismiss)',
+          duration: -1
+        })
+      this.$notify({
+          group: 'notify',
+          title: 'What does Loam Soil mean?',
+          text: 'It is a soil that can carry water for an average time. (Click to Dismiss)',
+          duration: -1
+        })
+      this.$notify({
+          group: 'notify',
+          title: 'What does Clay Soil mean?',
+          text: 'It is a soil that can carry water for a really long time. (Click to Dismiss)',
+          duration: -1
+        })
+
+    },
+    npkHint() {
+      this.$notify({
+          group: 'notify',
+          title: 'What do Recommended NPK to analyze fertilizer mean?',
+          text: 'This shows the discretized amount of N, P, and K elements to fill into the soil via fertilizer. If one of them shows as low, you may do not even need to fill it at all. If all of them shows as low, then the soil may have perfect acidity. (Click to dismiss)',
+          duration: -1
+        })
+
     }
   },
   mounted(){

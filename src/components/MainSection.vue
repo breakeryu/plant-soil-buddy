@@ -153,12 +153,14 @@ export default {
       this.$notify({
           group: 'notify',
           title: 'What is Soil Profile?',
-          text: 'This is the storage of the recorded soil quality data specific to each soil chunk you record.'
+          text: 'This is the storage of the recorded soil quality data specific to each soil chunk you record. (Click to dismiss)',
+          duration: -1
         })
       this.$notify({
           group: 'notify',
           title: 'What is Soil Profile?',
-          text: 'However, do not record more than 2 different soil chunks for one profile, otherwise the plant recommendation will be inaccurate.'
+          text: 'However, do not record more than 2 different soil chunks for one profile, otherwise the plant recommendation will be inaccurate. (Click to dismiss)',
+          duration: -1
         })
 
     },

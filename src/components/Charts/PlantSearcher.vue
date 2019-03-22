@@ -15,6 +15,8 @@
       <h3 class="warning" v-if="empty && showing_results">-None-</h3>
     </div>
 
+    <p>You can click on the plant name for informations.</p>
+
       
 
   </div>
