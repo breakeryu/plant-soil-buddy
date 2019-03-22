@@ -12,3 +12,4 @@ scipy
 scikit-learn
 xlrd
 passlib
+psycopg2
