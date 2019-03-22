@@ -11,9 +11,10 @@
       <h3 id="unused" v-if="unused && showing_results">This Soil Profile haven't yet been used or analyzed.</h3>
     </div>
 
+    <p>You can click on the plant name for more informations.</p>
     <p><a href="#" class="tooltip" v-on:click="soilHint">What are each soil type means?
       </a></p>
-      <p>You can click on the plant name for more informations.</p>
+      
 
       <br>
       <h2><u>Recommended NPK to analyze fertilizer</u></h2>
@@ -203,6 +204,9 @@ export default {
 }
 .soil {
   color: #703104; /* Dirt Brown */
+}
+.tooltip {
+  color: blue;
 }
 #graph {
   display: inline-block;

@@ -278,6 +278,9 @@ input:focus {
   height: 35px;
   margin-bottom: 30px;
 }
+.tooltip {
+  color: blue;
+}
 .user-btn {
   margin-bottom: 10px;
 }
