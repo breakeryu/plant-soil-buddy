@@ -430,6 +430,7 @@ def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
         values = np.array([[float(record.moist), float(record.ph), float(record.record_frequency_min)]])
         raw_chart_data = np.append(raw_chart_data, values, axis=0)
 
+    #These are needed for DBScan range settings quality.
     #set min
     raw_chart_data = np.append(raw_chart_data, [[0,0,0.1]], axis=0)
     #set max
