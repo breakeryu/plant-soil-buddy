@@ -39,8 +39,8 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from sklearn.preprocessing import StandardScaler
 #from sklearn.cluster import KMeans
-from sklearn.cluster import AgglomerativeClustering
-#from sklearn.cluster import DBSCAN
+#from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import DBSCAN
 from scipy.cluster.hierarchy import fcluster
 from scipy.cluster.hierarchy import dendrogram, linkage
 
@@ -446,14 +446,18 @@ def get_cluster_group_labels_and_most_frequent(fresh_numpy_data) :
         
     #get clusters
     #cluster = KMeans(n_clusters=6, init = 'k-means++').fit(normalized_numpy_data)
-    cluster = AgglomerativeClustering(linkage='ward', affinity='euclidean', n_clusters=6).fit(normalized_numpy_data)
-    #cluster = DBSCAN(eps=3, min_samples=2).fit(normalized_numpy_data)
+    #cluster = AgglomerativeClustering(linkage='ward', affinity='euclidean', n_clusters=6).fit(normalized_numpy_data)
+    cluster = DBSCAN(eps=0.25, min_samples=5).fit(normalized_numpy_data)
 
     cluster_labels = cluster.labels_
     
     cluster_labels_compare = cluster_labels[cluster_labels >= 0]
-    
-    most_frequent_cluster_index = np.argmax(np.bincount(cluster_labels_compare))
+    bincount = np.bincount(cluster_labels_compare)
+
+    if bincount.size > 0:
+        most_frequent_cluster_index = np.argmax(bincount)
+    else :
+        most_frequent_cluster_index = -1
 
     return cluster_labels, most_frequent_cluster_index
 
@@ -465,10 +469,13 @@ def get_good_moist_ph_values(request):
     fresh_numpy_data = get_fresh_numpy_data_of_soil_profile(data['soil_profile_id'])
     
     total_rows = fresh_numpy_data.shape[0]
-    if total_rows < 3 :
-        return HttpResponseBadRequest("Number of Sensors Records of this soil profile is less than 3, cannot analyze.")
+    if total_rows < 5 :
+        return HttpResponseBadRequest("Number of Sensors Records of this soil profile is less than 5, cannot analyze.")
 
     cluster_labels, most_frequent_cluster_index = get_cluster_group_labels_and_most_frequent(fresh_numpy_data)
+
+    if most_frequent_cluster_index < 0:
+        return HttpResponseBadRequest("No dense data of at least 5 sensor records.")
 
     good_data_moist = []
     good_data_acidity = []
