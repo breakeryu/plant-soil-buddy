@@ -6,7 +6,8 @@
     <h3>Soil Name : {{ soil_name }}</h3>
     <h3>Soil Location : {{ soil_location }}</h3>
     
-    <scatter-chart :data="values" xtitle="Moist %" ytitle="Acidity pH"></scatter-chart>
+    <scatter-chart :data="values" xtitle="Moist %" ytitle="Acidity pH" min="0"
+        ></scatter-chart>
     <br>
     <button class="normal-btn exit-btn" v-on:click="goBack">Back</button>
 

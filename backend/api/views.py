@@ -148,8 +148,6 @@ def register(request):
         if user :
             return HttpResponseBadRequest('User Already Exists')
         else :
-            #encrypt_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
-            
             new_user = User(username=data['username'], email=data['email'], password=make_password(data['password']))
             new_user.save()
 
@@ -431,6 +429,11 @@ def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
     for record in records :
         values = np.array([[float(record.moist), float(record.ph), float(record.record_frequency_min)]])
         raw_chart_data = np.append(raw_chart_data, values, axis=0)
+
+    #set min
+    raw_chart_data = np.append(raw_chart_data, [[0,0,0.1]], axis=0)
+    #set max
+    raw_chart_data = np.append(raw_chart_data, [[100,14,720]], axis=0)
 
     fresh_numpy_data = raw_chart_data[~np.isnan(raw_chart_data).any(axis=1)]
     
