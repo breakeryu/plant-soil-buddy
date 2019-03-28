@@ -41,8 +41,6 @@ from sklearn.preprocessing import StandardScaler
 #from sklearn.cluster import KMeans
 #from sklearn.cluster import AgglomerativeClustering
 from sklearn.cluster import DBSCAN
-from scipy.cluster.hierarchy import fcluster
-from scipy.cluster.hierarchy import dendrogram, linkage
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.validators import validate_email
