@@ -14,7 +14,6 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 
 from datetime import datetime
-from pyswip import Prolog
 
 import json
 import math
@@ -52,28 +51,9 @@ class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
 
-
-
 class PostsView(ListAPIView):
     authentication_class = (JSONWebTokenAuthentication,) # Don't forget to add a 'comma' after first element to make it a tuple
     permission_classes = (IsAuthenticated,)
-
-moist = 0
-acidity = 7
-
-moist_chart_data = {
-    'columns': ['time', '%'],
-    'rows': []
-}
-
-acidity_chart_data = {
-    'columns': ['time', 'pH'],
-    'rows': []
-}
-
-
-avg_moist = 0
-avg_acidity = 7
 
 def round_two_decimal_digits(number) :
     return math.ceil(number*100)/100
@@ -85,10 +65,6 @@ def get_current_time() :
 @csrf_exempt
 def home(request):
     return render(request, 'index.html')
-
-@csrf_exempt
-def program_test(request):
-    return None
 
 @csrf_exempt
 def register(request):
@@ -391,6 +367,25 @@ def get_total_records_per_soil(request):
     except SoilProfile.DoesNotExist :
         return HttpResponse(0)
 
+@csrf_exempt
+def get_all_values_as_scatter(request):
+
+    data = json.loads(request.body)
+
+    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
+    
+    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
+
+    dataset = []
+
+    for record in records :
+        dataset.append([float(record.moist), float(record.ph)])
+
+    total_rows = len(dataset)
+    if total_rows <= 0 :
+        return JsonResponse([], safe=False)
+    
+    return JsonResponse(dataset, safe=False)
 
 @csrf_exempt
 def debug_frequency(request):
@@ -417,7 +412,6 @@ def debug_frequency(request):
     else:
         return None
 
-
 def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
     
     soil_profile_on_use = SoilProfile.objects.get(pk=soil_profile_id)
@@ -440,7 +434,6 @@ def get_fresh_numpy_data_of_soil_profile(soil_profile_id) :
     
     return fresh_numpy_data
 
-
 def get_cluster_group_labels_and_most_frequent(fresh_numpy_data) :
     #Normalization
     sc = StandardScaler()
@@ -462,7 +455,6 @@ def get_cluster_group_labels_and_most_frequent(fresh_numpy_data) :
         most_frequent_cluster_index = -1
 
     return cluster_labels, most_frequent_cluster_index
-
 
 @csrf_exempt
 def get_good_moist_ph_values(request):
@@ -676,27 +668,6 @@ def get_recommendations(request):
     return JsonResponse([], safe=False)
 
 @csrf_exempt
-def get_all_values_as_scatter(request):
-
-    data = json.loads(request.body)
-
-    soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
-    
-    records = SensorRecord.objects.filter(soil_id=soil_profile_on_use)
-
-    dataset = []
-
-    for record in records :
-        dataset.append([float(record.moist), float(record.ph)])
-
-    total_rows = len(dataset)
-    if total_rows <= 0 :
-        return JsonResponse([], safe=False)
-    
-    return JsonResponse(dataset, safe=False)
-
-
-@csrf_exempt
 def load_latest_plants_recommendation(request):
     data = json.loads(request.body)
 
@@ -740,7 +711,6 @@ def load_latest_npk_recommendation(request):
 
     return JsonResponse({'n_lvl':n_lvl, 'p_lvl':p_lvl, 'k_lvl':k_lvl}, safe=False)
 
-
 @csrf_exempt
 def get_plant_info(request):
     data = json.loads(request.body)
@@ -758,7 +728,6 @@ def get_plant_info(request):
     life_cycle = lifecycle_config[plant.lifecycle_data.life_cycle]
 
     return JsonResponse({'name':name, 'min_moist':min_moist, 'max_moist':max_moist, 'min_ph':str(min_ph), 'max_ph':str(max_ph), 'life_cycle': life_cycle}, safe=False)
-
 
 @csrf_exempt
 def load_plant_search_results(request):
@@ -940,11 +909,3 @@ def push_soil_types_into_database(request):
 
     return HttpResponse('')
 
-
-def public(request):
-    return HttpResponse("You don't need to be authenticated to see this")
-
-
-@api_view(['GET'])
-def private(request):
-    return HttpResponse("You should not see this message if not authenticated!")
