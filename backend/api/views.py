@@ -42,6 +42,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import DBSCAN
 
 from django.contrib.auth.hashers import make_password, check_password
+import django.contrib.auth.password_validation as validators
 from django.core.validators import validate_email
 
 class MessageViewSet(viewsets.ModelViewSet):
@@ -138,7 +139,9 @@ def change_password(request) :
 
         user = User.objects.get(username=data['username'])
 
-        if not user.password == data['old_password'] :
+        try:
+            validators.validate_password(password=data['old_password'], user=user)
+        except ValidationError:
             return HttpResponseBadRequest('Incorrect old password')
     
         if data['username'] == data['password'] :
