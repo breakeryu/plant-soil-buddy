@@ -1,0 +1,255 @@
+Microsoft Windows [Version 10.0.17134.706]
+(c) 2018 Microsoft Corporation. All rights reserved.
+
+C:\Users\JBCOM>d:
+
+D:\>cd D:\proj\plant-soil-buddy\sensor_monitor_program
+
+D:\proj\plant-soil-buddy\sensor_monitor_program>python soil_sensor_monitor_program.py
+Enter your username: Metter
+Welcome! Metter
+Enter your soil profile name: DemoA
+Enter your soil profile location: Room
+Enter how often the sensors will record in every minutes, decimal allowed, annual plant = [0.1, 30), biennial plant = [30, 60), perennial plant = [60, 720]: 0.1
+Record every 6.0 seconds
+Enter your USB port for Arduino (Example: COM8): COM8
+Connecting to Arduino Decives...
+Connection Success.
+
+You can simply stop by plugging the USB off.
+Now Loading...
+Moist: 64 % , Acidity: 6.24 pH
+Moist: 64 % , Acidity: 6.23 pH
+Moist: 64 % , Acidity: 6.24 pH
+Moist: 64 % , Acidity: 6.24 pH
+Recording...
+Moist: 64 % , Acidity: 6.24 pH
+Moist: 64 % , Acidity: 6.24 pH
+Moist: 64 % , Acidity: 6.24 pH
+Moist: 65 % , Acidity: 6.24 pH
+Moist: 65 % , Acidity: 6.24 pH
+Moist: 65 % , Acidity: 6.24 pH
+Recording...
+Moist: 64 % , Acidity: 6.25 pH
+Moist: 64 % , Acidity: 6.25 pH
+Moist: 64 % , Acidity: 6.25 pH
+Moist: 64 % , Acidity: 6.25 pH
+Moist: 64 % , Acidity: 6.25 pH
+Moist: 64 % , Acidity: 6.24 pH
+Recording...
+Moist: 64 % , Acidity: 6.24 pH
+Moist: 64 % , Acidity: 6.24 pH
+Moist: 64 % , Acidity: 6.24 pH
+Moist: 64 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Recording...
+Moist: 64 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Recording...
+Moist: 63 % , Acidity: 6.23 pH
+Moist: 64 % , Acidity: 6.25 pH
+Moist: 64 % , Acidity: 6.25 pH
+Moist: 63 % , Acidity: 6.25 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Recording...
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Recording...
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 62 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 62 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.25 pH
+Recording...
+Moist: 63 % , Acidity: 6.25 pH
+Moist: 63 % , Acidity: 6.25 pH
+Moist: 63 % , Acidity: 6.25 pH
+Moist: 63 % , Acidity: 6.25 pH
+Moist: 63 % , Acidity: 6.25 pH
+Moist: 63 % , Acidity: 6.24 pH
+Recording...
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.24 pH
+Moist: 62 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.25 pH
+Recording...
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.26 pH
+Recording...
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 63 % , Acidity: 6.25 pH
+Moist: 63 % , Acidity: 6.25 pH
+Recording...
+Moist: 62 % , Acidity: 6.25 pH
+Moist: 62 % , Acidity: 6.25 pH
+Moist: 62 % , Acidity: 6.25 pH
+Moist: 62 % , Acidity: 6.25 pH
+Moist: 62 % , Acidity: 6.25 pH
+Moist: 62 % , Acidity: 6.25 pH
+Recording...
+Moist: 63 % , Acidity: 6.25 pH
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.26 pH
+Recording...
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.26 pH
+Moist: 63 % , Acidity: 6.26 pH
+Moist: 63 % , Acidity: 6.26 pH
+Moist: 63 % , Acidity: 6.26 pH
+Moist: 63 % , Acidity: 6.26 pH
+Recording...
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.25 pH
+Moist: 62 % , Acidity: 6.24 pH
+Moist: 63 % , Acidity: 6.25 pH
+Moist: 63 % , Acidity: 6.25 pH
+Moist: 62 % , Acidity: 6.25 pH
+Recording...
+Moist: 62 % , Acidity: 6.25 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.25 pH
+Moist: 62 % , Acidity: 6.25 pH
+Recording...
+Moist: 62 % , Acidity: 6.25 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 63 % , Acidity: 6.26 pH
+Moist: 63 % , Acidity: 6.26 pH
+Moist: 63 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Recording...
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.25 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.25 pH
+Moist: 62 % , Acidity: 6.26 pH
+Recording...
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 64 % , Acidity: 6.27 pH
+Moist: 64 % , Acidity: 6.27 pH
+Moist: 64 % , Acidity: 6.27 pH
+Moist: 64 % , Acidity: 6.28 pH
+Recording...
+Moist: 64 % , Acidity: 6.27 pH
+Moist: 64 % , Acidity: 6.28 pH
+Moist: 64 % , Acidity: 6.27 pH
+Moist: 64 % , Acidity: 6.27 pH
+Moist: 64 % , Acidity: 6.27 pH
+Moist: 64 % , Acidity: 6.27 pH
+Recording...
+Moist: 64 % , Acidity: 6.27 pH
+Moist: 64 % , Acidity: 6.27 pH
+Moist: 63 % , Acidity: 6.27 pH
+Moist: 63 % , Acidity: 6.27 pH
+Moist: 63 % , Acidity: 6.27 pH
+Moist: 63 % , Acidity: 6.27 pH
+Recording...
+Moist: 63 % , Acidity: 6.27 pH
+Moist: 63 % , Acidity: 6.26 pH
+Moist: 63 % , Acidity: 6.26 pH
+Moist: 63 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Recording...
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Recording...
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 61 % , Acidity: 6.25 pH
+Recording...
+Moist: 61 % , Acidity: 6.25 pH
+Moist: 61 % , Acidity: 6.25 pH
+Moist: 61 % , Acidity: 6.24 pH
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 62 % , Acidity: 6.26 pH
+Recording...
+Moist: 62 % , Acidity: 6.26 pH
+Moist: 61 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 62 % , Acidity: 6.27 pH
+Recording...
+Moist: 62 % , Acidity: 6.28 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 61 % , Acidity: 6.26 pH
+Recording...
+Moist: 61 % , Acidity: 6.27 pH
+Moist: 61 % , Acidity: 6.26 pH
+Moist: 61 % , Acidity: 6.26 pH
+Moist: 61 % , Acidity: 6.26 pH
+Moist: 61 % , Acidity: 6.26 pH
+Moist: 61 % , Acidity: 6.26 pH
+Recording...
+Moist: 61 % , Acidity: 6.26 pH
+Moist: 61 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 61 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.27 pH
+Recording...
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 61 % , Acidity: 6.27 pH
+Moist: 61 % , Acidity: 6.26 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 61 % , Acidity: 6.27 pH
+Moist: 62 % , Acidity: 6.28 pH
+Recording...
+Moist: 62 % , Acidity: 6.28 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 62 % , Acidity: 6.28 pH
+Moist: 62 % , Acidity: 6.28 pH
+Recording...
+Moist: 62 % , Acidity: 6.28 pH
+Moist: 62 % , Acidity: 6.28 pH
+Moist: 62 % , Acidity: 6.28 pH
+Moist: 62 % , Acidity: 6.27 pH
+Moist: 61 % , Acidity: 6.28 pH
+Moist: 61 % , Acidity: 6.28 pH
+Recording...
+Moist: 61 % , Acidity: 6.27 pH
+Moist: 61 % , Acidity: 6.27 pH
+Disconnected
+
+D:\proj\plant-soil-buddy\sensor_monitor_program>
+
