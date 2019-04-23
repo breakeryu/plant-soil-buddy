@@ -82,8 +82,6 @@ while not status == 'Connected':
         print('You can simply stop by plugging the USB off.')
 
         print('Now Loading...')
-
-        #arduino.close()
                
     except serial.serialutil.SerialException :
         status = 'Disconnected'
@@ -97,7 +95,7 @@ while True:
         moist = int(values[0].split("b'")[1])
         acidity = float(values[1])
         
-        #the last unused value, fertility = int(values[2].split("\\r\\n")[0])
+        #for last value, use : values[x].split("\\r\\n")[0]
 
         if moist < 0:
             moist = 0

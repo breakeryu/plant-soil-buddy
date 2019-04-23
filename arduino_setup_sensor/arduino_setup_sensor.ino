@@ -15,16 +15,12 @@ void setup() {
 
 void loop() {
   
-  
    moist_output_value= analogRead(moist_sensor_pin);
 
    moist_output_value = map(moist_output_value,550 ,0,0,100) + 84;
 
    fertility = (-readFertility() +123)*2;
    ph = readPH() + 7;
-
-   //fertility = analogRead(ph_fertility_pin);
-   //ph = analogRead(ph_fertility_pin);
 
    Serial.print(moist_output_value);
 
