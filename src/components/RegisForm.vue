@@ -45,8 +45,6 @@ export default {
   },
   methods: {
     register () {
-      //alert(this.username)
-      //alert(this.password)
       var self = this
 
       const input = {
@@ -55,13 +53,9 @@ export default {
         'password' : this.password,
         'confirm_password': this.confirm_password
       }
-      //alert(input['name']);
-      //alert(input['password']);
 
       axios.post('register', input).then(req =>{
         console.log(req.data)
-            //alert(req.data.token);
-            //self.type = req.data.type;
             
         if (req.data == 'Success'){
           this.$notify({

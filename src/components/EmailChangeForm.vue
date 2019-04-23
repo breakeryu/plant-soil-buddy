@@ -31,21 +31,15 @@ export default {
   },
   methods: {
     changeEmail () {
-      //alert(this.username)
-      //alert(this.password)
       var self = this
 
       const input = {
         'username': this.username,
         'email': this.email
       }
-      //alert(input['name']);
-      //alert(input['password']);
 
       axios.post('change_email', input).then(req =>{
         console.log(req.data)
-            //alert(req.data.token);
-            //self.type = req.data.type;
             
         if (req.data == 'Success'){
           this.$notify({

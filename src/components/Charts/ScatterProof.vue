@@ -34,17 +34,10 @@ export default {
       if (selected <= 0) {
         return
       }
-      
-    },
-    reset() {
-      
-      
     },
     goBack () {
       router.push("main")
     }
-
-
   },
   mounted(){
       this.soil_profile_id = this.$store.state.selected_soil_profile
@@ -59,13 +52,9 @@ export default {
             'soil_profile_id': this.soil_profile_id
           })
             .then((response) => {
-
-              this.values = response.data
-                
+              this.values = response.data 
             })
-
   }
-
 }
 </script>
 

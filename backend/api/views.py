@@ -37,8 +37,6 @@ from django.core.exceptions import (
 import numpy as np
 from scipy.spatial.distance import cdist
 from sklearn.preprocessing import StandardScaler
-#from sklearn.cluster import KMeans
-#from sklearn.cluster import AgglomerativeClustering
 from sklearn.cluster import DBSCAN
 
 from django.contrib.auth.hashers import make_password, check_password
@@ -443,8 +441,6 @@ def get_cluster_group_labels_and_most_frequent(fresh_numpy_data) :
     normalized_numpy_data = sc.fit_transform(fresh_numpy_data)
         
     #get clusters
-    #cluster = KMeans(n_clusters=6, init = 'k-means++').fit(normalized_numpy_data)
-    #cluster = AgglomerativeClustering(linkage='ward', affinity='euclidean', n_clusters=6).fit(normalized_numpy_data)
     cluster = DBSCAN(eps=0.25, min_samples=5).fit(normalized_numpy_data)
 
     cluster_labels = cluster.labels_
@@ -508,8 +504,6 @@ def get_recommendations(request):
 
     soil_profile_on_use = SoilProfile.objects.get(pk=data['soil_profile_id'])
 
-    #plants = Plant.objects.all()
-
     #Configs Facts
 
     #lvl(0, very_low).
@@ -517,7 +511,7 @@ def get_recommendations(request):
     #lvl(2, mid).
     #lvl(3, high).
     #lvl(4, very_high).
-
+    
     lvl_config = ['very_low','low','mid','high','very_high']
     lvl_config_to_index = {'very_low':'0','low':'1','mid':'2','high':'3','very_high':'4', 'none': '-1'}
 
@@ -526,7 +520,7 @@ def get_recommendations(request):
     #moist_range_lvl(41,60,2).
     #moist_range_lvl(61,80,3).
     #moist_range_lvl(81,100,4).
-
+    
     print(avg_moist)
     print(avg_acidity)
 
@@ -546,7 +540,7 @@ def get_recommendations(request):
     #lifecycle(0, annual).
     #lifecycle(1, biennial).
     #lifecycle(2, perennial).
-
+        
     lifecycle_config = ['annual','biennial','perennial']
 
     #lifecycle_for_minute_frequency(0, 0.1, 29.99).
@@ -580,8 +574,6 @@ def get_recommendations(request):
     valid_moist = [] 
 
     plants_valid_moist = Plant.objects.filter(moist_data__min_moist_lvl__lte=avg_moist_lvl, moist_data__max_moist_lvl__gte=avg_moist_lvl)
-
-    #print(avg_moist_lvl)
 
     print(plants_valid_moist)
 
@@ -624,8 +616,6 @@ def get_recommendations(request):
     print(recommended_plants)
 
     #nutrient_level(A, N, P, K) :- ph_NPK(MIN, MAX, N, P, K), A >= MIN, A =< MAX.
-
-    #dataset = NpkPerPh.objects.all()
     npk_data = NpkPerPh.objects.filter(min_ph__lte=avg_acidity, max_ph__gt=avg_acidity)[0]
     n_lvl = npk_data.n_lvl
     p_lvl = npk_data.p_lvl
@@ -756,11 +746,9 @@ def push_ph_to_npk_into_database(request):
     ph_to_npk_dataset = []
 
     for i in range(excel_dataset.nrows) :
-    
         ph_to_npk_dataset.append([])
     
         for j in range(excel_dataset.ncols) :
-        
             ph_to_npk_dataset[i].append(excel_dataset.cell_value(i,j))
 
         if i > 0 :

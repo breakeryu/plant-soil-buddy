@@ -154,7 +154,6 @@ export default {
       this.k_lvl = 'Unknown'
     },
     showPlantInfo(plant_id){
-      //console.log(name)
       this.$store.state.selected_plant = plant_id
       router.push('plantinfo')
     },

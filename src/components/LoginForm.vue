@@ -29,30 +29,16 @@ export default {
   },
   methods: {
     doLogin () {
-      //alert(this.username)
-      //alert(this.password)
       var self = this
 
       const input = {
         'username': this.username,
         'password' : this.password
       }
-      //alert(input['name']);
-      //alert(input['password']);
 
       axios.post(this.$store.state.endpoints.obtainJWT, input).then((response) =>{
-        //console.log(req.data)
            this.$store.commit('updateToken', response.data.token)
-           /*
-        if (req.data != 'None'){
-          alert('Welcome!')
-          router.push("/messages")
-        } else {
-          alert('Login Failed')
-          console.log('Login Failed')
-          router.push("/login")
-        }
-        return req*/
+
           const base = {
             baseURL: this.$store.state.endpoints.baseUrl,
             headers: {
@@ -66,11 +52,6 @@ export default {
           }
 
           const axiosInstance = axios.create(base)
-          /*axiosInstance({
-            url: "/user",
-            method: "get",
-            params: {}
-          })*/
           axios.post("/user", {
             'username': this.username
           })

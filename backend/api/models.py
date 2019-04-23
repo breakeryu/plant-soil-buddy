@@ -8,7 +8,6 @@ class Message(models.Model):
     subject = models.CharField(max_length=200)
     body = models.TextField()
 
-
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Message
@@ -74,11 +73,7 @@ class Plant(models.Model):
     lifecycle_data = models.ForeignKey(PlantLifeCycle, on_delete=models.CASCADE, default=0)
     plant_name = models.CharField(max_length=100, default='')
     def __str__(self):
-        #data = PlantMoistLvl.objects.get(pk=self.moist_data.pk)
-        #return data.plant_name
         return self.plant_name
-
-
 
 class NpkPerPh(models.Model):
     LOW = 1
@@ -173,8 +168,4 @@ class RecommendedPlant(models.Model):
     plant_name = models.CharField(max_length=100, default='')
     soil_type_name = models.CharField(max_length=100, default='')
     def __str__(self):
-        #plant = Plant.objects.get(pk=self.plant_id.pk)
-        #recco = Recommendation.objects.get(pk=self.recco_id.pk)
-        #soil = SoilProfile.objects.get(pk=recco.soil_id.pk)
-        #return plant.moist_data.plant_name + ", " + soil.name
         return self.plant_name + ", " + self.soil_type_name

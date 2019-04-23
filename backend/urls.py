@@ -61,10 +61,6 @@ urlpatterns = [
 
     path(r'auth/obtain_token/', obtain_jwt_token),
     path(r'auth/refresh_token/', refresh_jwt_token),
-
-    #url(r'^auth/obtain_token/', obtain_jwt_token),
-    
-    #url(r'^auth/refresh_token/', refresh_jwt_token),
 ]
 
 
